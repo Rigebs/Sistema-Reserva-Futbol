@@ -1,0 +1,124 @@
+.home-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin-top: 70px; /* Ajusta este valor según la altura de tu navbar */
+  overflow-x: hidden; /* Evita desbordamiento horizontal */
+}
+
+/* Centrar el home-container correctamente */
+.content-container {
+  display: flex;
+  max-width: 1200px; /* Limita el ancho máximo en pantallas grandes */
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+  overflow-x: hidden; /* Evita desbordamiento horizontal */
+}
+
+/* Estilos específicos para el texto y el carrusel */
+.invitation-text {
+  flex: 1;
+  text-align: left;
+}
+
+app-carousel {
+  flex: 1;
+}
+
+/* Estilos para el selector de distrito */
+.district-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Estilos para el selector */
+.district-select {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Ajuste del calendario */
+.demo-inline-calendar-card {
+  width: 100%; /* Asegura que ocupe todo el ancho disponible del contenedor */
+  max-width: 300px; /* Máximo ancho del calendario */
+}
+
+/* Estilos para el contenedor de los campos */
+.campos-container {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.campos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Asegura que las tarjetas de campo tengan un tamaño adecuado */
+app-campo-card {
+  max-width: 400px;
+  width: 100%; /* Asegura que la tarjeta ocupe todo el ancho disponible */
+}
+
+/* Estilos para el carrusel en dispositivos móviles */
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden; /* Asegura que no haya scroll horizontal */
+  }
+
+  .content-container {
+    flex-direction: column;
+    gap: 0;
+    overflow-x: hidden; /* Asegura que no haya scroll horizontal */
+  }
+
+  .invitation-text {
+    text-align: center;
+  }
+
+  app-carousel {
+    margin-top: 20px;
+  }
+
+  .district-selector {
+    max-width: 90%;
+  }
+
+  .district-select {
+    max-width: 100%;
+  }
+
+  /* Aseguramos que el calendario sea responsivo */
+  .campos-container {
+    max-width: 100%;
+  }
+
+  /* Ocultar el calendario en dispositivos móviles */
+  .demo-inline-calendar-card {
+    display: none; /* Oculta el calendario en pantallas pequeñas */
+  }
+
+  /* Limitar el tamaño de las tarjetas en dispositivos móviles */
+  app-campo-card {
+    display: flex;
+    justify-content: center;
+    max-width: 100%;
+    padding: 0 15px;
+    width: 85%;
+  }
+}

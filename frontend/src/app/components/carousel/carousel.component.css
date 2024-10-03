@@ -1,0 +1,52 @@
+.carousel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px; /* Ajusta el tamaño según tus necesidades */
+  margin: auto;
+}
+
+.carousel {
+  position: relative;
+  width: 100%; /* Se asegura que el carrusel ocupe todo el ancho disponible */
+  overflow: hidden;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 400px; /* Altura fija para evitar distorsión */
+  object-fit: cover; /* Mantiene la relación de aspecto */
+  transition: opacity 0.5s ease;
+}
+
+/* Cambios para el tamaño de la imagen en móviles */
+@media (max-width: 768px) {
+  .carousel-image {
+    height: 250px; /* Ajusta la altura para dispositivos móviles */
+  }
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.control-button {
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.control-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}

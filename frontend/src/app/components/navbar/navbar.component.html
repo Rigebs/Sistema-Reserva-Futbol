@@ -1,0 +1,16 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">MiLogo</div>
+    <div class="menu-icon" (click)="toggleMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <ul class="nav-links" [class.active]="menuOpen">
+      <li><a href="#">Inicio</a></li>
+      <li><a href="#">Servicios</a></li>
+      <li><a href="#">Sobre Nosotros</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+  </div>
+</nav>

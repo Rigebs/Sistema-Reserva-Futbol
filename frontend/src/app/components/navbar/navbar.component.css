@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.navbar {
+  background-color: #c44f4f; /* Color de fondo del navbar */
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: background-color 0.3s; /* Transición suave */
+}
+
+.navbar-container {
+  max-width: 1200px; /* Ancho máximo para el contenido */
+  margin: 0 auto; /* Centrar el contenido */
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: white;
+  font-size: 24px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin-left: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px; /* Aumentar el espacio alrededor de los enlaces */
+  border-radius: 5px; /* Bordes redondeados */
+  transition: background 0.3s; /* Transición suave para el hover */
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilos para la hamburguesa */
+.menu-icon {
+  display: none; /* Ocultar en pantallas grandes */
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  height: 3px;
+  width: 25px;
+  background-color: white;
+  margin: 3px 0;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 57px;
+    right: 0;
+    background-color: #f5b4b4;
+    flex-direction: column;
+    width: 100%;
+    display: none; /* Ocultar el menú en dispositivos móviles */
+    opacity: 0; /* Hacerlo transparente al inicio */
+    transition: opacity 0.3s ease; /* Transición suave de aparición */
+    z-index: 999; /* Asegurarse que esté por encima de otros elementos */
+  }
+
+  .nav-links.active {
+    display: flex; /* Mostrar menú cuando está activo */
+    align-items: center;
+    padding: 10px;
+    opacity: 1; /* Hacerlo visible */
+  }
+
+  .nav-links li {
+    margin: 15px 0; /* Espaciado vertical entre elementos */
+  }
+
+  .menu-icon {
+    display: flex; /* Mostrar el ícono de hamburguesa en dispositivos móviles */
+  }
+
+  .navbar-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

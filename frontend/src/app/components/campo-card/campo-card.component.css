@@ -1,0 +1,42 @@
+.campo-card {
+  max-width: 400px;
+  margin: 10px;
+  width: 100%; /* Asegura que ocupe todo el ancho disponible del contenedor */
+}
+
+mat-card {
+  border-radius: 10px;
+  width: 100%; /* Asegura que la tarjeta ocupe todo el ancho */
+}
+
+mat-card-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+mat-card-subtitle {
+  color: green; /* Aquí puedes usar diferentes colores según el estado del campo */
+}
+
+mat-card-image {
+  max-height: 200px;
+  object-fit: cover;
+}
+
+/* Estilos específicos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .campo-card {
+    max-width: 100%; /* Asegura que no exceda el ancho del contenedor */
+    margin: 0 10px; /* Añade margen para evitar que toque los bordes */
+  }
+
+  mat-card {
+    width: 100%; /* Asegura que la tarjeta ocupe todo el ancho en móviles */
+    max-width: 350px; /* Límite máximo para que no sea más ancha que la pantalla */
+    box-sizing: border-box; /* Asegura que el padding no cause que se agrande más de lo debido */
+  }
+
+  mat-card-image {
+    max-height: 150px; /* Reduce el tamaño de la imagen en móviles */
+  }
+}
