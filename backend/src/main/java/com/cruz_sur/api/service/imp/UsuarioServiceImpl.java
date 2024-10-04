@@ -1,6 +1,5 @@
 package com.cruz_sur.api.service.imp;
 
-
 import com.cruz_sur.api.model.Cliente;
 import com.cruz_sur.api.model.Rol;
 import com.cruz_sur.api.model.Usuario;
@@ -32,17 +31,28 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> existingUser = usuarioRepository.findByEmail(usuario.getEmail());
         if (existingUser.isPresent()) {
             Usuario userToUpdate = existingUser.get();
+            userToUpdate.setLogeo(usuario.getLogeo());
+            userToUpdate.setRol(usuario.getRol());
+            userToUpdate.setCliente(usuario.getCliente());
             return usuarioRepository.save(userToUpdate);
         } else {
             return usuarioRepository.save(usuario);
         }
     }
-    public Usuario createUser(String logeo, String clave, String email, Long rolId, Long clienteId, String usuarioCreacion) {
+
+    public Usuario createUser(String logeo, String clave, String email, Long rolId, Long clienteId, Long companiaId, String usuarioCreacion) {
         Usuario usuario = new Usuario();
         usuario.setLogeo(logeo);
         usuario.setClave(clave);
         usuario.setEmail(email);
-        usuario.setRol(rolRepository.findById(rolId).orElseThrow(() -> new RuntimeException("Rol no encontrado")));
+
+        // Determine role based on companiaId
+        if (companiaId != null) {
+            usuario.setRol(rolRepository.findByNomtipo("ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado")));
+        } else {
+            usuario.setRol(getDefaultUserRole());
+        }
 
         if (clienteId != null) {
             Cliente cliente = clienteRepository.findById(clienteId)
@@ -57,6 +67,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+
     public Usuario authenticateUser(String email, String clave) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -69,7 +80,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario findById(Long userId) {
+        return usuarioRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public Optional<Usuario> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
+    @Override
     public Rol getDefaultUserRole() {
         return rolRepository.findByNomtipo("USER").orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
+    }
+
+    // New method to get role by name
+    public Rol getRolByName(String rolName) {
+        return rolRepository.findByNomtipo(rolName).orElseThrow(() -> new RuntimeException("Rol " + rolName + " no encontrado"));
     }
 }

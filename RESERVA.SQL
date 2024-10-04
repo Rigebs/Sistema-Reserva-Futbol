@@ -111,25 +111,25 @@ CREATE TABLE cargo(
 )
 GO
 
--- Tabla empleado
-CREATE TABLE empleado (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    fecha_ingreso DATE NOT NULL,
-	fecha_salida DATE NOT NULL,
-    sueldo DECIMAL(6,2),
-    usuario_creacion VARCHAR(20) NULL,
-    fecha_creacion DATETIME DEFAULT GETDATE(),
-    usuario_modificacion VARCHAR(20),
-    fecha_modificacion DATETIME DEFAULT GETDATE(), 
-    estado CHAR(1) DEFAULT('1'),
-    cargo_id INT,
-    persona_id INT,
-    empresa_id INT,
-    FOREIGN KEY (persona_id) REFERENCES persona(id),
-    FOREIGN KEY (empresa_id) REFERENCES empresa(id),
-    FOREIGN KEY (cargo_id) REFERENCES cargo(id)
-);
-GO
+    -- Tabla empleado
+    CREATE TABLE empleado (
+        id INT PRIMARY KEY IDENTITY(1,1),
+        fecha_ingreso DATE NOT NULL,
+        fecha_salida DATE NOT NULL,
+        sueldo DECIMAL(6,2),
+        usuario_creacion VARCHAR(20) NULL,
+        fecha_creacion DATETIME DEFAULT GETDATE(),
+        usuario_modificacion VARCHAR(20),
+        fecha_modificacion DATETIME DEFAULT GETDATE(),
+        estado CHAR(1) DEFAULT('1'),
+        cargo_id INT,
+        persona_id INT,
+        empresa_id INT,
+        FOREIGN KEY (persona_id) REFERENCES persona(id),
+        FOREIGN KEY (empresa_id) REFERENCES empresa(id),
+        FOREIGN KEY (cargo_id) REFERENCES cargo(id)
+    );
+    GO
 
 CREATE TABLE imagen (
     id int IDENTITY(1,1) PRIMARY KEY,

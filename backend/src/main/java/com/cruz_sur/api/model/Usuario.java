@@ -22,7 +22,6 @@ public class Usuario {
     private String clave;
     private String email;
     private String googleId;
-    private String refreshToken;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")
@@ -31,6 +30,10 @@ public class Usuario {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "sede_id")
+    private Sede sede;
 
     @Column(name = "estado", nullable = false)
     private char estado = '1';
@@ -43,5 +46,4 @@ public class Usuario {
     @ManyToOne
     @JoinColumn(name = "empleado_id")
     private Empleado empleado;
-
 }

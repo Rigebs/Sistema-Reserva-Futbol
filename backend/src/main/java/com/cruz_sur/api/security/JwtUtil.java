@@ -14,10 +14,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String name) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username, 1000 * 60 * 60 * 10); // 10 horas para token de acceso
+        claims.put("name", name); // Agregar el nombre al token
+        return createToken(claims, username, 1000 * 60 * 60 * 10); // 10 horas para el token de acceso
     }
+
 
     public String generateRefreshToken(String username) {
         Map<String, Object> claims = new HashMap<>();

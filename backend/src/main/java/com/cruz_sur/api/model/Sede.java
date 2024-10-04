@@ -5,34 +5,30 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "cliente")
-public class Cliente {
+@Table(name = "sede")
+public class Sede {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String nombre;
+
     private String usuarioCreacion;
-
-    private LocalDateTime fechaCreacion;
-
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
     private String usuarioModificacion;
-
     private LocalDateTime fechaModificacion;
 
-    @Column(columnDefinition = "char(1) default '1'")
-    private char estado = '1';
+    @Column(name = "estado", nullable = false)
+    private char estado;
 
     @ManyToOne
-    @JoinColumn(name = "persona_id")
-    private Persona persona;
-
-    @ManyToOne
-    @JoinColumn(name = "empresa_id")
-    private Empresa empresa;
+    @JoinColumn(name = "sucursal_id", nullable = false)
+    private Sucursal sucursal;
 }
