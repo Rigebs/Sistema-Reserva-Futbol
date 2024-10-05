@@ -1,4 +1,4 @@
-package com.cruz_sur.api.service.imp;
+package com.cruz_sur.api.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

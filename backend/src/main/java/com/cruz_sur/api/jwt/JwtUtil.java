@@ -1,4 +1,4 @@
-package com.cruz_sur.api.security;
+package com.cruz_sur.api.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

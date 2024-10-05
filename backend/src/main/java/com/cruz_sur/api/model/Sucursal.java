@@ -23,21 +23,17 @@ public class Sucursal {
 
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
-
-    private String pcCreacion;
+    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;
 
     @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
-    @Column(name = "pc_modificacion", nullable = false)
-    private String pcModificacion;
 
     @Column(nullable = false)
-    private char estado;
+    private Character estado;
 
     @ManyToOne
     @JoinColumn(name = "compania_id", nullable = false)

@@ -7,32 +7,27 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Getter
-@Setter
+@Table(name = "metodo_pago")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "compania")
-public class Compania {
+public class MetodoPago {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nombre;
-    private String concepto;
-    private String correo;
-    private String pagWeb;
 
     private String usuarioCreacion;
+
     @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
+
     private String usuarioModificacion;
+
+    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaModificacion;
 
-    @Column(name = "estado", nullable = false)
-    private Character estado;
-
-    @ManyToOne
-    @JoinColumn(name = "imagen_id", nullable = false)
-    private Imagen imagen;
+    @Column(nullable = false, columnDefinition = "CHAR(1) DEFAULT '1'")
+    private char estado;
 }

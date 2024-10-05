@@ -22,7 +22,8 @@ public class Usuario {
     private String clave;
     private String email;
     private String googleId;
-
+    @Column(name = "imagen_url", columnDefinition = "nvarchar(max)")
+    private String imagenUrl;
     @ManyToOne
     @JoinColumn(name = "rol_id")
     private Rol rol;

@@ -234,7 +234,6 @@ CREATE TABLE campo(
 	id INT PRIMARY KEY IDENTITY(1,1),
 	nombre CHAR(12) NOT NULL,
 	precio DECIMAL (10,2) NOT NULL,
-	imagen VARBINARY(MAX) NULL,
     descripcion VARCHAR(100),
 	usuario_creacion VARCHAR(20) NULL,
     fecha_creacion DATETIME DEFAULT GETDATE(),

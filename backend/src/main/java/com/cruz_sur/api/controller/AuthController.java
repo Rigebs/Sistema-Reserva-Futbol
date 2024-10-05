@@ -3,7 +3,7 @@ package com.cruz_sur.api.controller;
 import com.cruz_sur.api.model.Usuario;
 import com.cruz_sur.api.model.dto.LoginDto;
 import com.cruz_sur.api.model.dto.UsuarioRegistrationDto;
-import com.cruz_sur.api.security.JwtUtil;
+import com.cruz_sur.api.jwt.JwtUtil;
 import com.cruz_sur.api.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,11 +35,13 @@ public class AuthController {
         String email = authToken.getPrincipal().getAttribute("email");
         String id = authToken.getPrincipal().getAttribute("sub");
         String logeo = authToken.getPrincipal().getAttribute("name");
+        String imagenUrl = authToken.getPrincipal().getAttribute("picture"); // Extraer la URL de la imagen
 
         Usuario usuario = new Usuario();
         usuario.setEmail(email);
         usuario.setGoogleId(id);
         usuario.setLogeo(logeo);
+        usuario.setImagenUrl(imagenUrl);
         usuario.setClave(null);
         usuario.setRol(usuarioService.getDefaultUserRole());
 
@@ -48,25 +50,24 @@ public class AuthController {
 
         response.put("accessToken", accessToken);
         response.put("userId", savedUsuario.getId());
+        response.put("usuario", savedUsuario);
 
         return ResponseEntity.ok(response);
     }
 
+
     @PostMapping("/register")
     public ResponseEntity<Usuario> registerUser(@RequestBody UsuarioRegistrationDto userDto) {
-        // Obtener los parámetros necesarios desde el DTO
         String logeo = userDto.getLogeo();
         String clave = userDto.getClave();
         String email = userDto.getEmail();
         Long rolId = userDto.getRolId();
         Long clienteId = userDto.getClienteId();
-        Long companiaId = userDto.getCompaniaId(); // Asegúrate de que esto esté en el DTO
+        Long companiaId = userDto.getCompaniaId();
         String usuarioCreacion = userDto.getUsuarioCreacion();
 
-        // Crear un nuevo usuario
         Usuario newUser = usuarioService.createUser(logeo, clave, email, rolId, clienteId, companiaId, usuarioCreacion);
 
-        // Retornar el nuevo usuario con un estado CREATED
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
@@ -100,5 +101,21 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/userInfo")
+    public ResponseEntity<Map<String, Object>> getUserInfo(OAuth2AuthenticationToken authToken) {
+        if (authToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication token is null"));
+        }
+
+        // Extraer los atributos del principal
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("attributes", authToken.getPrincipal().getAttributes());
+
+        // También puedes incluir información del token de autenticación
+        userInfo.put("name", authToken.getName());
+
+        return ResponseEntity.ok(userInfo);
+    }
+
 
 }

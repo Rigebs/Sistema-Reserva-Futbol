@@ -1,17 +1,15 @@
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=hola;encrypt=false
-    username: sa
-    password: 123
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect
+    database-platform: org.hibernate.dialect.SQLServerDialect
 
   servlet:
     multipart:
@@ -23,8 +21,13 @@ spring:
       client:
         registration:
           google:
-            client-id: 432367225275-qgfb3ko5sp10efnodhbsucgmdivtrim3.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+
+cloudinary:
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key:  ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
 
 logging:
   level:
@@ -32,6 +35,5 @@ logging:
       springframework:
         security: TRACE
 
-# JWT Secret Key
 jwt:
-  secret: your-256-bit-secret
+  secret: ${JWT_SECRET}

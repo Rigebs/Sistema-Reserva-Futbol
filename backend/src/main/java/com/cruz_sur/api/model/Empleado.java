@@ -51,10 +51,5 @@ public class Empleado {
     @JoinColumn(name = "persona_id", referencedColumnName = "id")
     private Persona persona;
 
-    @ManyToOne
-    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
-    private Empresa empresa;
 
-    // Getters y setters
-    // ...
 }

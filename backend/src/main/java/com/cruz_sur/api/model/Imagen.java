@@ -23,10 +23,16 @@ public class Imagen {
     private String imageId;
 
     private String usuarioCreacion;
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", nullable = false)
     private char estado = '1';
+    public Imagen(String name, String imageUrl, String imageId) {
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.imageId = imageId;
+    }
 }

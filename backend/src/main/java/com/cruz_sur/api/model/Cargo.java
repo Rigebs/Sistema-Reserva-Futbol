@@ -33,8 +33,6 @@ public class Cargo {
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", columnDefinition = "CHAR(1) DEFAULT '1'")
-    private char estado;
+    private Character estado;
 
-    // Getters y setters
-    // ...
 }

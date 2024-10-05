@@ -1,5 +1,6 @@
 package com.cruz_sur.api.security;
 
+import com.cruz_sur.api.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,7 +19,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/auth/testSave", "/auth/register").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN") // Acceso solo para ADMIN
-                                .requestMatchers("/user/**").hasRole("USER") // Acceso solo para USER
+                                .requestMatchers("/api/v1/**").hasRole("USER") // Acceso solo para USER
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

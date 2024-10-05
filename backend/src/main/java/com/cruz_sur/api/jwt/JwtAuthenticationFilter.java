@@ -1,6 +1,5 @@
-package com.cruz_sur.api.security;
+package com.cruz_sur.api.jwt;
 
-import com.cruz_sur.api.service.imp.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

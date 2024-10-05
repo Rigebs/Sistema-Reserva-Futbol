@@ -20,5 +20,5 @@ public class Rol {
     private String nomtipo;
 
     @Column(name = "estado", nullable = false)
-    private char estado = '1';
+    private Character estado = '1';
 }

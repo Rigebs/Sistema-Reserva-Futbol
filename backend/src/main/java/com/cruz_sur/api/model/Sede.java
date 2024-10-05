@@ -21,12 +21,13 @@ public class Sede {
     private String nombre;
 
     private String usuarioCreacion;
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", nullable = false)
-    private char estado;
+    private Character estado;
 
     @ManyToOne
     @JoinColumn(name = "sucursal_id", nullable = false)
