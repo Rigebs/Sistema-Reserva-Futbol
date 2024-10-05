@@ -30,7 +30,7 @@ public class Compania {
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", nullable = false)
-    private Character estado;
+    private Character estado = '1';
 
     @ManyToOne
     @JoinColumn(name = "imagen_id", nullable = false)

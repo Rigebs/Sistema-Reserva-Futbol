@@ -7,6 +7,7 @@ import com.cruz_sur.api.service.ICompaniaService;
 import com.cruz_sur.api.service.IImagenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class CompaniaService implements ICompaniaService {
     @Override
     public Compania update(Long id, Compania compania) {
         Compania compania1 = companiaRepository.findById(id).orElseThrow(
-                ()->new RuntimeException("Imagen no encontrada")
+                () -> new RuntimeException("Compañía no encontrada")
         );
         compania1.setNombre(compania.getNombre());
         compania1.setConcepto(compania.getConcepto());
@@ -57,19 +58,28 @@ public class CompaniaService implements ICompaniaService {
     @Override
     public Compania changeStatus(Long id, Integer status) {
         Compania compania = companiaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("compania no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Compañía no encontrada"));
 
         compania.setEstado(status == 1 ? '1' : '0');
         return companiaRepository.save(compania);
     }
 
     @Override
+    @Transactional
     public Compania updateCompaniaImage(MultipartFile file, Compania compania) throws IOException {
-        if (compania.getImagen() != null) {
-            iImagenService.deleteImage(compania.getImagen());
+        if (file != null && !file.isEmpty()) {
+            Imagen oldImage = compania.getImagen();
+
+            Imagen newImage = iImagenService.uploadImage(file);
+
+            oldImage.setName(newImage.getName());
+            oldImage.setImageUrl(newImage.getImageUrl());
+            oldImage.setImageId(newImage.getImageId());
+            compania.setImagen(oldImage);
+            companiaRepository.save(compania);
+
         }
-        Imagen newImage = iImagenService.uploadImage(file);
-        compania.setImagen(newImage);
-        return companiaRepository.save(compania);
+        return compania;
     }
+
 }

@@ -19,7 +19,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/auth/testSave", "/auth/register").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN") // Acceso solo para ADMIN
-                                .requestMatchers("/api/v1/**").hasRole("USER") // Acceso solo para USER
+                                .requestMatchers("/user/**").hasRole("USER") // Acceso solo para USER
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

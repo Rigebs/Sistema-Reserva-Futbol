@@ -14,4 +14,5 @@ public interface IImagenService {
     List<Imagen> findAllActive() throws IOException;
     Imagen updateImage(Long id, MultipartFile file) throws IOException;
     Imagen changeStatus(Long id, Integer status);
+
 }

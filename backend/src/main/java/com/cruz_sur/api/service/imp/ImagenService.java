@@ -28,7 +28,6 @@ public class ImagenService implements IImagenService {
         String imageUrl = (String) uploadResult.get("url");
         String imageId = (String) uploadResult.get("public_id");
 
-        // Asegúrate de que el nombre no sea nulo
         String name = file.getOriginalFilename();
         if (name == null) {
             throw new IllegalArgumentException("El nombre del archivo no puede ser nulo.");
@@ -78,8 +77,10 @@ public class ImagenService implements IImagenService {
         existingImage.setImageUrl(newImageUrl);
         existingImage.setImageId(newImageId);
         existingImage.setName(file.getOriginalFilename());
+
         return imageRepository.save(existingImage);
     }
+
 
     @Override
     public Imagen changeStatus(Long id, Integer status) {

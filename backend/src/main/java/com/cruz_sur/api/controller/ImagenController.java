@@ -1,7 +1,6 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Imagen;
-import com.cruz_sur.api.service.IImagenService;
 import com.cruz_sur.api.service.imp.ImagenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ImagenController {
 
-    private final IImagenService imagenService;
+    private final ImagenService imagenService;
 
     @PostMapping("/upload")
     public ResponseEntity<Imagen> uploadImage(@RequestParam("file") MultipartFile file) {
@@ -25,11 +24,14 @@ public class ImagenController {
             Imagen imagen = imagenService.uploadImage(file);
             return new ResponseEntity<>(imagen, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id) {

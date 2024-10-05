@@ -2,6 +2,7 @@ package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.service.ICompaniaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,11 @@ public class CompaniaController {
     private final ICompaniaService companiaService;
 
     @PostMapping
-    public ResponseEntity<Compania> saveCompania(@RequestParam("file") MultipartFile file, @RequestBody Compania compania) {
+    public ResponseEntity<Compania> save(@RequestParam("file") MultipartFile file, @RequestParam("compania") String companiaJson) {
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Compania compania = objectMapper.readValue(companiaJson, Compania.class);
+
             Compania savedCompania = companiaService.save(compania, file);
             return new ResponseEntity<>(savedCompania, HttpStatus.CREATED);
         } catch (IOException e) {
@@ -29,8 +33,9 @@ public class CompaniaController {
         }
     }
 
+
     @PutMapping("/{id}")
-    public ResponseEntity<Compania> updateCompania(@PathVariable Long id, @RequestBody Compania compania) {
+    public ResponseEntity<Compania> update(@PathVariable Long id, @RequestBody Compania compania) {
         try {
             Compania updatedCompania = companiaService.update(id, compania);
             return new ResponseEntity<>(updatedCompania, HttpStatus.OK);
@@ -40,13 +45,13 @@ public class CompaniaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Compania>> getAllCompanias() {
+    public ResponseEntity<List<Compania>> all() {
         List<Compania> companias = companiaService.all();
         return new ResponseEntity<>(companias, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Compania> getCompaniaById(@PathVariable Long id) {
+    public ResponseEntity<Compania> byId(@PathVariable Long id) {
         Optional<Compania> compania = companiaService.byId(id);
         return compania.map(c -> new ResponseEntity<>(c, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -62,17 +67,16 @@ public class CompaniaController {
         }
     }
 
-    @PutMapping("/update-image/{id}")
-    public ResponseEntity<Compania> updateCompaniaImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-        try {
-            Compania compania = companiaService.byId(id)
-                    .orElseThrow(() -> new RuntimeException("Compania no encontrada"));
-            Compania updatedCompania = companiaService.updateCompaniaImage(file, compania);
-            return new ResponseEntity<>(updatedCompania, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PutMapping("/{id}/imagen")
+    public ResponseEntity<Compania> updateCompaniaImage(@PathVariable Long id,
+                                                        @RequestParam("file") MultipartFile file) throws IOException {
+        Optional<Compania> companiaOpt = companiaService.byId(id);
+
+        if (companiaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        Compania updatedCompania = companiaService.updateCompaniaImage(file, companiaOpt.get());
+        return ResponseEntity.ok(updatedCompania);
     }
 }
