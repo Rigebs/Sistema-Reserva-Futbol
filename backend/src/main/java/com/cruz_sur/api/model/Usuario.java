@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -24,9 +26,14 @@ public class Usuario {
     private String googleId;
     @Column(name = "imagen_url", columnDefinition = "nvarchar(max)")
     private String imagenUrl;
-    @ManyToOne
-    @JoinColumn(name = "rol_id")
-    private Rol rol;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST) // O CascadeType.ALL si deseas más flexibilidad
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private Set<Rol> rol = new HashSet<>();
+
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")

@@ -79,4 +79,5 @@ public class CompaniaController {
         Compania updatedCompania = companiaService.updateCompaniaImage(file, companiaOpt.get());
         return ResponseEntity.ok(updatedCompania);
     }
+
 }

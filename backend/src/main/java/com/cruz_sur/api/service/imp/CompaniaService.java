@@ -7,7 +7,6 @@ import com.cruz_sur.api.service.ICompaniaService;
 import com.cruz_sur.api.service.IImagenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class CompaniaService implements ICompaniaService {
 
     @Override
     public Compania save(Compania compania, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()){
+        if (file != null && !file.isEmpty()) {
             Imagen imagen = iImagenService.uploadImage(file);
             compania.setImagen(imagen);
         }
@@ -41,7 +40,12 @@ public class CompaniaService implements ICompaniaService {
         compania1.setUsuarioCreacion(compania.getUsuarioCreacion());
         compania1.setUsuarioModificacion(compania.getUsuarioModificacion());
         compania1.setFechaModificacion(compania.getFechaModificacion());
-        compania1.setImagen(compania.getImagen());
+
+        // Actualiza la imagen si se proporciona
+        if (compania.getImagen() != null) {
+            compania1.setImagen(compania.getImagen());
+        }
+
         return companiaRepository.save(compania1);
     }
 
@@ -64,22 +68,17 @@ public class CompaniaService implements ICompaniaService {
         return companiaRepository.save(compania);
     }
 
-    @Override
-    @Transactional
     public Compania updateCompaniaImage(MultipartFile file, Compania compania) throws IOException {
+        // Verifica si el archivo es válido
         if (file != null && !file.isEmpty()) {
-            Imagen oldImage = compania.getImagen();
+            // Sube la nueva imagen y obtiene la nueva instancia de Imagen
+            Imagen nuevaImagen = iImagenService.uploadImage(file);
 
-            Imagen newImage = iImagenService.uploadImage(file);
-
-            oldImage.setName(newImage.getName());
-            oldImage.setImageUrl(newImage.getImageUrl());
-            oldImage.setImageId(newImage.getImageId());
-            compania.setImagen(oldImage);
-            companiaRepository.save(compania);
-
+            // Reemplaza la imagen existente con la nueva
+            compania.setImagen(nuevaImagen);
         }
-        return compania;
-    }
 
+        // Guarda la entidad actualizada
+        return companiaRepository.save(compania);
+    }
 }

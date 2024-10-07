@@ -1,121 +1,103 @@
 package com.cruz_sur.api.controller;
 
-import com.cruz_sur.api.model.Usuario;
-import com.cruz_sur.api.model.dto.LoginDto;
-import com.cruz_sur.api.model.dto.UsuarioRegistrationDto;
 import com.cruz_sur.api.jwt.JwtUtil;
-import com.cruz_sur.api.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cruz_sur.api.model.Rol;
+import com.cruz_sur.api.model.Usuario;
+import com.cruz_sur.api.service.IUsuarioService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set; // Asegúrate de que esta línea esté presente
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
+@AllArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final IUsuarioService usuarioService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @GetMapping("/testSave")
-    public ResponseEntity<Map<String, Object>> testSave(OAuth2AuthenticationToken authToken) {
+    @GetMapping("/login")
+    public ResponseEntity<Map<String, Object>> googleLogin(OAuth2AuthenticationToken authentication) {
         Map<String, Object> response = new HashMap<>();
 
-        if (authToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication token is null"));
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Authentication token is null"));
         }
 
-        String email = authToken.getPrincipal().getAttribute("email");
-        String id = authToken.getPrincipal().getAttribute("sub");
-        String logeo = authToken.getPrincipal().getAttribute("name");
-        String imagenUrl = authToken.getPrincipal().getAttribute("picture"); // Extraer la URL de la imagen
-
-        Usuario usuario = new Usuario();
-        usuario.setEmail(email);
-        usuario.setGoogleId(id);
-        usuario.setLogeo(logeo);
-        usuario.setImagenUrl(imagenUrl);
-        usuario.setClave(null);
-        usuario.setRol(usuarioService.getDefaultUserRole());
-
-        Usuario savedUsuario = usuarioService.save(usuario);
-        String accessToken = jwtUtil.generateToken(savedUsuario.getEmail(), logeo);
-
-        response.put("accessToken", accessToken);
-        response.put("userId", savedUsuario.getId());
-        response.put("usuario", savedUsuario);
-
-        return ResponseEntity.ok(response);
-    }
-
-
-    @PostMapping("/register")
-    public ResponseEntity<Usuario> registerUser(@RequestBody UsuarioRegistrationDto userDto) {
-        String logeo = userDto.getLogeo();
-        String clave = userDto.getClave();
-        String email = userDto.getEmail();
-        Long rolId = userDto.getRolId();
-        Long clienteId = userDto.getClienteId();
-        Long companiaId = userDto.getCompaniaId();
-        String usuarioCreacion = userDto.getUsuarioCreacion();
-
-        Usuario newUser = usuarioService.createUser(logeo, clave, email, rolId, clienteId, companiaId, usuarioCreacion);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-    }
-
-    @GetMapping("/")
-    public String home(){
-        return "Hello!";
-    }
-
-
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginDto loginDto) {
-        Usuario usuario = usuarioService.authenticateUser(loginDto.getEmail(), loginDto.getClave());
-
-        String accessToken = jwtUtil.generateToken(usuario.getEmail(), usuario.getLogeo());
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-
-        return ResponseEntity.ok(tokens);
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Usuario> getUserDetails(@PathVariable Long userId) {
         try {
-            Usuario usuario = usuarioService.findById(userId);
-            if (usuario == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            String email = authentication.getPrincipal().getAttribute("email");
+            String id = authentication.getPrincipal().getAttribute("sub");
+            String logeo = authentication.getPrincipal().getAttribute("name");
+            String imagenUrl = authentication.getPrincipal().getAttribute("picture");
+
+            // Busca el usuario existente
+            Optional<Usuario> existingUser = usuarioService.findByEmail(email);
+            Usuario usuario;
+
+            if (existingUser.isEmpty()) {
+                // Crea un nuevo usuario
+                usuario = new Usuario();
+                usuario.setEmail(email);
+                usuario.setGoogleId(id);
+                usuario.setLogeo(logeo);
+                usuario.setImagenUrl(imagenUrl);
+
+                // Obtén el rol predeterminado
+                Rol rol = usuarioService.getDefaultUserRole();
+                usuario.setRol(Set.of(rol)); // Utiliza un Set para asignar el rol
+
+                // Guarda el usuario
+                try {
+                    usuario = usuarioService.save(usuario);
+                    System.out.println("Usuario creado: " + usuario);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(Map.of("error", "An error occurred while saving the user: " + e.getMessage()));
+                }
+            } else {
+                usuario = existingUser.get();
             }
-            return ResponseEntity.ok(usuario);
+
+            String accessToken = jwtUtil.generateToken(usuario.getEmail());
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + accessToken);
+
+            response.put("accessToken", accessToken);
+            response.put("userId", usuario.getId());
+            response.put("usuario", usuario);
+
+            return ResponseEntity.ok().headers(headers).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while processing your request: " + e.getMessage()));
         }
     }
-    @GetMapping("/userInfo")
-    public ResponseEntity<Map<String, Object>> getUserInfo(OAuth2AuthenticationToken authToken) {
-        if (authToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Authentication token is null"));
+
+    // Método para saludar al usuario autenticado
+    @GetMapping("/saludo")
+    public ResponseEntity<String> saludarUsuario(OAuth2AuthenticationToken authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Error: No se ha autenticado.");
         }
 
-        // Extraer los atributos del principal
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("attributes", authToken.getPrincipal().getAttributes());
+        // Extraer el email y nombre del usuario autenticado
+        String email = authentication.getPrincipal().getAttribute("email");
+        String nombre = authentication.getPrincipal().getAttribute("name");
 
-        // También puedes incluir información del token de autenticación
-        userInfo.put("name", authToken.getName());
+        String saludo = "¡Hola, " + nombre + "! Bienvenido de nuevo, tu email es: " + email;
 
-        return ResponseEntity.ok(userInfo);
+        return ResponseEntity.ok(saludo);
     }
-
-
 }

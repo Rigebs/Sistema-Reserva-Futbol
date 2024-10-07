@@ -68,8 +68,10 @@ public class ImagenService implements IImagenService {
         Imagen existingImage = imageRepository.findById(id)
                 .orElseThrow(() -> new IOException("Imagen no encontrada"));
 
+        // Aquí se eliminará la imagen anterior de Cloudinary
         iCloudinaryService.delete(existingImage.getImageId());
 
+        // Subir la nueva imagen
         Map uploadResult = iCloudinaryService.upload(file);
         String newImageUrl = (String) uploadResult.get("url");
         String newImageId = (String) uploadResult.get("public_id");
@@ -80,6 +82,7 @@ public class ImagenService implements IImagenService {
 
         return imageRepository.save(existingImage);
     }
+
 
 
     @Override
