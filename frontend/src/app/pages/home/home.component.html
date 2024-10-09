@@ -1,0 +1,40 @@
+<app-navbar></app-navbar>
+
+<div class="home-container">
+  <div class="content-container">
+    <div class="invitation-text">
+      <h2>¡Alquila un campo de fútbol!</h2>
+      <p>
+        Disfruta de un momento divertido con amigos o familiares alquilando uno
+        de nuestros campos de fútbol.
+      </p>
+      <button mat-raised-button color="primary">Alquilar ahora</button>
+    </div>
+
+    <app-carousel [images]="images"></app-carousel>
+  </div>
+</div>
+
+<div class="district-selector">
+  <h5>Selecciona tu distrito</h5>
+  <mat-form-field appearance="outline" class="district-select">
+    <mat-select [(value)]="selectedDistrict">
+      <mat-option *ngFor="let district of districts" [value]="district">
+        {{ district }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div class="campos-container">
+  <div class="demo-inline-calendar-card">
+    <mat-calendar [(selected)]="selected"></mat-calendar>
+  </div>
+
+  <div class="campos-lista">
+    <app-campo-card
+      *ngFor="let campo of campos"
+      [campo]="campo"
+    ></app-campo-card>
+  </div>
+</div>

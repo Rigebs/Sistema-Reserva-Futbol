@@ -1,0 +1,13 @@
+<div class="carousel-container">
+  <div class="carousel">
+    <img
+      [src]="images[currentIndex]"
+      alt="Campo de fútbol"
+      class="carousel-image"
+    />
+    <div class="carousel-controls">
+      <button (click)="prevImage()" class="control-button">❮</button>
+      <button (click)="nextImage()" class="control-button">❯</button>
+    </div>
+  </div>
+</div>

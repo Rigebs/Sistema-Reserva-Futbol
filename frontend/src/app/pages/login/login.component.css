@@ -1,0 +1,61 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.login-container {
+  display: flex;
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  gap: 24px;
+  height: 100vh;
+  padding: 0 16px; /* Pequeño margen para móvil */
+}
+
+/* Oculta la sección de la imagen en pantallas pequeñas */
+@media (max-width: 768px) {
+  .image-section {
+    display: none;
+  }
+
+  .login-container {
+    justify-content: center; /* Centrado solo el login en móvil */
+  }
+}
+
+.example-card {
+  max-width: 400px;
+}
+
+/* Estilos para la sección de login */
+.login-section {
+  width: 100%;
+  max-width: 300px; /* Controla el tamaño del formulario */
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-parts {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center; /* Centra el ícono horizontalmente */
+  margin-bottom: 16px; /* Espacio entre el ícono y el título */
+}
+
+.icon-container mat-icon {
+  font-size: 64px; /* Ajusta el tamaño del icono */
+  color: #3f51b5; /* Cambia el color del ícono si lo deseas */
+  line-height: 64px; /* Asegura que el ícono esté centrado verticalmente */
+  margin: 0; /* Elimina margen que puede causar desbordamiento */
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+}
