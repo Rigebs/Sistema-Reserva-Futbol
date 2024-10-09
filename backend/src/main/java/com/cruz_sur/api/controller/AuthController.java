@@ -4,6 +4,7 @@ import com.cruz_sur.api.jwt.JwtUtil;
 import com.cruz_sur.api.model.Rol;
 import com.cruz_sur.api.model.Usuario;
 import com.cruz_sur.api.service.IUsuarioService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,8 +27,13 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/login")
-    public ResponseEntity<Map<String, Object>> googleLogin(OAuth2AuthenticationToken authentication) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> googleLogin(OAuth2AuthenticationToken authentication, HttpServletResponse response) throws IOException {
+        if (authentication == null) {
+            response.sendRedirect("/login");
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
+        }
+
+        Map<String, Object> responseBody = new HashMap<>();
 
         String email = authentication.getPrincipal().getAttribute("email");
         String id = authentication.getPrincipal().getAttribute("sub");
@@ -52,11 +59,10 @@ public class AuthController {
 
         String accessToken = jwtUtil.generateToken(usuario.getEmail());
 
-        response.put("accessToken", accessToken);
-        response.put("userId", usuario.getId());
-        response.put("usuario", usuario);
+        responseBody.put("accessToken", accessToken);
+        responseBody.put("userId", usuario.getId());
+        responseBody.put("usuario", usuario);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(responseBody);
     }
-
 }

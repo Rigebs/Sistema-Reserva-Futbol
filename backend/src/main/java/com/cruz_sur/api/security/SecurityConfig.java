@@ -22,24 +22,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/v1/auth/login").authenticated();
-                    auth.requestMatchers("/privado/").hasAnyAuthority("SCOPE_openid")
+                    auth.requestMatchers("/api/v1/auth/login").permitAll()
+                            .requestMatchers("/privado/**").hasAuthority("SCOPE_openid")
                             .requestMatchers("/api/v1/**").hasRole("USER")
                             .requestMatchers("/api/v2/**").hasRole("ADMIN")
-                            .requestMatchers("/anonimo/").hasRole("ANONYMOUS");
-                    auth.anyRequest().authenticated();
+                            .anyRequest().authenticated();
                 })
                 .oauth2Login(oauth -> oauth
-                        .successHandler(successHandler()))
+                        .successHandler((request, response, authentication) -> {
+                            response.sendRedirect("/api/v1/auth/login");
+                        })
+                        .failureUrl("/api/v1/auth/login?error=true")
+                )
                 .formLogin(form -> form
-                        .successHandler(successHandler()))
+                        .successHandler(successHandler())
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handling -> handling
+                        .accessDeniedPage("/api/v1/auth/login"))
                 .build();
-
-
     }
+
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return new SavedRequestAwareAuthenticationSuccessHandler();
