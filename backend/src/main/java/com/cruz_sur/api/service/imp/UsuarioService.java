@@ -46,7 +46,7 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 
     @Override
     public Rol getDefaultUserRole() {
-        return rolRepository.findByNomtipo("USER")
+        return rolRepository.findByNomtipo("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Rol USER no encontrado"));
     }
 

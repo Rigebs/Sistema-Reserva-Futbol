@@ -16,6 +16,9 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   security:
+    user:
+      name: ricardo
+      password: 123
     oauth2:
       client:
         registration:
