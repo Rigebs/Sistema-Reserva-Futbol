@@ -12,14 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sucursal")
-public class Sucursal {
+@Table(name = "ticket")
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
+    private String serie;
+
+    private String numero;
 
     private String usuarioCreacion;
 
@@ -28,14 +29,12 @@ public class Sucursal {
 
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
-
 
     @Column(name = "estado", nullable = false)
     private Character estado;
 
     @ManyToOne
-    @JoinColumn(name = "compania_id", nullable = false)
-    private Compania compania;
+    @JoinColumn(name = "reserva_id", nullable = false)
+    private Reserva reserva;
 }

@@ -45,8 +45,7 @@ public class Empresa {
     @Column(length = 1)
     private Character estado;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "distrito_id")
-    @JsonIgnore
     private Distrito  distrito;
 }

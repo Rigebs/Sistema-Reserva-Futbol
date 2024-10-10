@@ -21,17 +21,18 @@ public class CompaniaController {
     private final ICompaniaService companiaService;
 
     @PostMapping
-    public ResponseEntity<Compania> save(@RequestParam("file") MultipartFile file, @RequestParam("compania") String companiaJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Compania compania = objectMapper.readValue(companiaJson, Compania.class);
+    public ResponseEntity<Compania> save(@RequestParam("file") MultipartFile file,
+                                         @RequestParam("compania") String companiaJson) throws IOException {
+        // Convierte el JSON a un objeto Compania
+        ObjectMapper objectMapper = new ObjectMapper();
+        Compania compania = objectMapper.readValue(companiaJson, Compania.class);
 
-            Compania savedCompania = companiaService.save(compania, file);
-            return new ResponseEntity<>(savedCompania, HttpStatus.CREATED);
-        } catch (IOException e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        // Llama al servicio para guardar la compañía y el archivo
+        Compania savedCompania = companiaService.save(compania, file);
+
+        return ResponseEntity.ok(savedCompania);
     }
+
 
 
     @PutMapping("/{id}")

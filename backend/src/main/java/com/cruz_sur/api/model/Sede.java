@@ -29,7 +29,7 @@ public class Sede {
     @Column(name = "estado", nullable = false)
     private Character estado;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sucursal_id", nullable = false)
     private Sucursal sucursal;
 }

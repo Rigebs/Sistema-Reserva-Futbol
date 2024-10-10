@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -27,7 +26,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/auth/login").permitAll()
                             .requestMatchers("/privado/**").hasAuthority("SCOPE_openid")
                             .requestMatchers("/api/v1/**").hasRole("USER")
-                            .requestMatchers("/api/v2/**").hasRole("ADMIN")
+                            .requestMatchers("/api/v1/**").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .oauth2Login(oauth -> oauth

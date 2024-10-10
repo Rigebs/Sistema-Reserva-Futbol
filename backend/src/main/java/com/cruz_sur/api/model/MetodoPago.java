@@ -7,14 +7,16 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "metodo_pago")
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "metodo_pago")
 public class MetodoPago {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String nombre;
 
@@ -25,9 +27,8 @@ public class MetodoPago {
 
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaModificacion;
 
-    @Column(nullable = false, columnDefinition = "CHAR(1) DEFAULT '1'")
-    private char estado;
+    @Column(name = "estado", nullable = false)
+    private Character estado;
 }
