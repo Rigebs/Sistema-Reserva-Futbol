@@ -1,13 +1,10 @@
 package com.cruz_sur.api.jwt;
 
-import com.cruz_sur.api.service.imp.UsuarioService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,23 +12,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final JwtInvalidTokenService invalidTokenService;
 
-    public JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService, JwtInvalidTokenService invalidTokenService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.invalidTokenService = invalidTokenService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    @NonNull  HttpServletResponse response,
+                                    @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
@@ -42,6 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             mail = jwtUtil.getUsername(token);
+        }
+
+        if (token != null && invalidTokenService.isTokenInvalid(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         if (mail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -55,4 +57,3 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

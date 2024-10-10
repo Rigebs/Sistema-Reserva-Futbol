@@ -24,9 +24,11 @@ public class Usuario {
     private String clave;
     private String email;
     private String googleId;
-    @Column(name = "imagen_url", columnDefinition = "nvarchar(max)")
+
+    @Column(name = "imagen_url", length = 255)
     private String imagenUrl;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST) // O CascadeType.ALL si deseas más flexibilidad
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "usuario_id"),
@@ -34,17 +36,16 @@ public class Usuario {
     )
     private Set<Rol> rol = new HashSet<>();
 
-
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "sede_id")
     private Sede sede;
 
     @Column(name = "estado", nullable = false)
-    private char estado = '1';
+    private Character estado = '1';
 
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion = LocalDateTime.now();
@@ -54,4 +55,11 @@ public class Usuario {
     @ManyToOne
     @JoinColumn(name = "empleado_id")
     private Empleado empleado;
+
+    // Método para validar la asociación de cliente y sede
+    public void validate() {
+        if ((cliente != null && sede != null) || (cliente == null && sede == null)) {
+            throw new IllegalArgumentException("Un usuario debe tener un Cliente o una Sede, pero no ambos.");
+        }
+    }
 }

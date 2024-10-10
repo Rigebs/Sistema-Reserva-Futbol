@@ -40,7 +40,7 @@ public class CompaniaService implements ICompaniaService {
         compania1.setUsuarioCreacion(compania.getUsuarioCreacion());
         compania1.setUsuarioModificacion(compania.getUsuarioModificacion());
         compania1.setFechaModificacion(compania.getFechaModificacion());
-
+        compania1.setEmpresa(compania.getEmpresa());
         // Actualiza la imagen si se proporciona
         if (compania.getImagen() != null) {
             compania1.setImagen(compania.getImagen());
@@ -69,16 +69,12 @@ public class CompaniaService implements ICompaniaService {
     }
 
     public Compania updateCompaniaImage(MultipartFile file, Compania compania) throws IOException {
-        // Verifica si el archivo es válido
         if (file != null && !file.isEmpty()) {
-            // Sube la nueva imagen y obtiene la nueva instancia de Imagen
             Imagen nuevaImagen = iImagenService.uploadImage(file);
 
-            // Reemplaza la imagen existente con la nueva
             compania.setImagen(nuevaImagen);
         }
 
-        // Guarda la entidad actualizada
         return companiaRepository.save(compania);
     }
 }

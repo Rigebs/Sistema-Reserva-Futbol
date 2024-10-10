@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Entity
@@ -12,30 +13,25 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sucursal")
-public class Sucursal {
+@Table(name = "horario")
+public class Horario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio;
 
-    private String usuarioCreacion;
+    @Column(name = "hora_final", nullable = false)
+    private LocalTime horaFinal;
 
     @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
-
 
     @Column(name = "estado", nullable = false)
     private Character estado;
-
-    @ManyToOne
-    @JoinColumn(name = "compania_id", nullable = false)
-    private Compania compania;
 }

@@ -3,6 +3,7 @@ package com.cruz_sur.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,14 +13,17 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sucursal")
-public class Sucursal {
+@Table(name = "campo")
+public class Campo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
     private String nombre;
+
+    private BigDecimal precio;
+
+    private String descripcion;
 
     private String usuarioCreacion;
 
@@ -28,14 +32,12 @@ public class Sucursal {
 
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
-
 
     @Column(name = "estado", nullable = false)
     private Character estado;
 
     @ManyToOne
-    @JoinColumn(name = "compania_id", nullable = false)
-    private Compania compania;
+    @JoinColumn(name = "imagen_id", nullable = false)
+    private Imagen imagen;
 }

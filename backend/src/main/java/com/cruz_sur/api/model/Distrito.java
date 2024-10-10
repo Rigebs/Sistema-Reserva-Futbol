@@ -38,6 +38,5 @@ public class Distrito {
 
     @ManyToOne
     @JoinColumn(name = "provincia_id", nullable = false)
-    @JsonIgnore
     private Provincia provincia;
 }

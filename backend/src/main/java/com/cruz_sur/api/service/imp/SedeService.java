@@ -39,7 +39,6 @@ public class SedeService implements ISedeService {
         existingSede.setUsuarioCreacion(sede.getUsuarioCreacion());
         existingSede.setUsuarioModificacion(sede.getUsuarioModificacion());
         existingSede.setFechaModificacion(sede.getFechaModificacion());
-        existingSede.setEstado(sede.getEstado());
         existingSede.setSucursal(sede.getSucursal());
 
         return sedeRepository.save(existingSede);
