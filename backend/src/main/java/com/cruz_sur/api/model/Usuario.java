@@ -36,11 +36,11 @@ public class Usuario {
     )
     private Set<Rol> rol = new HashSet<>();
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "sede_id")
     private Sede sede;
 

@@ -169,6 +169,7 @@ CREATE TABLE compania (
     pc_modificacion VARCHAR(20) NOT NULL,
     estado CHAR(1),
 	imagen_id INT NOT NULL
+	idpersona
     FOREIGN KEY (imagen_id) REFERENCES imagen(id)
 );
 GO

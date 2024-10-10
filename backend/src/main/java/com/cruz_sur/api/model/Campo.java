@@ -37,7 +37,4 @@ public class Campo {
     @Column(name = "estado", nullable = false)
     private Character estado;
 
-    @ManyToOne
-    @JoinColumn(name = "imagen_id", nullable = false)
-    private Imagen imagen;
 }
