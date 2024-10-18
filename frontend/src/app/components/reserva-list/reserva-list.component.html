@@ -1,0 +1,67 @@
+<div class="reserva-list-container">
+  <h5>Campos seleccionados</h5>
+
+  <div *ngIf="reservas.length === 0">
+    <p>No hay campos reservados. Agrega alguno para comenzar.</p>
+  </div>
+
+  <div class="table-container example-table-container">
+    <!-- Contenedor para permitir el desplazamiento horizontal -->
+    <table
+      mat-table
+      [dataSource]="reservas"
+      class="mat-elevation-z8 example-table"
+      matSort
+      matSortActive="fecha"
+      matSortDisableClear
+      matSortDirection="asc"
+    >
+      <!-- Checkbox para seleccionar filas -->
+      <ng-container matColumnDef="select" sticky>
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="$event ? toggleAllRows() : null"
+            [checked]="isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()"
+          >
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Nombre del Campo -->
+      <ng-container matColumnDef="nombreCampo">
+        <th mat-header-cell *matHeaderCellDef>Nombre del Campo</th>
+        <td mat-cell *matCellDef="let reserva">{{ reserva.nombreCampo }}</td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let reserva">
+          <span [ngClass]="getEstadoClass(reserva.estado)">
+            {{ reserva.estado }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="['select', 'nombreCampo', 'estado']"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: ['select', 'nombreCampo', 'estado']"
+      ></tr>
+    </table>
+  </div>
+</div>

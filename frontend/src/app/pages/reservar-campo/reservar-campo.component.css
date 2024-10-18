@@ -1,0 +1,121 @@
+/* CSS para reserva-campo.component.css */
+
+/* Estilos para el contenedor principal */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 60px;
+  box-sizing: border-box;
+  overflow: hidden; /* Evitar overflow en el contenedor */
+}
+
+/* Estilos para el encabezado de la página */
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  color: #3f51b5; /* Color primario de Angular Material */
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Estilos para la sección de reserva */
+.reservation-section {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  overflow-x: hidden; /* Evitar scroll horizontal */
+  box-sizing: border-box;
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  /* Ajustes para el encabezado */
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .page-header p {
+    font-size: 1rem;
+  }
+
+  /* Asegurar que la sección de reserva se ajuste al ancho de la pantalla */
+  .reservation-section {
+    padding: 10px;
+    flex-direction: column; /* Cambiar a columna para pantallas pequeñas */
+    width: 100%;
+  }
+
+  /* Ajustar el componente mat-stepper en pantallas pequeñas */
+  mat-stepper {
+    width: 100%; /* Hacer que el stepper ocupe todo el ancho disponible */
+    max-width: 100%;
+  }
+
+  /* Ajustar los elementos internos del mat-stepper */
+  mat-form-field, .clock, .selected-time {
+    width: 100%; /* Asegurar que los campos de formulario ocupen todo el ancho */
+    max-width: 100%;
+  }
+
+  /* Ajustes para el reloj en el segundo paso */
+  .clock-face {
+    width: 180px; /* Reducir el tamaño del reloj */
+    height: 180px;
+    margin: 0 auto; /* Centrar el reloj */
+  }
+
+  .clock-hour {
+    font-size: 0.9rem;
+  }
+
+  .clock-hand {
+    height: 70px; /* Ajustar el tamaño de la manecilla */
+  }
+
+  /* Asegurar que los botones no ocupen demasiado espacio en pantallas pequeñas */
+  button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+}
+
+/* Ajustes específicos para pantallas aún más pequeñas */
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  .reservation-section {
+    padding: 5px;
+  }
+
+  /* Asegurar que el reloj no se salga de los márgenes */
+  .clock-face {
+    width: 140px;
+    height: 140px;
+  }
+
+  .clock-hour {
+    font-size: 0.8rem;
+  }
+
+  .clock-hand {
+    height: 55px; /* Ajustar aún más el tamaño de la manecilla */
+  }
+}

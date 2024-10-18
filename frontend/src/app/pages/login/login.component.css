@@ -3,13 +3,61 @@ html, body {
   margin: 0;
 }
 
+/* Fondo gradiente con temática de fútbol */
+.gradient-background {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Ocupa toda la pantalla */
+  background: linear-gradient(135deg, #1d325a, #2a5298); /* Colores relacionados al césped */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Pelotas de fútbol decorativas */
+.pelota {
+  position: absolute;
+  background-size: cover; /* Ajusta la imagen al contenedor */
+  z-index: 1;
+  background-color: white;
+  border-radius: 50%;
+}
+
+/* Primera pelota */
+.pelota1 {
+  top: 50px;
+  left: -50px;
+  width: 100px;
+  height: 100px;
+}
+
+/* Segunda pelota */
+.pelota2 {
+  bottom: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+}
+
+/* Tercera pelota */
+.pelota3 {
+  bottom: 50px;
+  left: 50px;
+  width: 80px;
+  height: 80px;
+}
+
 .login-container {
   display: flex;
-  align-items: center; /* Centra verticalmente */
-  justify-content: center; /* Centra horizontalmente */
+  align-items: center;
+  justify-content: center;
   gap: 24px;
-  height: 100vh;
-  padding: 0 16px; /* Pequeño margen para móvil */
+  padding: 0 16px;
+  z-index: 2;
+  padding: 40px;
+  background-color: white;
+  border-radius: 40px;
 }
 
 /* Oculta la sección de la imagen en pantallas pequeñas */
@@ -30,7 +78,10 @@ html, body {
 /* Estilos para la sección de login */
 .login-section {
   width: 100%;
-  max-width: 300px; /* Controla el tamaño del formulario */
+  max-width: 300px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
 }
 
 .full-width {

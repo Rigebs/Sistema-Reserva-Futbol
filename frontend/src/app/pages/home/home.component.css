@@ -49,6 +49,11 @@ app-carousel {
   max-width: 300px; /* Máximo ancho del calendario */
 }
 
+.calendar {
+  position: sticky;
+  top: 60px;
+}
+
 /* Estilos para el contenedor de los campos */
 .campos-container {
   display: flex;

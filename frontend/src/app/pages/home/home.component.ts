@@ -3,13 +3,15 @@ import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { MatButtonModule } from '@angular/material/button';
 import { CarouselComponent } from "../../components/carousel/carousel.component";
 import { MatSelectModule } from '@angular/material/select';
-import { NgForOf } from '@angular/common';
+import { NgClass, NgForOf } from '@angular/common';
 import {ChangeDetectionStrategy} from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { CampoCardComponent } from "../../components/campo-card/campo-card.component";
-
+import { ReservaCalendarComponent } from "../../components/reserva-calendar/reserva-calendar.component";
+import { ProcesoReservaComponent } from "../../components/proceso-reserva/proceso-reserva.component";
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +19,10 @@ import { CampoCardComponent } from "../../components/campo-card/campo-card.compo
   providers: [provideNativeDateAdapter()],
   imports: [NavbarComponent, MatButtonModule,
     MatCardModule, MatDatepickerModule,
-    CarouselComponent, MatSelectModule, NgForOf, CampoCardComponent],
+    CarouselComponent, MatSelectModule, 
+    MatGridListModule,
+    NgClass,
+    NgForOf, CampoCardComponent, ReservaCalendarComponent, ProcesoReservaComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -28,13 +33,19 @@ export class HomeComponent {
     'campo3.jpg'
   ];
 
-  selectedDistrict: string; // Almacena el distrito seleccionado
-  districts: string[] = ['Parcona', 'Tinguiña', 'Pueblo Nuevo', 'Miraflores', 'Cerro Colorado']; // Lista de distritos
+  selectedSlots: { [key: string]: string[] } = {};
+
+  isSelected(day: string, time: string): boolean {
+    return this.selectedSlots[day]?.includes(time) || false;
+  }
+
+  selectedDistrict: string;
+  districts: string[] = ['Parcona', 'Tinguiña', 'Pueblo Nuevo', 'Miraflores', 'Cerro Colorado'];
 
   selected = model<Date | null>(null);
 
   constructor() {
-    this.selectedDistrict = this.districts[0]; // Opcional: selecciona un distrito por defecto
+    this.selectedDistrict = this.districts[0];
   }
 
   campos = [

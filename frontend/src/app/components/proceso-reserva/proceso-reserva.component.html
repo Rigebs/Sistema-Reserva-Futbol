@@ -1,0 +1,90 @@
+<mat-stepper [linear]="isLinear" #stepper [orientation]="stepperOrientation">
+  <!-- Primer paso: Seleccionar uno o más días -->
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel
+        >Selecciona uno o más días para la reserva</ng-template
+      >
+
+      <mat-form-field appearance="fill">
+        <mat-label>Seleccionar fecha</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          (dateChange)="onDateSelected($event)"
+          formControlName="fechaReserva"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Mostrar los días seleccionados -->
+      <div *ngIf="selectedDates.length > 0">
+        <h4>Días seleccionados:</h4>
+        <ul>
+          <li *ngFor="let date of selectedDates">{{ date }}</li>
+        </ul>
+      </div>
+
+      <div>
+        <button mat-button matStepperNext [disabled]="!firstFormGroup.valid">
+          Continuar
+        </button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- Segundo paso: Seleccionar la hora -->
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Selecciona la hora para la reserva</ng-template>
+
+      <div class="clock">
+        <div class="clock-face">
+          <!-- Generar las horas en el reloj -->
+          <div
+            class="clock-hour"
+            *ngFor="let hour of hours"
+            [style.transform]="hour.transform"
+            (click)="onHourClick(hour.value)"
+          >
+            {{ hour.display }}
+          </div>
+          <!-- La manecilla de las horas -->
+          <div class="clock-hand" [style.transform]="handTransform"></div>
+        </div>
+
+        <div class="selected-time">
+          <p>Hora seleccionada: {{ selectedHour }}:00</p>
+        </div>
+      </div>
+
+      <!-- Vincular el valor de la hora seleccionada al formulario -->
+      <input type="hidden" formControlName="horaReserva" />
+
+      <div>
+        <button mat-button matStepperPrevious>Regresar</button>
+        <button mat-button matStepperNext [disabled]="!secondFormGroup.valid">
+          Continuar
+        </button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- Tercer paso: Pago mediante QR de Yape -->
+  <mat-step>
+    <ng-template matStepLabel>Realiza el pago</ng-template>
+    <div>
+      <h3>Pagar con Yape</h3>
+      <p>Escanea el código QR para realizar el pago.</p>
+
+      <!-- Aquí puedes colocar una imagen del código QR de Yape -->
+      <img src="https://via.placeholder.com/200" alt="QR de Yape" />
+
+      <div>
+        <button mat-button matStepperPrevious>Regresar</button>
+        <button mat-button (click)="stepper.reset()">Finalizar</button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

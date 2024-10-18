@@ -1,0 +1,19 @@
+<app-navbar></app-navbar>
+
+<!-- Contenedor principal para centrar el contenido -->
+<div class="container">
+  <!-- Encabezado de la página -->
+  <app-reserva-list [reservas]="reservas"> </app-reserva-list>
+  <header class="page-header">
+    <h1>Reservar Campo Deportivo</h1>
+    <p>
+      Selecciona los días, horas y completa el proceso de pago para reservar tu
+      campo.
+    </p>
+  </header>
+
+  <!-- Componente de proceso de reserva -->
+  <section class="reservation-section">
+    <app-proceso-reserva> </app-proceso-reserva>
+  </section>
+</div>
