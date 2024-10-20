@@ -19,20 +19,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RequestMapping("/auth")
 @RestController
 @AllArgsConstructor
 public class AuthenticationController {
     private final JwtService jwtService;
-    private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody RegisterUserDto registerUserDto) {
         try {
-            User registeredUser = authenticationService.signup(registerUserDto);
-            return ResponseEntity.ok(registeredUser);
+            authenticationService.signup(registerUserDto);
+            return ResponseEntity.ok("Registration successful! Please verify your email.");
         } catch (AuthException.UserAlreadyExistsException | AuthException.UsernameAlreadyExistsException e) {
             return ResponseEntity.status(409).body(e.getMessage()); // 409 Conflict
         } catch (Exception e) {

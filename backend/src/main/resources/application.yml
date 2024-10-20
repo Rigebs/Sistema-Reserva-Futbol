@@ -27,7 +27,7 @@ spring:
 
 security:
   jwt:
-    secret-key: ${JWT_SECRET}  # Asegúrate de que esta variable de entorno esté configurada
+    secret-key: ${JWT_SECRET}
     expiration-time: 3600000
 
 cloudinary:

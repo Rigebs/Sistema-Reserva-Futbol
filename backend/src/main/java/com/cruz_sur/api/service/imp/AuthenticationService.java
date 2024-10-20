@@ -112,8 +112,15 @@ public class AuthenticationService {
 
 
     public User authenticate(LoginUserDto loginUserDto) {
-        User user = userRepository.findByEmail(loginUserDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user;
+
+        if (loginUserDto.getIdentifier().contains("@")) {
+            user = userRepository.findByEmail(loginUserDto.getIdentifier())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        } else {
+            user = userRepository.findByUsername(loginUserDto.getIdentifier())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
 
         if (!user.isEnabled()) {
             throw new RuntimeException("Account not verified. Please verify your account.");
@@ -121,13 +128,14 @@ public class AuthenticationService {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginUserDto.getEmail(),
+                        user.getEmail(),
                         loginUserDto.getPassword()
                 )
         );
 
         return user;
     }
+
 
     public void verifyUser(VerifyUserDto verifyUserDto) {
         Optional<User> optionalUser = userRepository.findByEmail(verifyUserDto.getEmail());
@@ -201,10 +209,21 @@ public class AuthenticationService {
 
     private void sendVerificationEmail(User user) {
         String subject = "Please verify your email";
+        String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
         String htmlMessage = "<html>"
-                + "<body>"
-                + "<h2>Verification Code</h2>"
-                + "<p>Use the following code to verify your email: <strong>" + user.getVerificationCode() + "</strong></p>"
+                + "<body style='font-family: Arial, sans-serif; color: #333;'>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='color: #4CAF50;'>Welcome to Reserva!</h1>"
+                + "<img src='" + imageUrl + "' alt='Reserva Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
+                + "<h2 style='margin-top: 20px;'>Verification Code</h2>"
+                + "<p>Use the following code to verify your email:</p>"
+                + "<h3 style='font-size: 24px; font-weight: bold; color: #4CAF50;'>" + user.getVerificationCode() + "</h3>"
+                + "<h4>Explore various sports activities and fields!</h4>"
+                + "<p>If you did not create an account, please ignore this email.</p>"
+                + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
+                + "<p>&copy; 2024 Reserva. All rights reserved.</p>"
+                + "</footer>"
+                + "</div>"
                 + "</body>"
                 + "</html>";
 
