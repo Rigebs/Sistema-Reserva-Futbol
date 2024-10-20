@@ -38,7 +38,8 @@ public class UserController {
     public ResponseEntity<String> updateClientOrSede(@RequestBody UpdateClientAndSedeDto updateRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
-        authenticationService.updateClientAndSede(currentUser.getId(), updateRequest); // Obtener ID del usuario autenticado
+
+        authenticationService.updateClientAndSede(currentUser.getId(), updateRequest);
         return ResponseEntity.ok("User updated successfully.");
     }
 }

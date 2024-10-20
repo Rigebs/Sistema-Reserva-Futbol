@@ -20,12 +20,14 @@ public class ApplicationConfiguration {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return email -> {
-            System.out.println("Buscando usuario con email: " + email);
-            return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+        return identifier -> {
+            System.out.println("Buscando usuario con identificador (email o username): " + identifier);
+            return userRepository.findByEmail(identifier)
+                    .or(() -> userRepository.findByUsername(identifier))  // Buscar por email o username
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + identifier));
         };
     }
+
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {

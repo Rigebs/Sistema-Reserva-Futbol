@@ -11,8 +11,12 @@ import com.cruz_sur.api.repository.UserRepository;
 import com.cruz_sur.api.responses.LoginResponse;
 import com.cruz_sur.api.service.imp.AuthenticationService;
 import com.cruz_sur.api.service.imp.JwtService;
+import com.cruz_sur.api.service.imp.TokenBlacklistService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/auth")
@@ -22,7 +26,7 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
-
+    private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody RegisterUserDto registerUserDto) {
@@ -62,6 +66,21 @@ public class AuthenticationController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        tokenBlacklistService.blacklistToken(token);
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("Logout successful");
     }
 
 
