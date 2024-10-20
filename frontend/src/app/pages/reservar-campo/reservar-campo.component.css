@@ -1,5 +1,3 @@
-/* CSS para reserva-campo.component.css */
-
 /* Estilos para el contenedor principal */
 .container {
   width: 100%;
@@ -39,83 +37,58 @@
   box-sizing: border-box;
 }
 
-/* Ajustes responsivos para pantallas pequeñas */
-@media (max-width: 768px) {
-  /* Ajustes para el encabezado */
-  .page-header h1 {
-    font-size: 2rem;
-  }
-
-  .page-header p {
-    font-size: 1rem;
-  }
-
-  /* Asegurar que la sección de reserva se ajuste al ancho de la pantalla */
-  .reservation-section {
-    padding: 10px;
-    flex-direction: column; /* Cambiar a columna para pantallas pequeñas */
-    width: 100%;
-  }
-
-  /* Ajustar el componente mat-stepper en pantallas pequeñas */
-  mat-stepper {
-    width: 100%; /* Hacer que el stepper ocupe todo el ancho disponible */
-    max-width: 100%;
-  }
-
-  /* Ajustar los elementos internos del mat-stepper */
-  mat-form-field, .clock, .selected-time {
-    width: 100%; /* Asegurar que los campos de formulario ocupen todo el ancho */
-    max-width: 100%;
-  }
-
-  /* Ajustes para el reloj en el segundo paso */
-  .clock-face {
-    width: 180px; /* Reducir el tamaño del reloj */
-    height: 180px;
-    margin: 0 auto; /* Centrar el reloj */
-  }
-
-  .clock-hour {
-    font-size: 0.9rem;
-  }
-
-  .clock-hand {
-    height: 70px; /* Ajustar el tamaño de la manecilla */
-  }
-
-  /* Asegurar que los botones no ocupen demasiado espacio en pantallas pequeñas */
-  button {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-  }
+/* Contenedor de la lista de reservas y el resumen de campos */
+.reserva-content {
+  display: flex;
+  flex-direction: row; /* Colocar los elementos en una fila (tabla a la izquierda, resumen a la derecha) */
+  gap: 20px; /* Espacio entre la tabla y el resumen */
 }
 
-/* Ajustes específicos para pantallas aún más pequeñas */
-@media (max-width: 480px) {
-  .page-header h1 {
-    font-size: 1.6rem;
+/* Ajustar el ancho de la lista de reservas y del resumen */
+app-reserva-list {
+  flex: 2; /* La tabla toma más espacio */
+}
+
+/* Estilos para el componente de resumen y el botón */
+.resumen-boton-container {
+  flex: 1; /* La columna derecha ocupa menos espacio */
+  display: flex;
+  flex-direction: column; /* Colocar el resumen arriba y el botón abajo */
+  text-align: center;
+}
+
+app-campos-resumen {
+  max-height: 300px; /* Fijar una altura máxima para el componente de resumen */
+  overflow-y: auto; /* Habilitar scroll vertical solo para este componente */
+  flex-grow: 1; /* Hacer que el resumen ocupe todo el espacio disponible verticalmente */
+  padding: 10px;
+}
+
+/* Estilos para el botón */
+button {
+  margin-top: 10px; /* Separar el botón del componente de resumen */
+  align-self: flex-end; /* Alinear el botón a la derecha */
+  padding: 10px 20px; /* Añadir padding al botón */
+  background-color: #3f51b5; /* Color de fondo del botón */
+  color: white; /* Color del texto del botón */
+  border: none; /* Sin borde */
+  border-radius: 5px; /* Bordes redondeados */
+  width: 100%;
+  cursor: pointer; /* Cambiar el cursor a mano */
+}
+
+button:hover {
+  background-color: #303f9f; /* Cambiar color al pasar el ratón */
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .reserva-content {
+    flex-direction: column; /* Cambiar a disposición vertical (tabla arriba, resumen abajo) */
   }
 
-  .page-header p {
-    font-size: 0.9rem;
-  }
-
-  .reservation-section {
-    padding: 5px;
-  }
-
-  /* Asegurar que el reloj no se salga de los márgenes */
-  .clock-face {
-    width: 140px;
-    height: 140px;
-  }
-
-  .clock-hour {
-    font-size: 0.8rem;
-  }
-
-  .clock-hand {
-    height: 55px; /* Ajustar aún más el tamaño de la manecilla */
+  button {
+    width: 100%; /* Hacer que el botón ocupe todo el ancho en pantallas pequeñas */
+    align-self: center; /* Centrar el botón */
   }
 }

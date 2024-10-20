@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NgForOf, NgIf } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,6 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
 import { DatePipe } from '@angular/common'; // Para formatear las fechas
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 
 interface Hour {
   value: number;
@@ -24,91 +27,111 @@ interface Hour {
     MatFormFieldModule,
     MatInputModule,
     NgIf,
+    MatDialogModule,
     MatButtonModule,
     MatDatepickerModule,
     MatRadioGroup,
+    MatOptionModule,
+    MatSelectModule,
     NgForOf,
     MatRadioButton,
     ReactiveFormsModule
   ],
   templateUrl: './proceso-reserva.component.html',
-  styleUrls: ['./proceso-reserva.component.css'],
-  providers: [DatePipe] // Proveedor para el formateo de fechas
+  styleUrls: ['./proceso-reserva.component.css']
 })
-export class ProcesoReservaComponent implements OnInit {
-  
+export class ProcesoReservaComponent {
   isLinear = true;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  selectedDates: string[] = []; // Almacenar las fechas formateadas como strings
-  selectedHour: number = 12;
-  handTransform: string = 'rotate(0deg)';
-  hours: Hour[] = [];
-  stepperOrientation: 'horizontal' | 'vertical' = 'horizontal';
+  availableHours: number[] = [];
+  filteredEndHours: number[] = [];
+  minDate: Date | undefined;
+  
+  // Rango de atención disponible
+  atenciónStartHour = 8; // 8 AM
+  atenciónEndHour = 22; // 10 PM
+  unavailableRanges: { start: number, end: number }[] = [
+    { start: 12, end: 14 }, // Ejemplo: Bloqueando de 12 a 14
+    { start: 18, end: 19 }  // Ejemplo: Bloqueando de 18 a 19
+  ];
+  
+  // Aquí está la propiedad que debe existir
+  unavailableHours: number[] = [];
+
+  @Output() reservaFinalizada = new EventEmitter<{ nombre: string, fecha: Date, horaInicio: string, horaFin: string }>();
 
   constructor(
-    private _formBuilder: FormBuilder, 
-    private breakpointObserver: BreakpointObserver,
-    private datePipe: DatePipe // Para formatear las fechas seleccionadas
+    private _formBuilder: FormBuilder,
+    public dialogRef: MatDialogRef<ProcesoReservaComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    // Inicializar los formularios
     this.firstFormGroup = this._formBuilder.group({
       fechaReserva: ['', Validators.required],
     });
 
     this.secondFormGroup = this._formBuilder.group({
-      horaReserva: ['', Validators.required],
-    });
-
-    // Inicializar las horas del reloj
-    this.initializeHours();
-  }
-
-  ngOnInit(): void {
-    // Cambiar la orientación del *stepper* según el tamaño de la pantalla
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-      this.stepperOrientation = result.matches ? 'vertical' : 'horizontal';
+      horaInicio: ['', Validators.required],
+      horaFin: ['', Validators.required],
     });
   }
 
-  // Manejar la selección de la fecha
-  onDateSelected(event: MatDatepickerInputEvent<Date>) {
-    const selectedDate = event.value;
-    if (selectedDate) {
-      const formattedDate = this.datePipe.transform(selectedDate, 'dd/MM/yyyy');
-      if (formattedDate && !this.selectedDates.includes(formattedDate)) {
-        this.selectedDates.push(formattedDate);
+  cerrarDialogo(): void {
+    this.dialogRef.close();
+  }
+
+  ngOnInit() {
+    this.minDate = new Date();
+    // Inicializar las horas dentro del rango de atención
+    this.availableHours = Array.from({ length: this.atenciónEndHour - this.atenciónStartHour }, (_, i) => this.atenciónStartHour + i);
+
+    // Filtrar las horas disponibles excluyendo los rangos bloqueados
+    this.unavailableHours = this.getUnavailableHours();
+    this.availableHours = this.availableHours.filter(hour => !this.unavailableHours.includes(hour));
+  }
+
+  // Obtener las horas no disponibles basadas en los rangos
+  getUnavailableHours(): number[] {
+    const hours: number[] = [];
+    this.unavailableRanges.forEach(range => {
+      for (let i = range.start; i < range.end; i++) {
+        hours.push(i);
       }
+    });
+    return hours;
+  }
+
+  // Manejar la selección de la hora de inicio
+  onHourSelected(event: MatSelectChange, isStartHour: boolean) {
+    const selectedHour = event.value;
+    
+    if (isStartHour) {
+      // Establecer la hora de inicio
+      this.secondFormGroup.patchValue({ horaInicio: selectedHour });
+
+      // Filtrar las horas de fin, deben ser mayores que la hora de inicio seleccionada
+      this.filteredEndHours = this.availableHours.filter(hour => hour > selectedHour);
+      
+      // Limpiar la selección de hora de fin
+      this.secondFormGroup.patchValue({ horaFin: '' });
+    } else {
+      // Establecer la hora de fin
+      this.secondFormGroup.patchValue({ horaFin: selectedHour });
     }
   }
 
-  // Manejar la selección de la hora
-  onHourClick(hour: number) {
-    this.selectedHour = hour;
-    this.secondFormGroup.patchValue({ horaReserva: hour });
-    const angle = (hour / 12) * 360 + 90;
-    this.handTransform = `rotate(${angle}deg)`;
-  }
+  completeReserva() {
+    const reservaData = {
+      nombre: this.data.nombreCampo,
+      fecha: this.firstFormGroup.value.fechaReserva,
+      horaInicio: this.secondFormGroup.value.horaInicio,
+      horaFin: this.secondFormGroup.value.horaFin,
+    };
 
-  // Inicializar las posiciones de las horas en el reloj
-  initializeHours() {
-    const clockRadius = 80; // Radio del reloj
-    const clockCenter = 100; // Centro del reloj (mitad del tamaño del reloj)
-  
-    for (let i = 1; i <= 12; i++) {
-      const angle = (i / 12) * 360 - 90;
-      const radian = (angle - 90) * (Math.PI / 180); // Ajustar para que empiece en las 12 en punto
-  
-      const x = clockCenter + clockRadius * Math.cos(radian) - 15; // 15 es la mitad del ancho de .clock-hour
-      const y = clockCenter + clockRadius * Math.sin(radian) - 15; // 15 es la mitad del alto de .clock-hour
-  
-      const transform = `translate(${x}px, ${y}px)`;
-  
-      this.hours.push({
-        value: i,
-        display: i,
-        transform: transform,
-      });
-    }
+    // Emitir el evento con los detalles de la reserva
+    this.reservaFinalizada.emit(reservaData);
+
+    // Cerrar el diálogo
+    this.dialogRef.close();
   }
 }

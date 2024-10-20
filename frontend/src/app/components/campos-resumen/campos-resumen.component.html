@@ -1,0 +1,27 @@
+<div class="campo-resumen-container">
+  <mat-card *ngFor="let reserva of reservas" class="campo-card">
+    <mat-card-content>
+      <div class="reserva-detalles">
+        <div class="reserva-item">
+          <mat-icon>location_on</mat-icon>
+          <span>Campo: {{ reserva.nombre }}</span>
+        </div>
+        <div class="reserva-item">
+          <mat-icon>event</mat-icon>
+          <span>Fecha: {{ formatDate(reserva.fecha) }}</span>
+          <!-- Cambié 'fecha' a 'fechaReserva' -->
+        </div>
+        <div class="reserva-item">
+          <mat-icon>access_time</mat-icon>
+          <span>Hora Inicio: {{ reserva.horaInicio }}:00</span>
+          <!-- Asegúrate de que los valores de hora están en el formato correcto -->
+        </div>
+        <div class="reserva-item">
+          <mat-icon>access_time</mat-icon>
+          <span>Hora Final: {{ reserva.horaFin }}:00</span>
+          <!-- Cambié 'horaFinal' a 'horaFin' -->
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

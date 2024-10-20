@@ -1,12 +1,11 @@
 <div class="reserva-list-container">
-  <h5>Campos seleccionados</h5>
+  <h5>Campos disponibles</h5>
 
   <div *ngIf="reservas.length === 0">
     <p>No hay campos reservados. Agrega alguno para comenzar.</p>
   </div>
 
   <div class="table-container example-table-container">
-    <!-- Contenedor para permitir el desplazamiento horizontal -->
     <table
       mat-table
       [dataSource]="reservas"
@@ -16,51 +15,45 @@
       matSortDisableClear
       matSortDirection="asc"
     >
-      <!-- Checkbox para seleccionar filas -->
-      <ng-container matColumnDef="select" sticky>
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox
-            (change)="$event ? toggleAllRows() : null"
-            [checked]="isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()"
-            [aria-label]="checkboxLabel()"
-          >
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <mat-checkbox
-            (click)="$event.stopPropagation()"
-            (change)="$event ? selection.toggle(row) : null"
-            [checked]="selection.isSelected(row)"
-            [aria-label]="checkboxLabel(row)"
-          >
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <!-- Nombre del Campo -->
-      <ng-container matColumnDef="nombreCampo">
-        <th mat-header-cell *matHeaderCellDef>Nombre del Campo</th>
+      <ng-container matColumnDef="nombreCampo" sticky>
+        <th mat-header-cell *matHeaderCellDef>Campo</th>
         <td mat-cell *matCellDef="let reserva">{{ reserva.nombreCampo }}</td>
       </ng-container>
 
-      <!-- Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <ng-container matColumnDef="seleccionar" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef>Selecc.</th>
         <td mat-cell *matCellDef="let reserva">
-          <span [ngClass]="getEstadoClass(reserva.estado)">
-            {{ reserva.estado }}
-          </span>
+          <button
+            mat-mini-fab
+            class="green-button"
+            (click)="abrirDialogo(reserva); toggleRotation(reserva)"
+            [ngClass]="{
+              'rotate-icon': reserva.rotating,
+              finalizada: reserva.finalizada
+            }"
+          >
+            <mat-icon>sports_soccer</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let reserva">
+          <mat-chip> sintético | Con iluminación | Con Beelup</mat-chip>
         </td>
       </ng-container>
 
       <tr
         mat-header-row
-        *matHeaderRowDef="['select', 'nombreCampo', 'estado']"
+        *matHeaderRowDef="['nombreCampo', 'descripcion', 'seleccionar']"
       ></tr>
       <tr
         mat-row
-        *matRowDef="let row; columns: ['select', 'nombreCampo', 'estado']"
+        *matRowDef="
+          let row;
+          columns: ['nombreCampo', 'descripcion', 'seleccionar']
+        "
       ></tr>
     </table>
   </div>
