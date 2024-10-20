@@ -18,14 +18,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
+    private final TokenBlacklistService tokenBlacklistService;
+
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
+    public JwtService(TokenBlacklistService tokenBlacklistService) {
+        this.tokenBlacklistService = tokenBlacklistService;
+    }
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);  // El subject es el email
+        return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -37,12 +42,13 @@ public class JwtService {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(email)  // Usando el email como subject
+                .setSubject(email)  // Usar el email como subject del JWT
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -50,21 +56,26 @@ public class JwtService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        return buildToken(claims, userDetails.getUsername(), jwtExpiration); // Cambia a userDetails.getUsername()
+        return buildToken(claims, userDetails.getUsername(), jwtExpiration);
     }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        boolean isValid = username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        boolean isValid = username.equals(userDetails.getUsername())
+                && !isTokenExpired(token)
+                && !tokenBlacklistService.isTokenBlacklisted(token);
 
         System.out.println("Validando token: " + token);
         System.out.println("Usuario extraído: " + username);
         System.out.println("Usuario de detalles: " + userDetails.getUsername());
         System.out.println("¿Es válido?: " + isValid);
         System.out.println("¿Expirado?: " + isTokenExpired(token));
+        System.out.println("¿En lista negra?: " + tokenBlacklistService.isTokenBlacklisted(token));
 
         return isValid;
     }
+
 
 
     private boolean isTokenExpired(String token) {
@@ -90,6 +101,6 @@ public class JwtService {
     }
 
     public long getExpirationTime() {
-        return jwtExpiration; // Retorna el tiempo de expiración configurado
+        return jwtExpiration;
     }
 }

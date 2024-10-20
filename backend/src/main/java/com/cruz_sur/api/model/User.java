@@ -21,7 +21,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(unique = true, nullable = false)
-    private String username;
+    private String username;  // Ahora este campo se usará correctamente para el username
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
@@ -77,9 +77,8 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email; // Devuelve el email en lugar del nombre de usuario
+        return this.username;  // Devuelve el nombre de usuario correcto
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -107,7 +106,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
-
-
 }
-
