@@ -25,11 +25,13 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
 
-jwt:
-  secret-key: ${JWT_SECRET}  # Cambiado a secret-key
-  expiration-time: 3600000
+security:
+  jwt:
+    secret-key: ${JWT_SECRET}  # Asegúrate de que esta variable de entorno esté configurada
+    expiration-time: 3600000
 
 cloudinary:
   cloud_name: ${CLOUDINARY_CLOUD_NAME}
   api_key: ${CLOUDINARY_API_KEY}
   api_secret: ${CLOUDINARY_API_SECRET}
+
