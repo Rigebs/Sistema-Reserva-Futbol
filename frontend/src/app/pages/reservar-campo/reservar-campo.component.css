@@ -1,0 +1,94 @@
+/* Estilos para el contenedor principal */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 60px;
+  box-sizing: border-box;
+  overflow: hidden; /* Evitar overflow en el contenedor */
+}
+
+/* Estilos para el encabezado de la página */
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+  color: #3f51b5; /* Color primario de Angular Material */
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Estilos para la sección de reserva */
+.reservation-section {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  overflow-x: hidden; /* Evitar scroll horizontal */
+  box-sizing: border-box;
+}
+
+/* Contenedor de la lista de reservas y el resumen de campos */
+.reserva-content {
+  display: flex;
+  flex-direction: row; /* Colocar los elementos en una fila (tabla a la izquierda, resumen a la derecha) */
+  gap: 20px; /* Espacio entre la tabla y el resumen */
+}
+
+/* Ajustar el ancho de la lista de reservas y del resumen */
+app-reserva-list {
+  flex: 2; /* La tabla toma más espacio */
+}
+
+/* Estilos para el componente de resumen y el botón */
+.resumen-boton-container {
+  flex: 1; /* La columna derecha ocupa menos espacio */
+  display: flex;
+  flex-direction: column; /* Colocar el resumen arriba y el botón abajo */
+  text-align: center;
+}
+
+app-campos-resumen {
+  max-height: 300px; /* Fijar una altura máxima para el componente de resumen */
+  overflow-y: auto; /* Habilitar scroll vertical solo para este componente */
+  flex-grow: 1; /* Hacer que el resumen ocupe todo el espacio disponible verticalmente */
+  padding: 10px;
+}
+
+/* Estilos para el botón */
+button {
+  margin-top: 10px; /* Separar el botón del componente de resumen */
+  align-self: flex-end; /* Alinear el botón a la derecha */
+  padding: 10px 20px; /* Añadir padding al botón */
+  background-color: #3f51b5; /* Color de fondo del botón */
+  color: white; /* Color del texto del botón */
+  border: none; /* Sin borde */
+  border-radius: 5px; /* Bordes redondeados */
+  width: 100%;
+  cursor: pointer; /* Cambiar el cursor a mano */
+}
+
+button:hover {
+  background-color: #303f9f; /* Cambiar color al pasar el ratón */
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .reserva-content {
+    flex-direction: column; /* Cambiar a disposición vertical (tabla arriba, resumen abajo) */
+  }
+
+  button {
+    width: 100%; /* Hacer que el botón ocupe todo el ancho en pantallas pequeñas */
+    align-self: center; /* Centrar el botón */
+  }
+}

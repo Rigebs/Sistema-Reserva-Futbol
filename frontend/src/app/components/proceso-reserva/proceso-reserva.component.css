@@ -1,0 +1,85 @@
+/* CSS para proceso-reserva.component.css */
+
+mat-form-field {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.mat-radio-button {
+  display: block;
+  margin: 5px 0;
+}
+
+img {
+  display: block;
+  margin: 20px auto;
+  max-width: 200px;
+}
+
+.clock {
+  width: 200px;
+  height: 200px;
+  margin: 20px auto;
+  position: relative;
+}
+
+.clock-face {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border: 2px solid #000;
+  border-radius: 50%;
+}
+
+.clock-hour {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.clock-hand {
+  position: absolute;
+  width: 2px;
+  height: 50%;
+  background-color: #b63636;
+  top: 25%;
+  left: 50%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.clock-hand::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; /* Posiciona la punta de la flecha fuera de la manecilla */
+  left: -6px; /* Centra la flecha horizontalmente respecto a la manecilla */
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid #b63636; /* Color de la flecha */
+}
+
+.selected-time {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .clock {
+    width: 150px; /* Ajustar tamaño del reloj para pantallas pequeñas */
+    height: 150px;
+  }
+  .clock-hour {
+    width: 25px; /* Reducir tamaño de las horas */
+    height: 25px;
+    font-size: 0.8rem; /* Reducir tamaño de la fuente */
+  }
+}
+

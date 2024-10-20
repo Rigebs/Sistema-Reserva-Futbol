@@ -1,0 +1,111 @@
+/* Structure */
+.example-container {
+    position: relative;
+  }
+  
+  .example-table-container {
+    position: relative;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: auto;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  .example-loading-shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 56px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .example-rate-limit-reached {
+    max-width: 360px;
+    text-align: center;
+  }
+  
+  /* Column Widths */
+  .mat-column-number,
+  .mat-column-state {
+    width: 64px;
+  }
+  
+  .mat-column-created {
+    width: 124px;
+  }
+
+/* Estilos base para todos los estados */
+.estado-en-proceso,
+.estado-reservado,
+.estado-no-disponible {
+  display: inline-block;
+  padding: 6px 0px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: center;
+  min-width: 100px; /* Ajusta el tamaño mínimo si es necesario */
+}
+
+/* Estado 'En proceso' */
+.estado-en-proceso {
+  background-color: #fff3cd; /* Fondo amarillo suave */
+  color: #856404; /* Texto marrón oscuro */
+}
+
+/* Estado 'Reservado' */
+.estado-reservado {
+  background-color: #d4edda; /* Fondo verde suave */
+  color: #155724; /* Texto verde oscuro */
+}
+
+/* Estado 'No disponible' */
+.estado-no-disponible {
+  background-color: #f8d7da; /* Fondo rojo suave */
+  color: #721c24; /* Texto rojo oscuro */
+}
+
+/*
+
+  
+
+*/
+
+.green-button {
+  background-color: #ffffff; /* Color verde */
+  color: rgb(0, 0, 0);
+  border: 1px solid #0d4e83; /* Color del icono o texto en blanco */
+}
+
+.green-button:hover {
+  background-color: #0d4e83;
+  color: white; /* Tono más oscuro al hacer hover */
+}
+
+/* Animación para rotar el ícono */
+.rotate-icon mat-icon {
+  animation: rotate 0.5s ease-in-out;
+}
+
+/* Definir la animación para rotar el ícono */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.finalizada {
+  background-color: green; /* O el color que desees para el fondo */
+  color: white; /* Cambia el color del texto si es necesario */
+}

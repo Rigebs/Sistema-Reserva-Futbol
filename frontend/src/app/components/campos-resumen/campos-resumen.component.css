@@ -1,0 +1,27 @@
+.campo-resumen-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.campo-card {
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reserva-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reserva-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+mat-icon {
+  color: #4caf50; /* Color del ícono */
+}

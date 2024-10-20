@@ -1,0 +1,65 @@
+.calendar-container {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.day-name {
+  font-weight: bold;
+  text-align: center;
+}
+
+.day-cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.day-cell.active {
+  background-color: #e0e0e0;
+}
+
+.day-cell.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.hora-seleccion {
+  margin-top: 20px;
+}
+
+.horas-disponibles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.horas-disponibles button {
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.horas-disponibles button.selected {
+  background-color: #007bff;
+  color: white;
+}

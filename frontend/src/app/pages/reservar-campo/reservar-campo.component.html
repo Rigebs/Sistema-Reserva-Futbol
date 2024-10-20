@@ -1,0 +1,37 @@
+<app-navbar></app-navbar>
+
+<!-- Contenedor principal para centrar el contenido -->
+<div class="container">
+  <!-- Encabezado de la página -->
+  <header class="page-header">
+    <h1>Reservar Campo Deportivo</h1>
+    <p>
+      Selecciona los días, horas y completa el proceso de pago para reservar tu
+      campo.
+    </p>
+  </header>
+
+  <!-- Componente de proceso de reserva -->
+  <section class="reservation-section">
+    <div class="reserva-content">
+      <!-- Tabla de reserva de campos -->
+      <app-reserva-list
+        [reservas]="reservas"
+        (reservaFinalizada)="agregarReservaFinalizada($event)"
+      >
+      </app-reserva-list>
+
+      <!-- Contenedor para el resumen y el botón -->
+      <div class="resumen-boton-container">
+        <h6>Resumen de la reserva</h6>
+        <!-- Componente de resumen -->
+        <app-campos-resumen
+          [reservas]="reservasFinalizadas"
+        ></app-campos-resumen>
+
+        <!-- Botón debajo del resumen -->
+        <button>Reservar Ahora</button>
+      </div>
+    </div>
+  </section>
+</div>

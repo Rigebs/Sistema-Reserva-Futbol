@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>Detalles de la reserva</h2>
+<div mat-dialog-content>
+  <p><strong>Nombre del Campo:</strong> {{ data.nombreCampo }}</p>
+  <p><strong>Estado:</strong> {{ data.estado }}</p>
+  <mat-stepper [linear]="isLinear" #stepper orientation="vertical">
+    <!-- Paso 1: Seleccionar fecha -->
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>Selecciona la fecha</ng-template>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Fecha de reserva</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fechaReserva"
+            [min]="minDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <div>
+          <button mat-button matStepperNext [disabled]="!firstFormGroup.valid">
+            Continuar
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Paso 2: Seleccionar hora -->
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>
+          Selecciona la hora de inicio y fin
+        </ng-template>
+
+        <!-- Selector de hora de inicio -->
+        <mat-form-field appearance="fill">
+          <mat-label>Hora de inicio</mat-label>
+          <mat-select
+            formControlName="horaInicio"
+            (selectionChange)="onHourSelected($event, true)"
+          >
+            <mat-option
+              *ngFor="let hour of availableHours"
+              [value]="hour"
+              [disabled]="unavailableHours.includes(hour)"
+            >
+              {{ hour }}:00
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Selector de hora de fin -->
+        <mat-form-field appearance="fill">
+          <mat-label>Hora de fin</mat-label>
+          <mat-select
+            formControlName="horaFin"
+            (selectionChange)="onHourSelected($event, false)"
+          >
+            <mat-option
+              *ngFor="let hour of filteredEndHours"
+              [value]="hour"
+              [disabled]="unavailableHours.includes(hour)"
+            >
+              {{ hour }}:00
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div>
+          <button mat-button matStepperPrevious>Regresar</button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-stepper>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="cerrarDialogo()">Cerrar</button>
+  <button
+    mat-flat-button
+    (click)="completeReserva()"
+    color="success"
+    [disabled]="!secondFormGroup.valid"
+  >
+    Finalizar
+  </button>
+</div>

@@ -1,0 +1,38 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button (click)="cambiarMes(-1)">&lt;</button>
+    <span>{{ meses[mesActual] }} {{ anioActual }}</span>
+    <button (click)="cambiarMes(1)">&gt;</button>
+  </div>
+
+  <div class="calendar-grid">
+    <div *ngFor="let dia of diasSemana" class="day-name">{{ dia }}</div>
+
+    <div
+      *ngFor="let dia of obtenerDiasDelMes()"
+      class="day-cell"
+      [class.active]="dia !== 0"
+      [class.selected]="
+        dia === fechaSeleccionada.getDate() &&
+        mesActual === fechaSeleccionada.getMonth() &&
+        anioActual === fechaSeleccionada.getFullYear()
+      "
+      (click)="dia !== 0 ? seleccionarDia(dia) : null"
+    >
+      {{ dia !== 0 ? dia : "" }}
+    </div>
+  </div>
+
+  <div class="hora-seleccion">
+    <h3>Seleccionar Hora</h3>
+    <div class="horas-disponibles">
+      <button
+        *ngFor="let hora of horasDisponibles"
+        (click)="seleccionarHora(hora)"
+        [class.selected]="hora === horaSeleccionada"
+      >
+        {{ hora }}
+      </button>
+    </div>
+  </div>
+</div>
