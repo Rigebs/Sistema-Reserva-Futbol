@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Persona;
+import com.cruz_sur.api.responses.ReniecSunatResponse;
 import com.cruz_sur.api.service.IPersonaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/personas")
@@ -15,6 +17,18 @@ import java.util.List;
 public class PersonaController {
 
     private final IPersonaService personaService;
+    private final ReniecSunatResponse reniecSunatResponse;
+
+
+    @PostMapping("/consultar-dni")
+    public ResponseEntity<Map<String, Object>> consultarDni(@RequestParam String dni) {
+        Map<String, Object> personaData = reniecSunatResponse.getPerson(dni);
+        if (!personaData.isEmpty()) {
+            return ResponseEntity.ok(personaData);
+        } else {
+            return ResponseEntity.status(404).body(Map.of("error", "No se encontraron datos para el DNI"));
+        }
+    }
 
     @GetMapping
     public ResponseEntity<List<Persona>> getAllPersonas() {
