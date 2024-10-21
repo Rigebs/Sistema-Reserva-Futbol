@@ -24,7 +24,6 @@ public class Boleta {
 
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;

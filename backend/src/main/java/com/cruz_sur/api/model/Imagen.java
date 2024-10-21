@@ -23,7 +23,6 @@ public class Imagen {
     private String imageId;
 
     private String usuarioCreacion;
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
     private LocalDateTime fechaModificacion;
