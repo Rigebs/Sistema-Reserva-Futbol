@@ -1,0 +1,12 @@
+[build]
+  base = "frontend"
+  command = "ng build --configuration production"
+  publish = "dist/frontend/browser"
+
+[functions]
+  directory = "functions"  # Cambia esto a tu directorio de funciones
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
