@@ -1,15 +1,16 @@
 spring:
   datasource:
-    url: ${DB_NAME}
+    url: jdbc:sqlserver://localhost:1433;databaseName=ReservaDB;encrypt=false
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate.transaction.jta.platform: org.hibernate.service.jta.platform.internal.NoJtaPlatform
+    database-platform: org.hibernate.dialect.SQLServerDialect
+
   servlet:
     multipart:
       max-file-size: 10MB
@@ -33,3 +34,6 @@ cloudinary:
   cloud_name: ${CLOUDINARY_CLOUD_NAME}
   api_key: ${CLOUDINARY_API_KEY}
   api_secret: ${CLOUDINARY_API_SECRET}
+
+apis:
+  token: ${API_RENIEC_SUNAT_TOKEN}
