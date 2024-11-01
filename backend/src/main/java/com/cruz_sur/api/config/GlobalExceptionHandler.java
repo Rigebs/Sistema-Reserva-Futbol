@@ -1,34 +1,37 @@
 package com.cruz_sur.api.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // Manejar todas las excepciones
+    // Manejo de excepciones generales
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView handleAllExceptions(Exception ex, Model model) {
-        // Capturar el error en el log
         logger.error("Ocurrió un error: ", ex);
-
-        // Agregar un mensaje al modelo
         model.addAttribute("message", "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.");
-
-        // Redirigir a la página de error
         return new ModelAndView("error");
     }
 
-    // Manejar excepciones específicas si es necesario
+    // NullPointerException específico
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ModelAndView handleNullPointerException(NullPointerException ex) {
@@ -38,6 +41,7 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
+    // IllegalArgumentException específico
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ModelAndView handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -47,5 +51,45 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
-    // Puedes agregar más manejadores para excepciones específicas según sea necesario
+    // RuntimeException, manejo sin stack trace detallado
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        logger.error("Runtime Exception: ", ex);
+        String errorMessage = "Ocurrió un error al procesar la solicitud: " + ex.getMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    // Manejo específico de DataIntegrityViolationException
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        logger.error("Data Integrity Violation Exception: ", ex);
+        String errorMessage = "Violación de integridad de datos. Puede haber conflicto con datos existentes.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+    }
+
+    // Manejo específico de EntityNotFoundException (usualmente para entidades de JPA no encontradas)
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        logger.error("Entity Not Found Exception: ", ex);
+        String errorMessage = "La entidad solicitada no fue encontrada en el sistema.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo específico de MethodArgumentNotValidException (errores de validación en los argumentos)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        logger.error("Validation Exception: ", ex);
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 }
