@@ -19,19 +19,15 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "hora_inicio", nullable = false)
     private LocalTime horaInicio;
 
-    @Column(name = "hora_final", nullable = false)
     private LocalTime horaFinal;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;
 
     private LocalDateTime fechaModificacion;
 
-    @Column(name = "estado", nullable = false)
     private Character estado;
 }

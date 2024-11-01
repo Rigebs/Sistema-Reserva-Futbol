@@ -19,16 +19,13 @@ public class Persona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "dni", nullable = false, length = 8)
     private String dni;
 
     @Column(nullable = false, length = 50)
     private String nombre;
 
-    @Column(name = "ape_paterno", nullable = false, length = 50)
     private String apePaterno;
 
-    @Column(name = "ape_materno", nullable = false, length = 50)
     private String apeMaterno;
 
     @Column(length = 9)
@@ -37,7 +34,6 @@ public class Persona {
     @Column(length = 250)
     private String correo;
 
-    @Column(name = "fecha_nac")
     private LocalDate fechaNac;
 
     @Column(length = 2)
@@ -46,17 +42,13 @@ public class Persona {
     @Column(length = 150)
     private String direccion;
 
-    @Column(name = "usuario_creacion", length = 20)
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
 
-    @Column(name = "usuario_modificacion", length = 20)
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaModificacion;
 
 

@@ -35,13 +35,10 @@ public class User implements UserDetails {
     @Column(name = "usuario_creacion", length = 20)
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "usuario_modificacion", length = 20)
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaModificacion;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

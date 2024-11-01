@@ -18,6 +18,7 @@ import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,37 +40,34 @@ public class AuthenticationService {
 
 
     public User signup(RegisterUserDto registerUserDto) {
-        // Validar si el email ya está registrado
         if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
             throw new AuthException.UserAlreadyExistsException("Email already registered");
         }
 
-        // Validar si el username ya está registrado
         if (userRepository.findByUsername(registerUserDto.getUsername()).isPresent()) {
             throw new AuthException.UsernameAlreadyExistsException("Username already taken");
         }
 
-        // Crear nuevo usuario
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
         User newUser = new User();
         newUser.setEmail(registerUserDto.getEmail());
         newUser.setUsername(registerUserDto.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         newUser.setEnabled(false);
+        newUser.setUsuarioCreacion(authenticatedUsername);
+        newUser.setFechaCreacion(LocalDateTime.now());
 
-        // Asignar rol por defecto
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("User role not found"));
         newUser.setRoles(List.of(userRole));
 
-        // Generar y asignar código de verificación
         String verificationCode = generateVerificationCode();
         newUser.setVerificationCode(verificationCode);
         newUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
 
-        // Guardar el usuario en la base de datos
         userRepository.save(newUser);
 
-        // Enviar email de verificación
         sendVerificationEmail(newUser);
 
         return newUser;
@@ -81,7 +79,9 @@ public class AuthenticationService {
 
         user.setCliente(null);
         user.setSede(null);
-        user.getRoles().clear();  // Limpiar roles previos
+        user.getRoles().clear();
+
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (dto.getClienteId() != null && dto.getSedeId() != null) {
             throw new IllegalArgumentException("User cannot have both cliente and sede.");
@@ -107,9 +107,11 @@ public class AuthenticationService {
             user.getRoles().add(adminRole);
         }
 
+        user.setUsuarioModificacion(authenticatedUsername);
+        user.setFechaModificacion(LocalDateTime.now());
+
         userRepository.save(user);
     }
-
 
     public User authenticate(LoginUserDto loginUserDto) {
         User user;

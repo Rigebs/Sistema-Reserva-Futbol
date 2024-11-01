@@ -23,12 +23,10 @@ public class Sucursal {
 
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;
 
-    @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
 

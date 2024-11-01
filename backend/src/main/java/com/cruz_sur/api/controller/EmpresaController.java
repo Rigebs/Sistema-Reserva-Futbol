@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Empresa;
+import com.cruz_sur.api.responses.ReniecSunatResponse;
 import com.cruz_sur.api.service.IEmpresaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,13 +9,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/empresa")
 public class EmpresaController {
     private final IEmpresaService empresaService;
+    private final ReniecSunatResponse reniecSunatResponse;
 
+    @PostMapping("/consultar-ruc")
+    public ResponseEntity<Map<String, Object>> consultarRuc(@RequestParam String ruc) {
+        Map<String, Object> empresaData = reniecSunatResponse.getRuc(ruc);
+        if (!empresaData.isEmpty()) {
+            return ResponseEntity.ok(empresaData);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "No se encontraron datos para el RUC"));
+        }
+    }
     @GetMapping
     public ResponseEntity<List<Empresa>> getAllEmpresas() {
         List<Empresa> empresas = empresaService.all();

@@ -25,7 +25,6 @@ public class Cliente {
 
     private LocalDateTime fechaModificacion;
 
-    @Column(columnDefinition = "char(1) default '1'")
     private Character estado = '1';
 
     @ManyToOne

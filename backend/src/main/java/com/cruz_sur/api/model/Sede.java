@@ -21,7 +21,6 @@ public class Sede {
     private String nombre;
 
     private String usuarioCreacion;
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
     private LocalDateTime fechaModificacion;

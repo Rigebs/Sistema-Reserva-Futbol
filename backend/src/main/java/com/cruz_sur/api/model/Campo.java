@@ -27,14 +27,12 @@ public class Campo {
 
     private String usuarioCreacion;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime fechaCreacion;
 
     private String usuarioModificacion;
 
     private LocalDateTime fechaModificacion;
 
-    @Column(name = "estado", nullable = false)
     private Character estado;
 
 }
