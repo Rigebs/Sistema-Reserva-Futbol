@@ -22,7 +22,6 @@ public class ComprobanteService {
                 ? campo.getUsuario()
                 : null;
 
-        // Generate the number based on user ID and tipoComprobante
         String numero = numeroComprobanteGenerator.generate(userSede.getId(), reserva.getTipoComprobante());
 
         switch (reserva.getTipoComprobante()) {

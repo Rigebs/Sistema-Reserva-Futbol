@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;  // Import LocalTime
 import java.util.List;
@@ -23,7 +25,7 @@ public class ReservaResponseDTO {
     private String comprobante;
     private BigDecimal igv;
     private BigDecimal descuento;
-    private LocalDateTime fecha;
+    private LocalDate fecha;
     private BigDecimal subtotal;
     private BigDecimal total;
     private String campo;
@@ -40,6 +42,5 @@ public class ReservaResponseDTO {
     private String paginaWeb;
     private String sedeNombre;
     private List<DetalleVentaDTO> detallesVenta; // Existing field
-    private LocalTime horaInicio;  // Add this line
-    private LocalTime horaFinal;   // Add this line
+
 }

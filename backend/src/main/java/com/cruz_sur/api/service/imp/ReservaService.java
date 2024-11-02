@@ -21,7 +21,6 @@ public class ReservaService implements IReservaService {
     private final ReservaRepository reservaRepository;
     private final UserRepository userRepository;
     private final MetodoPagoRepository metodoPagoRepository;
-    private final HorarioRepository horarioRepository;
     private final DetalleVentaService detalleVentaService;
     private final ComprobanteService comprobanteService;
     private final ReservaValidationService reservaValidationService;
@@ -37,7 +36,6 @@ public class ReservaService implements IReservaService {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         Cliente cliente = usuario.getCliente();
         if (cliente == null) {
             throw new RuntimeException("No associated client for the authenticated user");
@@ -46,8 +44,6 @@ public class ReservaService implements IReservaService {
         reservaValidationService.validateTipoComprobante(cliente, reservaDTO.getTipoComprobante());
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
-        Horario horario = horarioRepository.findById(reservaDTO.getHorarioId())
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
         BigDecimal subtotal = reservaCalculations.calculateSubtotal(detallesVenta);
         BigDecimal totalDescuento = reservaCalculations.calculateDiscount(subtotal, reservaDTO.getDescuento());
@@ -66,7 +62,6 @@ public class ReservaService implements IReservaService {
                 .cliente(cliente)
                 .usuario(usuario)
                 .metodoPago(metodoPago)
-                .horario(horario)
                 .estado('1')
                 .usuarioCreacion(authenticatedUsername)
                 .fechaCreacion(now)
@@ -76,20 +71,15 @@ public class ReservaService implements IReservaService {
 
         reservaRepository.save(reserva);
 
-        // Get the first DetalleVenta to extract Campo
         Campo campo = null;
         if (!detallesVenta.isEmpty()) {
-            Long campoId = detallesVenta.get(0).getCampoId(); // Assuming campoId is accessible
-            campo = campoRepository.findById(campoId) // You might need to inject campoRepository
+            Long campoId = detallesVenta.get(0).getCampoId();
+            campo = campoRepository.findById(campoId)
                     .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
         }
 
-
-        // Now call createComprobante with Campo included
-        comprobanteService.createComprobante(reserva, usuario, now, campo); // Pass the Campo object
-
+        comprobanteService.createComprobante(reserva, usuario, now, campo);
         detallesVenta.forEach(detalle -> detalleVentaService.createDetalleVenta(detalle, reserva));
-
         return buildReservaResponse(reserva);
     }
 
@@ -115,22 +105,25 @@ public class ReservaService implements IReservaService {
 
         switch (reserva.getTipoComprobante()) {
             case 'B':
-                Boleta boleta = boletaRepository.findByReserva(reserva)
-                        .orElseThrow(() -> new RuntimeException("Boleta not found for the reservation"));
-                numero = boleta.getNumero();
-                serie = boleta.getSerie();
+                Boleta boleta = boletaRepository.findByReserva(reserva).orElse(null);
+                if (boleta != null) {
+                    numero = boleta.getNumero();
+                    serie = boleta.getSerie();
+                }
                 break;
             case 'F':
-                Factura factura = facturaRepository.findByReserva(reserva)
-                        .orElseThrow(() -> new RuntimeException("Factura not found for the reservation"));
-                numero = factura.getNumero();
-                serie = factura.getSerie();
+                Factura factura = facturaRepository.findByReserva(reserva).orElse(null);
+                if (factura != null) {
+                    numero = factura.getNumero();
+                    serie = factura.getSerie();
+                }
                 break;
             case 'T':
-                Ticket ticket = ticketRepository.findByReserva(reserva)
-                        .orElseThrow(() -> new RuntimeException("Ticket not found for the reservation"));
-                numero = ticket.getNumero();
-                serie = ticket.getSerie();
+                Ticket ticket = ticketRepository.findByReserva(reserva).orElse(null);
+                if (ticket != null) {
+                    numero = ticket.getNumero();
+                    serie = ticket.getSerie();
+                }
                 break;
             default:
                 throw new RuntimeException("Invalid comprobante type");
@@ -142,8 +135,11 @@ public class ReservaService implements IReservaService {
                         .campoId(detalle.getCampo().getId())
                         .campoNombre(detalle.getCampo().getNombre())
                         .precio(detalle.getCampo().getPrecio())
+                        .horarioId(detalle.getHorario().getId())
+                        .horaInicio(detalle.getHorario().getHoraInicio())
+                        .horaFinal(detalle.getHorario().getHoraFinal())
                         .build())
-                .toList();
+                .collect(Collectors.toList());
 
         Campo campo = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo();
         Compania compania = campo != null && campo.getUsuario() != null && campo.getUsuario().getSede() != null
@@ -151,7 +147,6 @@ public class ReservaService implements IReservaService {
                 : null;
 
         Imagen imagen = compania != null ? compania.getImagen() : null;
-        Horario horario = reserva.getHorario();
 
         return ReservaResponseDTO.builder()
                 .reservaId(reserva.getId())
@@ -181,10 +176,9 @@ public class ReservaService implements IReservaService {
                 .sedeNombre(campo != null && campo.getUsuario().getSede() != null
                         ? campo.getUsuario().getSede().getNombre() : null)
                 .detallesVenta(detalleVentaDTOs)
-                .horaInicio(horario != null ? horario.getHoraInicio() : null)
-                .horaFinal(horario != null ? horario.getHoraFinal() : null)
                 .build();
     }
+
 
     private String getComprobanteType(Character tipoComprobante) {
         return switch (tipoComprobante) {
@@ -199,7 +193,7 @@ public class ReservaService implements IReservaService {
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Reserva> reservas = reservaRepository.findByUsuario(usuario); // Ensure you have this method in your repository
+        List<Reserva> reservas = reservaRepository.findByUsuario(usuario);
 
         return reservas.stream().map(reserva -> {
             VentaDTO ventaDTO = new VentaDTO();
@@ -207,7 +201,7 @@ public class ReservaService implements IReservaService {
             ventaDTO.setFecha(reserva.getFecha());
             ventaDTO.setTotal(reserva.getTotal());
             ventaDTO.setTipoComprobante(reserva.getTipoComprobante().toString());
-            ventaDTO.setEstado(String.valueOf(reserva.getEstado())); // Assuming estado is of char type
+            ventaDTO.setEstado(String.valueOf(reserva.getEstado()));
 
             return ventaDTO;
         }).collect(Collectors.toList());
@@ -215,7 +209,7 @@ public class ReservaService implements IReservaService {
 
     @Override
     public int getTotalReservas() {
-        return (int) reservaRepository.count(); // Count total reservations in the repository
+        return (int) reservaRepository.count();
     }
 
 

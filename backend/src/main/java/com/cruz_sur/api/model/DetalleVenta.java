@@ -19,11 +19,8 @@ public class DetalleVenta {
     private Long id;
 
     private String usuarioCreacion;
-
     private LocalDateTime fechaCreacion;
-
     private String usuarioModificacion;
-
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", nullable = false)
@@ -40,4 +37,8 @@ public class DetalleVenta {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private User usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
 }
