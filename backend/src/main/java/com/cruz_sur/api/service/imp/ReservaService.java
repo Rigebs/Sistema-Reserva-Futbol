@@ -1,11 +1,10 @@
 package com.cruz_sur.api.service.imp;
 
-import com.cruz_sur.api.dto.ReservaDTO;
-import com.cruz_sur.api.dto.DetalleVentaDTO;
+import com.cruz_sur.api.dto.*;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.repository.*;
 import com.cruz_sur.api.service.IReservaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,39 +12,28 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class ReservaService implements IReservaService {
 
-    @Autowired
-    private ReservaRepository reservaRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private MetodoPagoRepository metodoPagoRepository;
-
-    @Autowired
-    private HorarioRepository horarioRepository;
-
-    @Autowired
-    private DetalleVentaService detalleVentaService;
-
-    @Autowired
-    private CampoRepository campoRepository;
-
-    @Autowired
-    private BoletaRepository boletaRepository;
-
-    @Autowired
-    private FacturaRepository facturaRepository;
-
-    @Autowired
-    private TicketRepository ticketRepository;
+    private final ReservaRepository reservaRepository;
+    private final UserRepository userRepository;
+    private final MetodoPagoRepository metodoPagoRepository;
+    private final HorarioRepository horarioRepository;
+    private final DetalleVentaService detalleVentaService;
+    private final ComprobanteService comprobanteService;
+    private final ReservaValidationService reservaValidationService;
+    private final ReservaCalculations reservaCalculations;
+    private final DetalleVentaRepository detalleVentaRepository;
+    private final CampoRepository campoRepository;
+    private final BoletaRepository boletaRepository;
+    private final FacturaRepository facturaRepository;
+    private final TicketRepository ticketRepository;
 
     @Transactional
-    public Reserva createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
+    public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -55,15 +43,15 @@ public class ReservaService implements IReservaService {
             throw new RuntimeException("No associated client for the authenticated user");
         }
 
-        validateTipoComprobante(cliente, reservaDTO.getTipoComprobante());
+        reservaValidationService.validateTipoComprobante(cliente, reservaDTO.getTipoComprobante());
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
         Horario horario = horarioRepository.findById(reservaDTO.getHorarioId())
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
 
-        BigDecimal subtotal = calculateSubtotal(detallesVenta);
-        BigDecimal totalDescuento = calculateDiscount(subtotal, reservaDTO.getDescuento());
-        BigDecimal igvAmount = calculateIgv(subtotal.subtract(totalDescuento), reservaDTO.getIgv());
+        BigDecimal subtotal = reservaCalculations.calculateSubtotal(detallesVenta);
+        BigDecimal totalDescuento = reservaCalculations.calculateDiscount(subtotal, reservaDTO.getDescuento());
+        BigDecimal igvAmount = reservaCalculations.calculateIgv(subtotal.subtract(totalDescuento), reservaDTO.getIgv());
         BigDecimal total = subtotal.subtract(totalDescuento).add(igvAmount);
 
         LocalDateTime now = LocalDateTime.now();
@@ -87,122 +75,148 @@ public class ReservaService implements IReservaService {
                 .build();
 
         reservaRepository.save(reserva);
-        createComprobante(reserva, authenticatedUsername, now);
+
+        // Get the first DetalleVenta to extract Campo
+        Campo campo = null;
+        if (!detallesVenta.isEmpty()) {
+            Long campoId = detallesVenta.get(0).getCampoId(); // Assuming campoId is accessible
+            campo = campoRepository.findById(campoId) // You might need to inject campoRepository
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+        }
+
+
+        // Now call createComprobante with Campo included
+        comprobanteService.createComprobante(reserva, usuario, now, campo); // Pass the Campo object
 
         detallesVenta.forEach(detalle -> detalleVentaService.createDetalleVenta(detalle, reserva));
-        return reserva;
+
+        return buildReservaResponse(reserva);
     }
 
-    private void validateTipoComprobante(Cliente cliente, Character tipoComprobante) {
-        if (tipoComprobante == null) {
-            throw new RuntimeException("Tipo de comprobante no especificado");
-        }
+    private ReservaResponseDTO buildReservaResponse(Reserva reserva) {
+        String cliente = reserva.getCliente().getPersona() != null
+                ? reserva.getCliente().getPersona().getNombreCompleto()
+                : reserva.getCliente().getEmpresa().getRazonSocial();
 
-        boolean isEmpresa = cliente.getEmpresa() != null;
-        boolean isPersona = cliente.getPersona() != null;
+        String direccionCliente = reserva.getCliente().getPersona() != null
+                ? reserva.getCliente().getPersona().getDireccion()
+                : reserva.getCliente().getEmpresa().getDireccion();
 
-        switch (tipoComprobante) {
-            case 'F':
-                if (!isEmpresa) {
-                    throw new RuntimeException("El tipo de comprobante 'F' solo es válido para empresas.");
-                }
-                break;
-            case 'B':
-                if (!isPersona) {
-                    throw new RuntimeException("El tipo de comprobante 'B' solo es válido para personas.");
-                }
-                break;
-            case 'T':
-                if (!isEmpresa && !isPersona) {
-                    throw new RuntimeException("El tipo de comprobante 'T' es válido solo si existe una empresa o una persona.");
-                }
-                break;
-            default:
-                throw new RuntimeException("Tipo de comprobante no válido: debe ser 'F', 'B' o 'T'.");
-        }
-    }
+        String identificacion = reserva.getCliente().getPersona() != null
+                ? reserva.getCliente().getPersona().getDni()
+                : reserva.getCliente().getEmpresa().getRuc();
 
-    private BigDecimal calculateSubtotal(List<DetalleVentaDTO> detallesVenta) {
-        return detallesVenta.stream()
-                .map(detalle -> {
-                    Campo campo = campoRepository.findById(detalle.getCampoId())
-                            .orElseThrow(() -> new RuntimeException("Campo not found for id: " + detalle.getCampoId()));
-                    return campo.getPrecio();
-                })
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+        String celular = reserva.getCliente().getPersona() != null
+                ? reserva.getCliente().getPersona().getCelular()
+                : reserva.getCliente().getEmpresa().getTelefono();
 
-    private BigDecimal calculateDiscount(BigDecimal subtotal, BigDecimal descuento) {
-        return (descuento != null && descuento.compareTo(BigDecimal.ZERO) > 0)
-                ? subtotal.multiply(descuento).divide(BigDecimal.valueOf(100))
-                : BigDecimal.ZERO;
-    }
-
-    private BigDecimal calculateIgv(BigDecimal subtotalAfterDiscount, BigDecimal igv) {
-        return (igv != null && igv.compareTo(BigDecimal.ZERO) > 0)
-                ? subtotalAfterDiscount.multiply(igv).divide(BigDecimal.valueOf(100))
-                : BigDecimal.ZERO;
-    }
-
-    private void createComprobante(Reserva reserva, String authenticatedUsername, LocalDateTime now) {
-        String serie;
-        String numero = generateNumeroComprobante(reserva.getTipoComprobante());
+        String numero = null;
+        String serie = null;
 
         switch (reserva.getTipoComprobante()) {
             case 'B':
-                serie = "B001";
-                Boleta boleta = Boleta.builder()
-                        .serie(serie)
-                        .numero(numero)
-                        .reserva(reserva)
-                        .estado('1')
-                        .usuarioCreacion(authenticatedUsername)
-                        .fechaCreacion(now)
-                        .usuarioModificacion(authenticatedUsername)
-                        .fechaModificacion(now)
-                        .build();
-                boletaRepository.save(boleta);
+                Boleta boleta = boletaRepository.findByReserva(reserva)
+                        .orElseThrow(() -> new RuntimeException("Boleta not found for the reservation"));
+                numero = boleta.getNumero();
+                serie = boleta.getSerie();
                 break;
             case 'F':
-                serie = "F001";
-                Factura factura = Factura.builder()
-                        .serie(serie)
-                        .numero(numero)
-                        .reserva(reserva)
-                        .estado('1')
-                        .usuarioCreacion(authenticatedUsername)
-                        .fechaCreacion(now)
-                        .usuarioModificacion(authenticatedUsername)
-                        .fechaModificacion(now)
-                        .build();
-                facturaRepository.save(factura);
+                Factura factura = facturaRepository.findByReserva(reserva)
+                        .orElseThrow(() -> new RuntimeException("Factura not found for the reservation"));
+                numero = factura.getNumero();
+                serie = factura.getSerie();
                 break;
             case 'T':
-                serie = "T001";
-                Ticket ticket = Ticket.builder()
-                        .serie(serie)
-                        .numero(numero)
-                        .reserva(reserva)
-                        .estado('1')
-                        .usuarioCreacion(authenticatedUsername)
-                        .fechaCreacion(now)
-                        .usuarioModificacion(authenticatedUsername)
-                        .fechaModificacion(now)
-                        .build();
-                ticketRepository.save(ticket);
+                Ticket ticket = ticketRepository.findByReserva(reserva)
+                        .orElseThrow(() -> new RuntimeException("Ticket not found for the reservation"));
+                numero = ticket.getNumero();
+                serie = ticket.getSerie();
                 break;
             default:
-                throw new IllegalArgumentException("Invalid tipoComprobante: " + reserva.getTipoComprobante());
+                throw new RuntimeException("Invalid comprobante type");
         }
+
+        List<DetalleVenta> detallesVenta = detalleVentaRepository.findByVenta(reserva);
+        List<DetalleVentaDTO> detalleVentaDTOs = detallesVenta.stream()
+                .map(detalle -> DetalleVentaDTO.builder()
+                        .campoId(detalle.getCampo().getId())
+                        .campoNombre(detalle.getCampo().getNombre())
+                        .precio(detalle.getCampo().getPrecio())
+                        .build())
+                .toList();
+
+        Campo campo = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo();
+        Compania compania = campo != null && campo.getUsuario() != null && campo.getUsuario().getSede() != null
+                ? campo.getUsuario().getSede().getSucursal().getCompania()
+                : null;
+
+        Imagen imagen = compania != null ? compania.getImagen() : null;
+        Horario horario = reserva.getHorario();
+
+        return ReservaResponseDTO.builder()
+                .reservaId(reserva.getId())
+                .cliente(cliente)
+                .direccionCliente(direccionCliente)
+                .identificacion(identificacion)
+                .celular(celular)
+                .comprobante(getComprobanteType(reserva.getTipoComprobante()))
+                .igv(reserva.getIgv())
+                .descuento(reserva.getDescuento())
+                .fecha(reserva.getFecha())
+                .subtotal(reserva.getSubtotal())
+                .total(reserva.getTotal())
+                .campo(campo != null ? campo.getNombre() : null)
+                .precio(campo != null ? campo.getPrecio() : null)
+                .numero(numero)
+                .serie(serie)
+                .razonSocial(compania != null ? compania.getEmpresa().getRazonSocial() : null)
+                .ruc(compania != null ? compania.getEmpresa().getRuc() : null)
+                .telefonoEmpresa(compania != null ? compania.getEmpresa().getTelefono() : null)
+                .direccionEmpresa(compania != null ? compania.getEmpresa().getDireccion() : null)
+                .concepto(compania != null ? compania.getConcepto() : null)
+                .imageUrl(imagen != null ? imagen.getImageUrl() : null)
+                .sucursalNombre(campo != null && campo.getUsuario().getSede() != null
+                        ? campo.getUsuario().getSede().getSucursal().getNombre() : null)
+                .paginaWeb(compania != null ? compania.getPagWeb() : null)
+                .sedeNombre(campo != null && campo.getUsuario().getSede() != null
+                        ? campo.getUsuario().getSede().getNombre() : null)
+                .detallesVenta(detalleVentaDTOs)
+                .horaInicio(horario != null ? horario.getHoraInicio() : null)
+                .horaFinal(horario != null ? horario.getHoraFinal() : null)
+                .build();
     }
 
-    private String generateNumeroComprobante(Character tipoComprobante) {
-        long count = switch (tipoComprobante) {
-            case 'B' -> boletaRepository.count();
-            case 'F' -> facturaRepository.count();
-            case 'T' -> ticketRepository.count();
-            default -> throw new IllegalArgumentException("Invalid tipoComprobante: " + tipoComprobante);
+    private String getComprobanteType(Character tipoComprobante) {
+        return switch (tipoComprobante) {
+            case 'B' -> "BOLETA";
+            case 'F' -> "FACTURA";
+            default -> "TICKET";
         };
-        return String.format("%06d", count + 1);
     }
+
+    public List<VentaDTO> getVentasByUsuario() {
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Reserva> reservas = reservaRepository.findByUsuario(usuario); // Ensure you have this method in your repository
+
+        return reservas.stream().map(reserva -> {
+            VentaDTO ventaDTO = new VentaDTO();
+            ventaDTO.setReservaId(reserva.getId());
+            ventaDTO.setFecha(reserva.getFecha());
+            ventaDTO.setTotal(reserva.getTotal());
+            ventaDTO.setTipoComprobante(reserva.getTipoComprobante().toString());
+            ventaDTO.setEstado(String.valueOf(reserva.getEstado())); // Assuming estado is of char type
+
+            return ventaDTO;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getTotalReservas() {
+        return (int) reservaRepository.count(); // Count total reservations in the repository
+    }
+
+
 }

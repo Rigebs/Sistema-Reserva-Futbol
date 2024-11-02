@@ -58,5 +58,9 @@ public class Persona {
     @ManyToOne
     @JoinColumn(name = "distrito_id")
     private Distrito distrito;
+    // En la clase Persona
+    public String getNombreCompleto() {
+        return nombre + " " + apePaterno + " " + apeMaterno;
+    }
 
 }

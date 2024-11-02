@@ -36,4 +36,8 @@ public class Boleta {
     @ManyToOne
     @JoinColumn(name = "reserva_id", nullable = false)
     private Reserva reserva;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private User usuario;
 }

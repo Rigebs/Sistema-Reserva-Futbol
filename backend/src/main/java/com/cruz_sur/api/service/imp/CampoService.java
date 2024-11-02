@@ -1,7 +1,9 @@
 package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.model.Campo;
+import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.CampoRepository;
+import com.cruz_sur.api.repository.UserRepository;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class CampoService implements ICampoService {
 
     private final CampoRepository campoRepository;
+    private final UserRepository userRepository; // Añade esto
 
     @Override
     public Campo save(Campo campo) {
@@ -23,6 +26,12 @@ public class CampoService implements ICampoService {
         campo.setUsuarioCreacion(authenticatedUsername);
         campo.setFechaCreacion(LocalDateTime.now());
         campo.setEstado('1');
+
+        // Obtiene el usuario autenticado y establece en el campo
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        campo.setUsuario(usuario);
+
         return campoRepository.save(campo);
     }
 

@@ -9,7 +9,6 @@ public class ReservaDTO {
     private LocalDateTime fecha;
     private BigDecimal descuento;
     private BigDecimal igv;
-    private BigDecimal total;
     private Character tipoComprobante;
     private Long metodoPagoId;
     private Long horarioId;
