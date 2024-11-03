@@ -42,5 +42,4 @@ public class ReservaResponseDTO {
     private String paginaWeb;
     private String sedeNombre;
     private List<DetalleVentaDTO> detallesVenta; // Existing field
-
 }

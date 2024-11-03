@@ -20,7 +20,7 @@ public class Ticket {
 
     private String serie;
 
-    private String numero;
+    private String numero; // Asegúrate de que sea String
 
     private String usuarioCreacion;
 

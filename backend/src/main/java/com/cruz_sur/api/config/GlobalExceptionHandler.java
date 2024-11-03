@@ -51,10 +51,10 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
-    // RuntimeException, manejo sin stack trace detallado
+    // Manejo específico de RuntimeException, sin stack trace detallado
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        logger.error("Runtime Exception: ", ex);
+        logger.warn("Runtime Exception: {}", ex.getMessage());
         String errorMessage = "Ocurrió un error al procesar la solicitud: " + ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
@@ -65,6 +65,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         logger.error("Data Integrity Violation Exception: ", ex);
         String errorMessage = "Violación de integridad de datos. Puede haber conflicto con datos existentes.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CampoAlreadyReservedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleCampoAlreadyReservedException(CampoAlreadyReservedException ex) {
+        logger.warn("Campo already reserved: {}", ex.getMessage());
+        String errorMessage = ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
     }
 
@@ -91,5 +99,12 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    // Custom exception for already reserved field
+    public static class CampoAlreadyReservedException extends RuntimeException {
+        public CampoAlreadyReservedException(Long campoId, Long horarioId) {
+            super("Campo with ID " + campoId + " is already reserved at horario ID " + horarioId);
+        }
     }
 }

@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long> {
     List<DetalleVenta> findByVenta(Reserva reserva);
+    boolean existsByCampoIdAndHorarioId(Long campoId, Long horarioId);
 
 }

@@ -31,4 +31,8 @@ public class Sede {
     @ManyToOne(optional = false)
     @JoinColumn(name = "sucursal_id", nullable = false)
     private Sucursal sucursal;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "atencion_id", nullable = false)
+    private Atencion atencion;
 }

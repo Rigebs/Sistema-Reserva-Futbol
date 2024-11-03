@@ -1,5 +1,7 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.config.GlobalExceptionHandler;
+import com.cruz_sur.api.controller.AvailabilityController;
 import com.cruz_sur.api.dto.*;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.repository.*;
@@ -30,6 +32,7 @@ public class ReservaService implements IReservaService {
     private final BoletaRepository boletaRepository;
     private final FacturaRepository facturaRepository;
     private final TicketRepository ticketRepository;
+    private final AvailabilityController availabilityController;
 
     @Transactional
     public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
@@ -71,17 +74,32 @@ public class ReservaService implements IReservaService {
 
         reservaRepository.save(reserva);
 
-        Campo campo = null;
-        if (!detallesVenta.isEmpty()) {
-            Long campoId = detallesVenta.get(0).getCampoId();
-            campo = campoRepository.findById(campoId)
+        boolean comprobanteCreated = false;
+
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Long horarioId = detalleDTO.getHorarioId();
+
+            if (detalleVentaRepository.existsByCampoIdAndHorarioId(campoId, horarioId)) {
+                throw new GlobalExceptionHandler.CampoAlreadyReservedException(campoId, horarioId);
+            }
+
+            Campo campo = campoRepository.findById(campoId)
                     .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+
+            detalleVentaService.createDetalleVenta(detalleDTO, reserva);
+
+            availabilityController.notifyCampoStatusChange(campo);
+
+            if (!comprobanteCreated) {
+                comprobanteService.createComprobante(reserva, usuario, now, campo);
+                comprobanteCreated = true;
+            }
         }
 
-        comprobanteService.createComprobante(reserva, usuario, now, campo);
-        detallesVenta.forEach(detalle -> detalleVentaService.createDetalleVenta(detalle, reserva));
         return buildReservaResponse(reserva);
     }
+
 
     private ReservaResponseDTO buildReservaResponse(Reserva reserva) {
         String cliente = reserva.getCliente().getPersona() != null

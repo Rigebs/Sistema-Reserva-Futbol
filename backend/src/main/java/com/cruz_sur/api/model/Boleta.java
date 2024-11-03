@@ -20,7 +20,8 @@ public class Boleta {
 
     private String serie;
 
-    private String numero;
+    @Getter
+    private String numero; // Asegúrate de que sea String
 
     private String usuarioCreacion;
 
