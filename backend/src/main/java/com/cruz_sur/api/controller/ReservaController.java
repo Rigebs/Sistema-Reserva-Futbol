@@ -23,6 +23,7 @@ public class ReservaController {
         ReservaResponseDTO reservaResponse = reservaService.createReserva(request.getReservaDTO(), request.getDetallesVenta());
         return ResponseEntity.ok(reservaResponse);
     }
+
     @GetMapping("/ventas")
     public List<VentaDTO> getVentas() {
         return reservaService.getVentasByUsuario();

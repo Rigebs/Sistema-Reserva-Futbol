@@ -1,13 +1,13 @@
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=ReservaDB;encrypt=false
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: sa
+    password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     database-platform: org.hibernate.dialect.SQLServerDialect
 

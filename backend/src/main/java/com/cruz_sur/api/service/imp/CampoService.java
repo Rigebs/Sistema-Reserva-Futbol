@@ -18,7 +18,7 @@ import java.util.Optional;
 public class CampoService implements ICampoService {
 
     private final CampoRepository campoRepository;
-    private final UserRepository userRepository; // Añade esto
+    private final UserRepository userRepository;
 
     @Override
     public Campo save(Campo campo) {
@@ -27,7 +27,6 @@ public class CampoService implements ICampoService {
         campo.setFechaCreacion(LocalDateTime.now());
         campo.setEstado('1');
 
-        // Obtiene el usuario autenticado y establece en el campo
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         campo.setUsuario(usuario);

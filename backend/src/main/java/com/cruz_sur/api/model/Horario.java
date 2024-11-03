@@ -3,6 +3,7 @@ package com.cruz_sur.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -19,9 +20,9 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalTime horaInicio;
+    private Time horaInicio;
 
-    private LocalTime horaFinal;
+    private Time horaFinal;
 
     private LocalDateTime fechaCreacion;
 
