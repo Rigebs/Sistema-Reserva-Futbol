@@ -3,6 +3,7 @@ package com.cruz_sur.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,7 +18,9 @@ public class DetalleVenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Time horaInicio;
 
+    private Time horaFinal;
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
@@ -38,7 +41,4 @@ public class DetalleVenta {
     @JoinColumn(name = "usuario_id", nullable = false)
     private User usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "horario_id", nullable = false)
-    private Horario horario;
 }

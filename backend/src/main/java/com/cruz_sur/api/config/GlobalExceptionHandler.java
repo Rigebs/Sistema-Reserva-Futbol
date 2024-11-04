@@ -1,5 +1,6 @@
 package com.cruz_sur.api.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,15 @@ public class GlobalExceptionHandler {
         logger.error("Ocurrió un error: ", ex);
         model.addAttribute("message", "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.");
         return new ModelAndView("error");
+    }
+
+    // Manejo específico de ExpiredJwtException
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // Ajusta el código de estado según sea necesario
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+        logger.warn("JWT Expired Exception: {}", ex.getMessage());
+        String errorMessage = "El token ha expirado. Por favor, inicie sesión nuevamente.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
     }
 
     // NullPointerException específico

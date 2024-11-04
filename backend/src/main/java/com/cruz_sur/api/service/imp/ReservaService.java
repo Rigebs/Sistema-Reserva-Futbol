@@ -5,13 +5,19 @@ import com.cruz_sur.api.controller.AvailabilityController;
 import com.cruz_sur.api.dto.*;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.repository.*;
+import com.cruz_sur.api.responses.TotalReservasResponse;
 import com.cruz_sur.api.service.IReservaService;
+
 import lombok.AllArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +35,12 @@ public class ReservaService implements IReservaService {
     private final ReservaCalculations reservaCalculations;
     private final DetalleVentaRepository detalleVentaRepository;
     private final CampoRepository campoRepository;
-    private final BoletaRepository boletaRepository;
-    private final FacturaRepository facturaRepository;
-    private final TicketRepository ticketRepository;
     private final AvailabilityController availabilityController;
+    private final ReservaResponseBuilder reservaResponseBuilder;
+    private final JdbcTemplate jdbcTemplate;
 
     @Transactional
+    @Override
     public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
@@ -72,23 +78,31 @@ public class ReservaService implements IReservaService {
                 .fechaModificacion(now)
                 .build();
 
-        reservaRepository.save(reserva);
-
         boolean comprobanteCreated = false;
+
+        // Primero, verifica la disponibilidad de todos los campos en detallesVenta
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Campo campo = campoRepository.findById(campoId)
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+
+            boolean available = availabilityController.checkCampoAvailability(
+                    campoId, reservaDTO.getFecha(), detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
+
+            if (!available) {
+                throw new RuntimeException("Campo not available for the specified time range");
+            }
+        }
+
+        // Si todos los campos están disponibles, guarda la reserva y detalles
+        reservaRepository.save(reserva);
 
         for (DetalleVentaDTO detalleDTO : detallesVenta) {
             Long campoId = detalleDTO.getCampoId();
-            Long horarioId = detalleDTO.getHorarioId();
-
-            if (detalleVentaRepository.existsByCampoIdAndHorarioId(campoId, horarioId)) {
-                throw new GlobalExceptionHandler.CampoAlreadyReservedException(campoId, horarioId);
-            }
-
             Campo campo = campoRepository.findById(campoId)
                     .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
 
             detalleVentaService.createDetalleVenta(detalleDTO, reserva);
-
             availabilityController.notifyCampoStatusChange(campo);
 
             if (!comprobanteCreated) {
@@ -97,115 +111,11 @@ public class ReservaService implements IReservaService {
             }
         }
 
-        return buildReservaResponse(reserva);
+        return reservaResponseBuilder.build(reserva);
     }
 
 
-    private ReservaResponseDTO buildReservaResponse(Reserva reserva) {
-        String cliente = reserva.getCliente().getPersona() != null
-                ? reserva.getCliente().getPersona().getNombreCompleto()
-                : reserva.getCliente().getEmpresa().getRazonSocial();
-
-        String direccionCliente = reserva.getCliente().getPersona() != null
-                ? reserva.getCliente().getPersona().getDireccion()
-                : reserva.getCliente().getEmpresa().getDireccion();
-
-        String identificacion = reserva.getCliente().getPersona() != null
-                ? reserva.getCliente().getPersona().getDni()
-                : reserva.getCliente().getEmpresa().getRuc();
-
-        String celular = reserva.getCliente().getPersona() != null
-                ? reserva.getCliente().getPersona().getCelular()
-                : reserva.getCliente().getEmpresa().getTelefono();
-
-        String numero = null;
-        String serie = null;
-
-        switch (reserva.getTipoComprobante()) {
-            case 'B':
-                Boleta boleta = boletaRepository.findByReserva(reserva).orElse(null);
-                if (boleta != null) {
-                    numero = boleta.getNumero();
-                    serie = boleta.getSerie();
-                }
-                break;
-            case 'F':
-                Factura factura = facturaRepository.findByReserva(reserva).orElse(null);
-                if (factura != null) {
-                    numero = factura.getNumero();
-                    serie = factura.getSerie();
-                }
-                break;
-            case 'T':
-                Ticket ticket = ticketRepository.findByReserva(reserva).orElse(null);
-                if (ticket != null) {
-                    numero = ticket.getNumero();
-                    serie = ticket.getSerie();
-                }
-                break;
-            default:
-                throw new RuntimeException("Invalid comprobante type");
-        }
-
-        List<DetalleVenta> detallesVenta = detalleVentaRepository.findByVenta(reserva);
-        List<DetalleVentaDTO> detalleVentaDTOs = detallesVenta.stream()
-                .map(detalle -> DetalleVentaDTO.builder()
-                        .campoId(detalle.getCampo().getId())
-                        .campoNombre(detalle.getCampo().getNombre())
-                        .precio(detalle.getCampo().getPrecio())
-                        .horarioId(detalle.getHorario().getId())
-                        .horaInicio(detalle.getHorario().getHoraInicio())
-                        .horaFinal(detalle.getHorario().getHoraFinal())
-                        .build())
-                .collect(Collectors.toList());
-
-        Campo campo = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo();
-        Compania compania = campo != null && campo.getUsuario() != null && campo.getUsuario().getSede() != null
-                ? campo.getUsuario().getSede().getSucursal().getCompania()
-                : null;
-
-        Imagen imagen = compania != null ? compania.getImagen() : null;
-
-        return ReservaResponseDTO.builder()
-                .reservaId(reserva.getId())
-                .cliente(cliente)
-                .direccionCliente(direccionCliente)
-                .identificacion(identificacion)
-                .celular(celular)
-                .comprobante(getComprobanteType(reserva.getTipoComprobante()))
-                .igv(reserva.getIgv())
-                .descuento(reserva.getDescuento())
-                .fecha(reserva.getFecha())
-                .subtotal(reserva.getSubtotal())
-                .total(reserva.getTotal())
-                .campo(campo != null ? campo.getNombre() : null)
-                .precio(campo != null ? campo.getPrecio() : null)
-                .numero(numero)
-                .serie(serie)
-                .razonSocial(compania != null ? compania.getEmpresa().getRazonSocial() : null)
-                .ruc(compania != null ? compania.getEmpresa().getRuc() : null)
-                .telefonoEmpresa(compania != null ? compania.getEmpresa().getTelefono() : null)
-                .direccionEmpresa(compania != null ? compania.getEmpresa().getDireccion() : null)
-                .concepto(compania != null ? compania.getConcepto() : null)
-                .imageUrl(imagen != null ? imagen.getImageUrl() : null)
-                .sucursalNombre(campo != null && campo.getUsuario().getSede() != null
-                        ? campo.getUsuario().getSede().getSucursal().getNombre() : null)
-                .paginaWeb(compania != null ? compania.getPagWeb() : null)
-                .sedeNombre(campo != null && campo.getUsuario().getSede() != null
-                        ? campo.getUsuario().getSede().getNombre() : null)
-                .detallesVenta(detalleVentaDTOs)
-                .build();
-    }
-
-
-    private String getComprobanteType(Character tipoComprobante) {
-        return switch (tipoComprobante) {
-            case 'B' -> "BOLETA";
-            case 'F' -> "FACTURA";
-            default -> "TICKET";
-        };
-    }
-
+    @Override
     public List<VentaDTO> getVentasByUsuario() {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
@@ -226,8 +136,46 @@ public class ReservaService implements IReservaService {
     }
 
     @Override
-    public int getTotalReservas() {
-        return (int) reservaRepository.count();
+    public TotalReservasResponse getTotalReservas() {
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Long total = reservaRepository.countByUsuario(usuario);
+        return new TotalReservasResponse(total);
+    }
+
+    @Override
+    public TotalReservasResponse getTotalReservasSede() {
+        Long userId = userRepository.findByUsername(
+                        SecurityContextHolder.getContext().getAuthentication().getName())
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String query = "EXEC ALL_RESERVAS @UserId = ?, @ACTION = 'C'";
+        Long total = jdbcTemplate.queryForObject(query, new Object[]{userId}, Long.class);
+
+        return new TotalReservasResponse(total);
+    }
+
+
+    @Override
+    public List<ReservaDisplayDTO> getReservasForLoggedUser() {
+        Long userId = userRepository.findByUsername(
+                        SecurityContextHolder.getContext().getAuthentication().getName())
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String query = "EXEC ALL_RESERVAS ?, @ACTION = 'L'";
+
+        return jdbcTemplate.query(query, new Object[]{userId}, (rs, rowNum) -> new ReservaDisplayDTO(
+                rs.getLong(1),
+                rs.getString(2),
+                rs.getDate(3).toLocalDate(),
+                rs.getBigDecimal(4),
+                rs.getBigDecimal(5),
+                rs.getString(6)
+        ));
     }
 
 

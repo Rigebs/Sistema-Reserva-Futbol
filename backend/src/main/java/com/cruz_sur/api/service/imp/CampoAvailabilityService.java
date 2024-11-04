@@ -1,40 +1,32 @@
 package com.cruz_sur.api.service.imp;
 
-import com.cruz_sur.api.model.Campo;
-import com.cruz_sur.api.repository.CampoRepository;
+import com.cruz_sur.api.model.DetalleVenta;
+import com.cruz_sur.api.repository.DetalleVentaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CampoAvailabilityService {
+    private final DetalleVentaRepository detalleVentaRepository;
 
-    private final CampoRepository campoRepository;
+    public boolean isCampoAvailable(Long campoId, LocalDate fecha, Time horaInicio, Time horaFin) {
+        if (horaFin.toLocalTime().equals(LocalTime.MIDNIGHT)) {
+            return false;
+        }
 
-    public List<Campo> getAvailableCampos() {
-        // Fetch available fields (custom logic based on your model)
-        return campoRepository.findAll().stream()
-                .filter(this::isCampoAvailable)
-                .collect(Collectors.toList());
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha);
+        for (DetalleVenta reserva : reservas) {
+            if (reserva.getHoraInicio().before(horaFin) && reserva.getHoraFinal().after(horaInicio)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    private boolean isCampoAvailable(Campo campo) {
-        // Define your availability logic, e.g., campo.getEstado() == '1' for available
-        return campo.getEstado() == '1';
-    }
-
-    public void updateCampoStatus(Long campoId, boolean enUso) {
-        Campo campo = campoRepository.findById(campoId)
-                .orElseThrow(() -> new RuntimeException("Campo not found"));
-        campo.setEnUso(enUso);
-        campoRepository.save(campo);
-    }
-
-    public Campo getCampoById(Long campoId) {
-        return campoRepository.findById(campoId)
-                .orElseThrow(() -> new RuntimeException("Campo not found"));
-    }
 }

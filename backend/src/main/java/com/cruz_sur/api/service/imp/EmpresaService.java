@@ -36,7 +36,6 @@ public class EmpresaService implements IEmpresaService {
         empresa.setUsuarioCreacion(authenticatedUsername);
         empresa.setFechaCreacion(LocalDateTime.now());
         empresa.setEstado('1');
-
         Empresa newEmpresa = empresaRepository.save(empresa);
 
         Cliente cliente = new Cliente();
@@ -53,7 +52,6 @@ public class EmpresaService implements IEmpresaService {
     public Empresa update(Long id, Empresa empresa) {
         Empresa existingEmpresa = empresaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
-
         existingEmpresa.setRuc(empresa.getRuc());
         existingEmpresa.setRazonSocial(empresa.getRazonSocial());
         existingEmpresa.setTelefono(empresa.getTelefono());
@@ -68,11 +66,17 @@ public class EmpresaService implements IEmpresaService {
     }
 
     @Override
+    @Transactional
     public Empresa changeStatus(Long id, Integer status) {
         Empresa empresa = empresaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empresa no encontrada"));
 
         empresa.setEstado(status == 1 ? '1' : '0');
+
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        empresa.setUsuarioModificacion(authenticatedUsername);
+        empresa.setFechaModificacion(LocalDateTime.now());
+
         return empresaRepository.save(empresa);
     }
 }

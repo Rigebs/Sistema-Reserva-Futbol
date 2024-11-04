@@ -2,6 +2,7 @@ package com.cruz_sur.api.jwt;
 
 import com.cruz_sur.api.service.imp.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,12 +33,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
-            String userEmail = jwtService.extractUsername(jwt);
-            System.out.println("Email extraído del JWT: " + userEmail);
+            String userEmail;
 
-            // Imprimir claims del token
-            Claims claims = jwtService.extractAllClaims(jwt);
-            System.out.println("Claims del JWT: " + claims);
+            try {
+                userEmail = jwtService.extractUsername(jwt);
+                Claims claims = jwtService.extractAllClaims(jwt);
+                System.out.println("Claims del JWT: " + claims);
+            } catch (ExpiredJwtException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+                return;
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error al procesar el token");
+                return;
+            }
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);

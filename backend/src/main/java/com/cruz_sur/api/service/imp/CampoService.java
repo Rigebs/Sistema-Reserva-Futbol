@@ -23,13 +23,21 @@ public class CampoService implements ICampoService {
     @Override
     public Campo save(Campo campo) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Obtiene el usuario autenticado
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Verifica que el usuario tenga un sedeId
+        if (usuario.getSede() == null || usuario.getSede().getId() == null) {
+            throw new RuntimeException("El usuario debe estar asociado a una sede para crear un campo.");
+        }
+
+        // Establece la información del campo
         campo.setUsuarioCreacion(authenticatedUsername);
         campo.setFechaCreacion(LocalDateTime.now());
         campo.setEstado('1');
-
-        User usuario = userRepository.findByUsername(authenticatedUsername)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        campo.setUsuario(usuario);
+        campo.setUsuario(usuario); // Asignar el usuario al campo
 
         return campoRepository.save(campo);
     }
@@ -38,12 +46,12 @@ public class CampoService implements ICampoService {
     public Campo update(Long id, Campo campo) {
         Campo campoExistente = campoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Campo no encontrado"));
+
         campoExistente.setNombre(campo.getNombre());
         campoExistente.setPrecio(campo.getPrecio());
         campoExistente.setDescripcion(campo.getDescripcion());
 
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
         campoExistente.setUsuarioModificacion(authenticatedUsername);
         campoExistente.setFechaModificacion(LocalDateTime.now());
 

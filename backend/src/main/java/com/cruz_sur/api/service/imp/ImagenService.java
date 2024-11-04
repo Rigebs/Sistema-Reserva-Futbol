@@ -5,10 +5,12 @@ import com.cruz_sur.api.repository.ImagenRepository;
 import com.cruz_sur.api.service.ICloudinaryService;
 import com.cruz_sur.api.service.IImagenService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,10 @@ import java.util.Map;
 public class ImagenService implements IImagenService {
     private final ICloudinaryService iCloudinaryService;
     private final ImagenRepository imageRepository;
+
+    private String getAuthenticatedUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 
     @Override
     public Imagen uploadImage(MultipartFile file) throws IOException {
@@ -35,6 +41,11 @@ public class ImagenService implements IImagenService {
 
         Imagen image = new Imagen(name, imageUrl, imageId);
         image.setEstado('1');
+
+        String authenticatedUsername = getAuthenticatedUsername();
+        image.setUsuarioCreacion(authenticatedUsername); // Establecer usuario de creación
+        image.setFechaCreacion(LocalDateTime.now()); // Establecer fecha de creación
+
         return imageRepository.save(image);
     }
 
@@ -80,10 +91,12 @@ public class ImagenService implements IImagenService {
         existingImage.setImageId(newImageId);
         existingImage.setName(file.getOriginalFilename());
 
+        String authenticatedUsername = getAuthenticatedUsername();
+        existingImage.setUsuarioModificacion(authenticatedUsername); // Establecer usuario de modificación
+        existingImage.setFechaModificacion(LocalDateTime.now()); // Establecer fecha de modificación
+
         return imageRepository.save(existingImage);
     }
-
-
 
     @Override
     public Imagen changeStatus(Long id, Integer status) {
@@ -93,6 +106,4 @@ public class ImagenService implements IImagenService {
         imagen.setEstado(status == 1 ? '1' : '0');
         return imageRepository.save(imagen);
     }
-
-
 }
