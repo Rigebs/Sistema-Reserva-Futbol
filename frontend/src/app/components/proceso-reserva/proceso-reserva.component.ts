@@ -8,16 +8,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
-import { DatePipe } from '@angular/common'; // Para formatear las fechas
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-
-interface Hour {
-  value: number;
-  display: number;
-  transform: string;
-}
 
 @Component({
   selector: 'app-proceso-reserva',
@@ -40,15 +33,14 @@ interface Hour {
   templateUrl: './proceso-reserva.component.html',
   styleUrls: ['./proceso-reserva.component.css']
 })
-export class ProcesoReservaComponent {
+export class ProcesoReservaComponent implements OnInit {
   isLinear = true;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   availableHours: number[] = [];
   filteredEndHours: number[] = [];
   minDate: Date | undefined;
-  
-  // Rango de atención disponible
+
   atenciónStartHour = 8; // 8 AM
   atenciónEndHour = 22; // 10 PM
   unavailableRanges: { start: number, end: number }[] = [
@@ -56,10 +48,9 @@ export class ProcesoReservaComponent {
     { start: 18, end: 19 }  // Ejemplo: Bloqueando de 18 a 19
   ];
   
-  // Aquí está la propiedad que debe existir
   unavailableHours: number[] = [];
 
-  @Output() reservaFinalizada = new EventEmitter<{ nombre: string, fecha: Date, horaInicio: string, horaFin: string }>();
+  @Output() reservaFinalizada = new EventEmitter<{ id: number, nombre: string, fecha: Date, horaInicio: string, horaFin: string }>();
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -82,15 +73,11 @@ export class ProcesoReservaComponent {
 
   ngOnInit() {
     this.minDate = new Date();
-    // Inicializar las horas dentro del rango de atención
-    this.availableHours = Array.from({ length: this.atenciónEndHour - this.atenciónStartHour }, (_, i) => this.atenciónStartHour + i);
-
-    // Filtrar las horas disponibles excluyendo los rangos bloqueados
+    this.availableHours = Array.from({ length: this.atenciónEndHour - this.atenciónStartHour + 1 }, (_, i) => this.atenciónStartHour + i);
     this.unavailableHours = this.getUnavailableHours();
     this.availableHours = this.availableHours.filter(hour => !this.unavailableHours.includes(hour));
   }
 
-  // Obtener las horas no disponibles basadas en los rangos
   getUnavailableHours(): number[] {
     const hours: number[] = [];
     this.unavailableRanges.forEach(range => {
@@ -101,37 +88,38 @@ export class ProcesoReservaComponent {
     return hours;
   }
 
-  // Manejar la selección de la hora de inicio
   onHourSelected(event: MatSelectChange, isStartHour: boolean) {
     const selectedHour = event.value;
-    
-    if (isStartHour) {
-      // Establecer la hora de inicio
-      this.secondFormGroup.patchValue({ horaInicio: selectedHour });
 
-      // Filtrar las horas de fin, deben ser mayores que la hora de inicio seleccionada
+    if (isStartHour) {
+      this.secondFormGroup.patchValue({ horaInicio: selectedHour });
       this.filteredEndHours = this.availableHours.filter(hour => hour > selectedHour);
-      
-      // Limpiar la selección de hora de fin
       this.secondFormGroup.patchValue({ horaFin: '' });
     } else {
-      // Establecer la hora de fin
       this.secondFormGroup.patchValue({ horaFin: selectedHour });
     }
   }
 
   completeReserva() {
+    const horaInicioString = `${this.secondFormGroup.value.horaInicio}:00`;
+    const horaFinString = `${this.secondFormGroup.value.horaFin}:00`;
+
     const reservaData = {
+      id: this.data.id, // Asegúrate de pasar el ID del campo
       nombre: this.data.nombreCampo,
       fecha: this.firstFormGroup.value.fechaReserva,
-      horaInicio: this.secondFormGroup.value.horaInicio,
-      horaFin: this.secondFormGroup.value.horaFin,
+      horaInicio: horaInicioString,
+      horaFin: horaFinString,
+      precio: this.data.precio
     };
 
-    // Emitir el evento con los detalles de la reserva
     this.reservaFinalizada.emit(reservaData);
-
-    // Cerrar el diálogo
     this.dialogRef.close();
   }
+
+  formatHour(hour: number): string {
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:00 ${suffix}`;
+  }  
 }

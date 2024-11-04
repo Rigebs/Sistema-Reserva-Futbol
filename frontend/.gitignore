@@ -44,3 +44,5 @@ src/environments/*.ts
 
 # Angular cache
 .angular/cache/
+
+.angular/

@@ -1,1 +1,61 @@
-<p>table works!</p>
+<div class="example-container">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <!-- Generación dinámica de columnas -->
+    <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+      <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+      <td mat-cell *matCellDef="let element">
+        <!-- Verifica si es una columna de acción -->
+        <ng-container *ngIf="column.isAction; else showTag">
+          <div class="action">
+            <ng-container *ngFor="let action of column.actions">
+              <!-- Verifica si la acción es "toggleState" para cambiar dinámicamente el icono -->
+              <button
+                mat-icon-button
+                *ngIf="action.action === 'toggleState'"
+                (click)="onActionClick(action.action, element)"
+              >
+                <mat-icon
+                  [color]="element.estado ? 'warn' : 'primary'"
+                  [ngClass]="{ check: !element.estado }"
+                >
+                  {{ element.estado ? "block" : "check_circle" }}
+                </mat-icon>
+              </button>
+
+              <!-- Otros botones de acción que no cambian -->
+              <button
+                mat-icon-button
+                *ngIf="action.action !== 'toggleState'"
+                (click)="onActionClick(action.action, element)"
+              >
+                <mat-icon [color]="action.color">{{ action.icon }}</mat-icon>
+              </button>
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <!-- Verifica si es una columna de tipo "tag" -->
+        <ng-template #showTag>
+          <ng-container *ngIf="column.isTag; else showData">
+            <div
+              [ngClass]="{
+                'tag-enabled': element[column.key] === true,
+                'tag-disabled': element[column.key] === false
+              }"
+            >
+              {{ element[column.key] ? "Habilitado" : "Inhabilitado" }}
+            </div>
+          </ng-container>
+        </ng-template>
+
+        <!-- Mostrar el contenido normal si no es columna de acción o tag -->
+        <ng-template #showData>
+          {{ element[column.key] }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnKeys"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnKeys"></tr>
+  </table>
+</div>

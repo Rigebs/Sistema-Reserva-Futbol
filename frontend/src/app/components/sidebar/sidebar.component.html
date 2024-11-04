@@ -1,1 +1,18 @@
-<p>sidebar works!</p>
+<div class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <button mat-icon-button (click)="toggleCollapse()">
+      <mat-icon>{{ isCollapsed ? "menu" : "menu_open" }}</mat-icon>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li *ngFor="let item of menuItems">
+        <a [routerLink]="item.route">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span *ngIf="!isCollapsed">{{ item.title }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

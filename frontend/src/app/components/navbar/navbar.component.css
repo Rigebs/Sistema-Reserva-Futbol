@@ -7,18 +7,19 @@ body {
 }
 
 .navbar {
-  background-color: #c44f4f; /* Color de fondo del navbar */
+  background: linear-gradient(135deg, #4a90e2, #213759); /* Degradado suave */
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  transition: background-color 0.3s; /* Transición suave */
+  transition: background-color 0.3s, box-shadow 0.3s; /* Transición suave */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
 .navbar-container {
-  max-width: 1200px; /* Ancho máximo para el contenido */
-  margin: 0 auto; /* Centrar el contenido */
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 15px;
   display: flex;
   justify-content: space-between;
@@ -28,6 +29,7 @@ body {
 .logo {
   color: white;
   font-size: 24px;
+  font-weight: bold; /* Negrita para mayor impacto */
 }
 
 .nav-links {
@@ -44,18 +46,19 @@ body {
 .nav-links a {
   color: white;
   text-decoration: none;
-  padding: 8px 15px; /* Aumentar el espacio alrededor de los enlaces */
-  border-radius: 5px; /* Bordes redondeados */
-  transition: background 0.3s; /* Transición suave para el hover */
+  padding: 10px 20px; /* Aumentar el espacio */
+  border-radius: 5px;
+  transition: background 0.3s, transform 0.2s; /* Transición suave para el hover */
 }
 
 .nav-links a:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05); /* Efecto de zoom al hover */
 }
 
 /* Estilos para la hamburguesa */
 .menu-icon {
-  display: none; /* Ocultar en pantallas grandes */
+  display: none;
   flex-direction: column;
   cursor: pointer;
 }
@@ -77,24 +80,24 @@ body {
     flex-direction: column;
     width: 100%;
     display: none; /* Ocultar el menú en dispositivos móviles */
-    opacity: 0; /* Hacerlo transparente al inicio */
-    transition: opacity 0.3s ease; /* Transición suave de aparición */
-    z-index: 999; /* Asegurarse que esté por encima de otros elementos */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 999;
   }
 
   .nav-links.active {
     display: flex; /* Mostrar menú cuando está activo */
     align-items: center;
     padding: 10px;
-    opacity: 1; /* Hacerlo visible */
+    opacity: 1;
   }
 
   .nav-links li {
-    margin: 15px 0; /* Espaciado vertical entre elementos */
+    margin: 15px 0;
   }
 
   .menu-icon {
-    display: flex; /* Mostrar el ícono de hamburguesa en dispositivos móviles */
+    display: flex; /* Mostrar ícono de hamburguesa en dispositivos móviles */
   }
 
   .navbar-container {

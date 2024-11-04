@@ -28,9 +28,9 @@ import { MatGridListModule } from '@angular/material/grid-list';
 })
 export class HomeComponent {
   images = [
-    'campo1.jpeg',
+    'campo3.jpg',
     'campo2.jpeg',
-    'campo3.jpg'
+    'campo4.jpg'
   ];
 
   selectedSlots: { [key: string]: string[] } = {};
@@ -51,28 +51,28 @@ export class HomeComponent {
   campos = [
     {
       nombre: 'Campo El Estadio',
-      imagen: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+      imagen: 'campo-1.jpeg',
       descripcion: 'Ideal para torneos locales con grandes espacios.',
       precio: 60,
       estado: 'Disponible',
     },
     {
       nombre: 'Campo El Estadio',
-      imagen: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+      imagen: 'campo-2.jpeg',
       descripcion: 'Ideal para torneos locales con grandes espacios.',
       precio: 60,
       estado: 'Disponible',
     },
     {
       nombre: 'Campo El Estadio',
-      imagen: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+      imagen: 'campo-3.jpeg',
       descripcion: 'Ideal para torneos locales con grandes espacios.',
       precio: 60,
       estado: 'Disponible',
     },
     {
       nombre: 'Campo El Estadio',
-      imagen: 'https://material.angular.io/assets/img/examples/shiba2.jpg',
+      imagen: 'campo-4.jpeg',
       descripcion: 'Ideal para torneos locales con grandes espacios.',
       precio: 60,
       estado: 'Disponible',

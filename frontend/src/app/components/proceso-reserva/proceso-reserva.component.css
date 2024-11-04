@@ -83,3 +83,22 @@ img {
   }
 }
 
+/* Contenedor flex para las horas */
+.hours-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Espacio entre los dos selectores */
+}
+
+/* Los mat-form-field deben tomar el mismo ancho para que se vean bien */
+.hours-container mat-form-field {
+  flex: 1; /* Hace que ambos selectores ocupen el mismo espacio */
+}
+
+/* En pantallas pequeñas (menos de 768px de ancho), apilar los selectores */
+@media (max-width: 768px) {
+  .hours-container {
+    flex-direction: column; /* Cambia el flex a columna para apilar los selectores */
+    gap: 10px; /* Reduce el espacio entre los selectores cuando están apilados */
+  }
+}

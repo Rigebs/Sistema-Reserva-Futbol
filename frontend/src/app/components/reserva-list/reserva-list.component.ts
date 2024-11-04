@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,14 +10,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { ProcesoReservaComponent } from '../proceso-reserva/proceso-reserva.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-reserva-list',
   standalone: true,
-  imports: [MatCheckboxModule, NgFor, NgIf, 
+  imports: [MatCheckboxModule,
     MatTableModule,
     MatIcon,
     MatInputModule,
+    MatTooltipModule,
+    CommonModule,
     MatChipsModule,
     FormsModule, MatButtonModule, NgClass],
   templateUrl: './reserva-list.component.html',
@@ -26,51 +29,40 @@ import { ProcesoReservaComponent } from '../proceso-reserva/proceso-reserva.comp
 export class ReservaListComponent {
   @Input() reservas: any[] = [];
   @Output() reservaFinalizada = new EventEmitter<any>();
-  displayedColumns: string[] = ['nombreCampo', 'descripcion', 'seleccionar'];
+  displayedColumns: string[] = ['nombreCampo', 'descripcion', 'precio', 'seleccionar'];
   selection = new SelectionModel<any>(true, []);
-  selectedReserva: any; // Para almacenar la reserva seleccionada
+  selectedReserva: any;
 
   constructor(public dialog: MatDialog) {}
 
   abrirDialogo(reserva: any): void {
+    if (reserva.finalizada) {
+      return;
+    }
+
     const dialogRef = this.dialog.open(ProcesoReservaComponent, {
       data: reserva,
     });
 
-    dialogRef.componentInstance.reservaFinalizada.subscribe((reservaCompletada: any) => {
-      this.reservaFinalizada.emit(reservaCompletada);
-      this.cambiarColorBoton(reserva);
-    });
+    dialogRef.componentInstance.reservaFinalizada.subscribe(
+      (reservaCompletada: any) => {
+        this.reservaFinalizada.emit(reservaCompletada);
+        this.cambiarColorBoton(reserva);
+      }
+    );
   }
 
   cambiarColorBoton(reserva: any) {
-    reserva.finalizada = true; // Marca la reserva como finalizada
+    reserva.finalizada = true;
   }
 
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.reservas.length;
-    return numSelected === numRows;
+  hola(reserva: any) {
+    // Comparar 'reserva.nombre' con 'r.nombreCampo'
+    const reservaEncontrada = this.reservas.find(r => r.nombreCampo === reserva.nombre);
+    reservaEncontrada.finalizada = false;
   }
-
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-    } else {
-      this.reservas.forEach((row) => this.selection.select(row));
-    }
-  }
-
-  checkboxLabel(row?: any): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row`;
-  }
-
-  hayReservasSeleccionadas() {
-    return this.selection.selected.length > 0;
-  }
+  
+  
 
   toggleRotation(reserva: any) {
     reserva.rotating = !reserva.rotating;

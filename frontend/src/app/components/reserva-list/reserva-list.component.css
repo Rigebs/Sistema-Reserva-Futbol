@@ -80,15 +80,29 @@
 */
 
 .green-button {
-  background-color: #ffffff; /* Color verde */
+  background-color: #ffffff; /* Color de fondo inicial */
   color: rgb(0, 0, 0);
-  border: 1px solid #0d4e83; /* Color del icono o texto en blanco */
+  border: 1px solid #0d4e83;
 }
 
 .green-button:hover {
   background-color: #0d4e83;
-  color: white; /* Tono más oscuro al hacer hover */
+  color: white; /* Cambia el color al hacer hover */
 }
+
+/* Estilo para el botón cuando la reserva está finalizada */
+.green-button.finalizada {
+  background-color: #d4edda; /* Fondo verde suave */
+  color: #155724; /* Texto verde oscuro */
+  border-color: #155724; /* Mantén el borde verde */
+}
+
+/* No cambiar el estilo al hacer hover si está finalizada */
+.green-button.finalizada:hover {
+  background-color: #d4edda; /* Mantiene el mismo color */
+  color: #155724; /* Mantiene el color del texto */
+}
+
 
 /* Animación para rotar el ícono */
 .rotate-icon mat-icon {
@@ -108,4 +122,38 @@
 .finalizada {
   background-color: green; /* O el color que desees para el fondo */
   color: white; /* Cambia el color del texto si es necesario */
+}
+
+/* Centrar el contenido en la columna de selección */
+.mat-column-seleccionar {
+  text-align: center; /* Centra la palabra "Seleccionar" */
+}
+
+
+
+/* Elimina la animación del hover si está en estado finalizada */
+.green-button.finalizada:hover {
+  background-color: #d4edda; /* Mantiene el mismo color */
+  color: #155724; /* Mantiene el color del texto */
+}
+
+/* Centrar el texto "Seleccionar" en el encabezado */
+th.mat-column-seleccionar {
+  text-align: center;
+}
+
+/* Centrar el contenido en el encabezado de la columna */
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.precio {
+  background-color: #1fa03e;
+  color: white;
+  padding: 6px;
+  border-radius: 8px;
+  text-align: center;
 }
