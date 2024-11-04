@@ -181,7 +181,7 @@ public class AuthenticationService {
             User user = optionalUser.get();
             user.setVerificationCode(generateVerificationCode());
             user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-            sendVerificationEmail(user); // Revisa si esta línea se ejecuta
+            sendVerificationEmail(user);
             userRepository.save(user);
             System.out.println("Email de restablecimiento enviado a: " + email);
         } else {

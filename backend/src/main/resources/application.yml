@@ -37,3 +37,7 @@ cloudinary:
 
 apis:
   token: ${API_RENIEC_SUNAT_TOKEN}
+
+logging:
+  level:
+    org.springframework.web.servlet.resource: ERROR

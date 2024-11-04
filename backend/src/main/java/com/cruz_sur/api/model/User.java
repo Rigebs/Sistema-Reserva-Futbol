@@ -21,7 +21,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(unique = true, nullable = false)
-    private String username;  // Ahora este campo se usará correctamente para el username
+    private String username;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
@@ -56,13 +56,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    public void setClienteOrSede(Cliente cliente, Sede sede) {
-        if (cliente != null && sede != null) {
-            throw new IllegalArgumentException("User cannot have both cliente and sede.");
-        }
-        this.cliente = cliente;
-        this.sede = sede;
-    }
 
     public User(String username, String email, String password) {
         this.username = username;
@@ -74,7 +67,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;  // Devuelve el nombre de usuario correcto
+        return this.username;
     }
 
     @Override

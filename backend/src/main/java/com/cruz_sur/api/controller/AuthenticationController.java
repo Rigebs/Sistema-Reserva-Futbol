@@ -36,7 +36,7 @@ public class AuthenticationController {
             authenticationService.signup(registerUserDto);
             return ResponseEntity.ok("Registration successful! Please verify your email.");
         } catch (AuthException.UserAlreadyExistsException | AuthException.UsernameAlreadyExistsException e) {
-            return ResponseEntity.status(409).body(e.getMessage()); // 409 Conflict
+            return ResponseEntity.status(409).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred during registration.");
         }

@@ -26,6 +26,7 @@ public class ReservaResponseDTO {
     private BigDecimal igv;
     private BigDecimal descuento;
     private LocalDate fecha;
+    private LocalDateTime fechaCreacion;
     private BigDecimal subtotal;
     private BigDecimal total;
     private String campo;

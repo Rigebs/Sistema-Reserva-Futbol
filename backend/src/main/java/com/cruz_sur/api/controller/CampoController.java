@@ -1,5 +1,6 @@
 package com.cruz_sur.api.controller;
 
+import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/campos")
@@ -17,18 +19,18 @@ public class CampoController {
     private final ICampoService campoService;
 
     @GetMapping
-    public ResponseEntity<List<Campo>> all() {
-        List<Campo> campos = campoService.all();
+    public ResponseEntity<List<CampoDTO>> all() {
+        List<CampoDTO> campos = campoService.all();
         return new ResponseEntity<>(campos, HttpStatus.OK);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> byId(@PathVariable Long id) {
-        Campo campo = campoService.byId(id).orElse(null);
-        return campo != null
-                ? new ResponseEntity<>(campo, HttpStatus.OK)
-                : new ResponseEntity<>("Campo no encontrado", HttpStatus.NOT_FOUND);
+        Optional<CampoDTO> campoDTO = campoService.byId(id);
+        return campoDTO.<ResponseEntity<Object>>map(dto -> new ResponseEntity<>(dto, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("Campo no encontrado", HttpStatus.NOT_FOUND));
     }
+
 
     @PostMapping
     public ResponseEntity<String> save(@RequestBody Campo campo) {

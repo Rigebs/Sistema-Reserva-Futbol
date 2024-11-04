@@ -8,5 +8,4 @@ public class PasswordResetDto {
     private String verificationCode;
     private String newPassword;
 
-    // Getters y Setters
 }

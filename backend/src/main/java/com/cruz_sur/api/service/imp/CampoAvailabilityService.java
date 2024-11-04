@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +16,7 @@ import java.util.List;
 public class CampoAvailabilityService {
     private final DetalleVentaRepository detalleVentaRepository;
 
+    // Existing method to check if a specific time range is available
     public boolean isCampoAvailable(Long campoId, LocalDate fecha, Time horaInicio, Time horaFin) {
         if (horaFin.toLocalTime().equals(LocalTime.MIDNIGHT)) {
             return false;
@@ -29,4 +31,17 @@ public class CampoAvailabilityService {
         return true;
     }
 
+    // Updated method to get available hours
+    public List<Time> getAvailableHours(Long campoId, LocalDate fecha, List<Time> allHours) {
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha);
+        List<Time> availableHours = new ArrayList<>(allHours);
+
+        for (DetalleVenta reserva : reservas) {
+            // Remove hours that are either within the reserved time or equal to the reserved times
+            availableHours.removeIf(hour ->
+                    !hour.before(reserva.getHoraInicio()) && !hour.after(reserva.getHoraFinal()));
+        }
+
+        return availableHours;
+    }
 }
