@@ -61,7 +61,7 @@ public class ReservaService implements IReservaService {
 
         LocalDateTime now = LocalDateTime.now();
         Reserva reserva = Reserva.builder()
-                .fecha(reservaDTO.getFecha()) // Pass the fecha to Reserva
+                .fecha(reservaDTO.getFecha())
                 .descuento(reservaDTO.getDescuento())
                 .igv(reservaDTO.getIgv())
                 .total(total)
@@ -78,27 +78,39 @@ public class ReservaService implements IReservaService {
                 .fechaModificacion(now)
                 .build();
 
-        try {
-            reservaRepository.save(reserva);
-            boolean comprobanteCreated = false;
+        boolean comprobanteCreated = false;
 
-            for (DetalleVentaDTO detalleDTO : detallesVenta) {
-                Long campoId = detalleDTO.getCampoId();
-                Campo campo = campoRepository.findById(campoId)
-                        .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+        // Primero, verifica la disponibilidad de todos los campos en detallesVenta
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Campo campo = campoRepository.findById(campoId)
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
 
-                detalleVentaService.createDetalleVenta(detalleDTO, reserva);
-                availabilityController.notifyCampoStatusChange(campo);
+            boolean available = availabilityController.checkCampoAvailability(
+                    campoId, reservaDTO.getFecha(), detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
 
-                if (!comprobanteCreated) {
-                    comprobanteService.createComprobante(reserva, usuario, now, campo);
-                    comprobanteCreated = true;
-                }
+            if (!available) {
+                throw new RuntimeException("Campo not available for the specified time range");
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error creating reservation: " + e.getMessage(), e);
         }
+
+        // Si todos los campos están disponibles, guarda la reserva y detalles
+        reservaRepository.save(reserva);
+
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Campo campo = campoRepository.findById(campoId)
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+
+            detalleVentaService.createDetalleVenta(detalleDTO, reserva);
+            availabilityController.notifyCampoStatusChange(campo);
+
+            if (!comprobanteCreated) {
+                comprobanteService.createComprobante(reserva, usuario, now, campo);
+                comprobanteCreated = true;
+            }
+        }
+
         return reservaResponseBuilder.build(reserva);
     }
 
