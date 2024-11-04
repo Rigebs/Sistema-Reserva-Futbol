@@ -36,6 +36,7 @@ public class PersonaService implements IPersonaService {
         Persona existingPersona = personaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
 
+        // Update fields
         existingPersona.setNombre(persona.getNombre());
         existingPersona.setApePaterno(persona.getApePaterno());
         existingPersona.setApeMaterno(persona.getApeMaterno());
@@ -53,21 +54,15 @@ public class PersonaService implements IPersonaService {
 
         personaRepository.save(existingPersona);
 
+        // Handle Cliente association
         Cliente cliente = clienteRepository.findByPersona(existingPersona)
-                .orElseGet(() -> {
-                    Cliente newCliente = new Cliente();
-                    newCliente.setPersona(existingPersona);
-                    newCliente.setEstado('1'); // Active by default
-                    newCliente.setUsuarioCreacion(authenticatedUsername);
-                    newCliente.setFechaCreacion(LocalDateTime.now());
-                    return newCliente;
-                });
+                .orElse(new Cliente());
 
-        cliente.setEstado('1');
+        cliente.setPersona(existingPersona);
+        cliente.setEstado('1'); // Active by default
         cliente.setUsuarioModificacion(authenticatedUsername);
         cliente.setFechaModificacion(LocalDateTime.now());
 
-        // Save the Cliente
         clienteRepository.save(cliente);
 
         return existingPersona;
@@ -79,27 +74,32 @@ public class PersonaService implements IPersonaService {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         persona.setUsuarioCreacion(authenticatedUsername);
         persona.setFechaCreacion(LocalDateTime.now());
-
         persona.setEstado('1');
 
         Persona newPersona = personaRepository.save(persona);
 
         Cliente cliente = new Cliente();
         cliente.setPersona(newPersona);
-        cliente.setEstado('1');
+        cliente.setEstado('1'); // Active by default
         cliente.setUsuarioCreacion(authenticatedUsername);
         cliente.setFechaCreacion(LocalDateTime.now());
         clienteRepository.save(cliente);
+
         return newPersona;
     }
 
-
+    @Transactional
     @Override
     public Persona changeStatus(Long id, Integer status) {
         Persona persona = personaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
 
         persona.setEstado(status == 1 ? '1' : '0');
+
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        persona.setUsuarioModificacion(authenticatedUsername);
+        persona.setFechaModificacion(LocalDateTime.now());
+
         return personaRepository.save(persona);
     }
 }

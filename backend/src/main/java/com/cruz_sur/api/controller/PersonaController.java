@@ -31,13 +31,13 @@ public class PersonaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Persona>> getAllPersonas() {
+    public ResponseEntity<List<Persona>> all() {
         List<Persona> personas = personaService.all();
         return new ResponseEntity<>(personas, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getPersonaById(@PathVariable Long id) {
+    public ResponseEntity<Object> byId(@PathVariable Long id) {
         Persona persona = personaService.byId(id).orElse(null);
         return persona != null
                 ? new ResponseEntity<>(persona, HttpStatus.OK)
@@ -45,13 +45,13 @@ public class PersonaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createPersona(@RequestBody Persona persona) {
+    public ResponseEntity<String> save(@RequestBody Persona persona) {
         personaService.save(persona);
         return new ResponseEntity<>("Persona creada con éxito", HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePersona(@PathVariable Long id, @RequestBody Persona persona) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Persona persona) {
         personaService.update(id, persona);
         return new ResponseEntity<>("Persona actualizada con éxito", HttpStatus.OK);
     }

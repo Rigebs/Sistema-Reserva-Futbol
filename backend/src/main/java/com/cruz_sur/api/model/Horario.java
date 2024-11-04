@@ -26,6 +26,8 @@ public class Horario {
 
     private LocalDateTime fechaCreacion;
 
+    private String usuarioCreacion;
+
     private String usuarioModificacion;
 
     private LocalDateTime fechaModificacion;

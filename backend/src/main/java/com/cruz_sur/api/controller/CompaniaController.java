@@ -33,10 +33,12 @@ public class CompaniaController {
         return ResponseEntity.ok(savedCompania);
     }
 
-
-
     @PutMapping("/{id}")
-    public ResponseEntity<Compania> update(@PathVariable Long id, @RequestBody Compania compania) {
+    public ResponseEntity<Compania> update(@PathVariable Long id, @RequestParam("compania") String companiaJson) throws IOException {
+        // Convierte el JSON a un objeto Compania
+        ObjectMapper objectMapper = new ObjectMapper();
+        Compania compania = objectMapper.readValue(companiaJson, Compania.class);
+
         try {
             Compania updatedCompania = companiaService.update(id, compania);
             return new ResponseEntity<>(updatedCompania, HttpStatus.OK);

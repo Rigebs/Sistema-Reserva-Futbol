@@ -17,13 +17,13 @@ public class CampoController {
     private final ICampoService campoService;
 
     @GetMapping
-    public ResponseEntity<List<Campo>> getAllCampos() {
+    public ResponseEntity<List<Campo>> all() {
         List<Campo> campos = campoService.all();
         return new ResponseEntity<>(campos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCampoById(@PathVariable Long id) {
+    public ResponseEntity<Object> byId(@PathVariable Long id) {
         Campo campo = campoService.byId(id).orElse(null);
         return campo != null
                 ? new ResponseEntity<>(campo, HttpStatus.OK)
@@ -31,13 +31,13 @@ public class CampoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createCampo(@RequestBody Campo campo) {
+    public ResponseEntity<String> save(@RequestBody Campo campo) {
         campoService.save(campo);
         return new ResponseEntity<>("Campo creado con éxito", HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCampo(@PathVariable Long id, @RequestBody Campo campo) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Campo campo) {
         campoService.update(id, campo);
         return new ResponseEntity<>("Campo actualizado con éxito", HttpStatus.OK);
     }
