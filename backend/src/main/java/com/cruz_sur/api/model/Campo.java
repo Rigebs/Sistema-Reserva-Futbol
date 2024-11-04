@@ -35,10 +35,7 @@ public class Campo {
 
     private Character estado;
 
-    @Column(name = "en_uso")
-    private boolean enUso;
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private User usuario;
-
 }

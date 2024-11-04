@@ -79,9 +79,9 @@ public class ReservaResponseBuilder {
                         .campoId(detalle.getCampo().getId())
                         .campoNombre(detalle.getCampo().getNombre())
                         .precio(detalle.getCampo().getPrecio())
-                        .horarioId(detalle.getHorario().getId())
-                        .horaInicio(detalle.getHorario().getHoraInicio())
-                        .horaFinal(detalle.getHorario().getHoraFinal())
+                        // Removed horarioId from here
+                        .horaInicio(detalle.getHoraInicio())
+                        .horaFinal(detalle.getHoraFinal())
                         .build())
                 .collect(Collectors.toList());
 

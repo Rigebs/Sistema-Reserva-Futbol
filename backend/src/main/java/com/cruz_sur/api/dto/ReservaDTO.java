@@ -15,5 +15,4 @@ public class ReservaDTO {
     private BigDecimal igv;
     private Character tipoComprobante;
     private Long metodoPagoId;
-    private Long horarioId;
 }

@@ -38,6 +38,7 @@ public class ReservaService implements IReservaService {
     private final AvailabilityController availabilityController;
     private final ReservaResponseBuilder reservaResponseBuilder;
     private final JdbcTemplate jdbcTemplate;
+
     @Transactional
     @Override
     public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
@@ -60,7 +61,7 @@ public class ReservaService implements IReservaService {
 
         LocalDateTime now = LocalDateTime.now();
         Reserva reserva = Reserva.builder()
-                .fecha(reservaDTO.getFecha())
+                .fecha(reservaDTO.getFecha()) // Pass the fecha to Reserva
                 .descuento(reservaDTO.getDescuento())
                 .igv(reservaDTO.getIgv())
                 .total(total)
@@ -78,14 +79,6 @@ public class ReservaService implements IReservaService {
                 .build();
 
         try {
-            for (DetalleVentaDTO detalleDTO : detallesVenta) {
-                Long campoId = detalleDTO.getCampoId();
-                Long horarioId = detalleDTO.getHorarioId();
-
-                if (detalleVentaRepository.existsByCampoIdAndHorarioId(campoId, horarioId)) {
-                    throw new GlobalExceptionHandler.CampoAlreadyReservedException(campoId, horarioId);
-                }
-            }
             reservaRepository.save(reserva);
             boolean comprobanteCreated = false;
 
@@ -103,13 +96,12 @@ public class ReservaService implements IReservaService {
                 }
             }
 
-        } catch (GlobalExceptionHandler.CampoAlreadyReservedException e) {
-            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error creating reservation: " + e.getMessage(), e);
         }
         return reservaResponseBuilder.build(reserva);
     }
+
 
     @Override
     public List<VentaDTO> getVentasByUsuario() {

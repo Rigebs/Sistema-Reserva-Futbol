@@ -14,7 +14,6 @@ public class DetalleVentaDTO {
     private Long campoId;
     private String campoNombre;
     private BigDecimal precio;
-    private Long horarioId; // New field for Horario ID
 
     private Time horaInicio; // Start time of Horario
     private Time horaFinal;  // End time of Horario
