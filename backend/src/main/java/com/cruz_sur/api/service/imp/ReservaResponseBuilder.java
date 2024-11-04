@@ -79,7 +79,6 @@ public class ReservaResponseBuilder {
                         .campoId(detalle.getCampo().getId())
                         .campoNombre(detalle.getCampo().getNombre())
                         .precio(detalle.getCampo().getPrecio())
-                        // Removed horarioId from here
                         .horaInicio(detalle.getHoraInicio())
                         .horaFinal(detalle.getHoraFinal())
                         .build())
@@ -102,6 +101,7 @@ public class ReservaResponseBuilder {
                 .igv(reserva.getIgv())
                 .descuento(reserva.getDescuento())
                 .fecha(reserva.getFecha())
+                .fechaCreacion(reserva.getFechaCreacion())
                 .subtotal(reserva.getSubtotal())
                 .total(reserva.getTotal())
                 .campo(campo != null ? campo.getNombre() : null)

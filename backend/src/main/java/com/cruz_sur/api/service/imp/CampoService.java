@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.CampoRepository;
@@ -59,9 +60,21 @@ public class CampoService implements ICampoService {
     }
 
     @Override
-    public List<Campo> all() {
-        return campoRepository.findAll();
+    public List<CampoDTO> all() {
+        List<Campo> campos = campoRepository.findAll();
+        // Convert Campo to CampoDTO
+        return campos.stream()
+                .map(campo -> new CampoDTO(
+                        campo.getId(),
+                        campo.getNombre(),
+                        campo.getPrecio(),
+                        campo.getDescripcion(),
+                        campo.getEstado(),
+                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
+                ))
+                .toList(); // Using Java 16+ stream method
     }
+
 
     @Override
     public Campo changeStatus(Long id, Integer status) {
@@ -73,7 +86,16 @@ public class CampoService implements ICampoService {
     }
 
     @Override
-    public Optional<Campo> byId(Long id) {
-        return campoRepository.findById(id);
+    public Optional<CampoDTO> byId(Long id) {
+        return campoRepository.findById(id)
+                .map(campo -> new CampoDTO(
+                        campo.getId(),
+                        campo.getNombre(),
+                        campo.getPrecio(),
+                        campo.getDescripcion(),
+                        campo.getEstado(),
+                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
+                ));
     }
+
 }
