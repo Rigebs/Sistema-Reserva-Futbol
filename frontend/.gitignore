@@ -39,8 +39,6 @@ coverage/
 test-output/
 !src/assets/
 
-# Environment files
-src/environments/*.ts
 
 # Angular cache
 .angular/cache/
