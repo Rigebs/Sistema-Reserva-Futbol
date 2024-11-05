@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Iniciar sesión</h2>
+<mat-dialog-content>
+  <form>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Usuario</mat-label>
+      <input
+        matInput
+        placeholder="Usuario"
+        [(ngModel)]="user.identifier"
+        name="username"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        type="password"
+        placeholder="Contraseña"
+        [(ngModel)]="user.password"
+        name="password"
+      />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onGoogleLogin()">
+    Iniciar sesión con Google
+  </button>
+  <button mat-flat-button color="primary" (click)="onLogin()">
+    Iniciar Sesión
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,18 @@
+<div class="container">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="content">
+    <h1>Gestiona tus campos</h1>
+    <button mat-fab extended (click)="openDialog()">
+      <mat-icon>add_circle</mat-icon>
+      Agregar
+    </button>
+    <div class="table">
+      <app-table
+        [columns]="columns"
+        [dataSource]="dataSource"
+        (actionClick)="onAction($event)"
+      ></app-table>
+    </div>
+  </div>
+</div>

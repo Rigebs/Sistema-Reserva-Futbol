@@ -1,0 +1,55 @@
+.container {
+  display: flex; /* Alinea los elementos en fila */
+}
+
+.sidebar {
+  position: fixed; /* Fija el sidebar a la izquierda */
+  left: 0;
+  top: 0;
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  z-index: 1000; /* Coloca el sidebar encima del contenido */
+  background-color: #fff; /* Color de fondo opcional para el sidebar */
+  transition: transform 0.3s ease; /* Transición para la animación */
+}
+
+.content {
+  margin-left: 250px; /* Separa el contenido del sidebar */
+  max-width: 1200px; /* Máximo ancho del contenido */
+  padding-top: 7px;
+  background-color: #f5f5f5; /* Color de fondo opcional */
+  margin: 0 auto; /* Centra el contenido cuando no ocupa toda la pantalla */
+}
+
+/* Asegura que la tabla sea responsiva */
+table {
+  width: 100%; /* La tabla ocupa el ancho completo del contenedor */
+  overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+}
+
+button {
+  margin-bottom: 20px;
+}
+
+/* Media Queries para pantallas móviles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 62px; /* Ancho reducido para dispositivos móviles */
+  }
+
+  .content {
+    margin-left: 68px; /* Ajusta el margen según el ancho del sidebar */
+    max-width: calc(
+      100% - 77px
+    ); /* Asegura que el contenido use el espacio disponible */
+  }
+
+  /* Si el sidebar está colapsado en móviles */
+  .collapsed .sidebar {
+    transform: translateX(-100%); /* Oculta el sidebar */
+  }
+
+  .collapsed .content {
+    margin-left: 0; /* Sin margen cuando el sidebar está colapsado */
+    max-width: 100%; /* Ocupa todo el ancho disponible */
+  }
+}

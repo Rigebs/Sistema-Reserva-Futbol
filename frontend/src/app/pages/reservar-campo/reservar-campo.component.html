@@ -16,6 +16,7 @@
     <div class="reserva-content">
       <!-- Tabla de reserva de campos -->
       <app-reserva-list
+        #reservaList
         [reservas]="reservas"
         (reservaFinalizada)="agregarReservaFinalizada($event)"
       >
@@ -27,10 +28,13 @@
         <!-- Componente de resumen -->
         <app-campos-resumen
           [reservas]="reservasFinalizadas"
+          (reservaEliminada)="onReservaEliminada($event)"
         ></app-campos-resumen>
 
-        <!-- Botón debajo del resumen -->
-        <button>Reservar Ahora</button>
+        <!-- Botón para ir a la pasarela de pago -->
+        <button mat-raised-button color="primary" (click)="irPasarelaDePago()">
+          Reservar Ahora
+        </button>
       </div>
     </div>
   </section>

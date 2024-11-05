@@ -1,52 +1,94 @@
 .carousel-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  max-width: 800px; /* Ajusta el tamaño según tus necesidades */
   margin: auto;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* Estilo para el pseudo-elemento ::before */
+.carousel-container::before {
+  content: ""; /* Asegúrate de incluir esto */
+  position: absolute; /* Debe ser absoluto para cubrir el contenedor */
+  top: 0; /* Asegúrate de cubrir desde la parte superior */
+  left: 0; /* Asegúrate de cubrir desde la parte izquierda */
+  right: 0; /* Asegúrate de cubrir hasta la parte derecha */
+  bottom: 0; /* Asegúrate de cubrir hasta la parte inferior */
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  z-index: 1; /* Asegúrate de que esté detrás del contenido */
 }
 
 .carousel {
   position: relative;
-  width: 100%; /* Se asegura que el carrusel ocupe todo el ancho disponible */
-  overflow: hidden;
+  width: 100%;
 }
 
 .carousel-image {
   width: 100%;
-  height: 400px; /* Altura fija para evitar distorsión */
-  object-fit: cover; /* Mantiene la relación de aspecto */
-  transition: opacity 0.5s ease;
+  height: 90vh;
+  object-fit: cover;
+  transition: opacity 1s ease; /* Transición para el efecto de desvanecimiento */
+  opacity: 0; /* Inicialmente invisible */
 }
 
-/* Cambios para el tamaño de la imagen en móviles */
+.carousel-image.fade-in {
+  opacity: 1; /* Visible cuando se aplica la clase fade-in */
+}
+
+.desvanecimiento {
+  opacity: 0; /* Estado inicial: invisible */
+  transition: opacity 3s ease-in-out; /* Duración y tipo de transición */
+}
+
+.desvanecimiento-top {
+  opacity: 1; /* Al hacer hover, se vuelve visible */
+}
+
+/* Estilos para el texto de invitación dentro del carrusel */
+.invitation-text {
+  position: absolute;
+  max-width: 450px;
+  z-index: 2;
+  padding: 20px;
+}
+
+.invitation-text h1 {
+  margin: 0 0 10px;
+  font-size: 4.5em;
+  font-weight: bold;
+  margin: 0 0 15px;
+  line-height: 1.2;
+  color: #000000;
+  text-shadow: 1px 3px 7px rgba(0, 0, 0, 0.5);
+}
+
+.invitation-text p {
+  font-size: 1.2em; /* Aumenta el tamaño de fuente para legibilidad */
+  line-height: 1.5;
+}
+
+.invitation-text button {
+  margin-top: 10px; /* Espacio entre el texto y el botón */
+}
+
+.invitation-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Estilos específicos para el texto y el carrusel */
+.invitation-text {
+  flex: 1;
+  text-align: left;
+}
+
+/* Estilos para el carrusel en dispositivos móviles */
 @media (max-width: 768px) {
   .carousel-image {
-    height: 250px; /* Ajusta la altura para dispositivos móviles */
+    height: 750px; /* Ajusta la altura para dispositivos móviles */
   }
-}
-
-.carousel-controls {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-}
-
-.control-button {
-  background-color: rgba(255, 255, 255, 0.7);
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 24px;
-  border-radius: 50%;
-  transition: background-color 0.3s;
-}
-
-.control-button:hover {
-  background-color: rgba(255, 255, 255, 1);
 }

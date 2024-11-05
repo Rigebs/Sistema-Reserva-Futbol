@@ -1,21 +1,46 @@
-import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-carousel',
   standalone: true,
-  imports: [],
+  imports: [
+    MatButtonModule,
+    CommonModule
+  ],
   templateUrl: './carousel.component.html',
-  styleUrl: './carousel.component.css'
+  styleUrls: ['./carousel.component.css']
 })
-export class CarouselComponent {
-  @Input() images: string[] = []; // Para recibir las rutas de las imágenes
-  currentIndex: number = 0; // Índice de la imagen actual
+export class CarouselComponent implements OnInit, OnDestroy {
+  @Input() images: string[] = [];
+  currentIndex: number = 0;
+  private interval: any;
+  fadeClass: string = 'fade-in';
 
-  nextImage() {
-    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+  num: number = 0;
+  h: string = "hola";
+
+  ngOnInit() {
+    this.startCarousel();
   }
 
-  prevImage() {
-    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+  ngOnDestroy() {
+    clearInterval(this.interval);
+  }
+
+  startCarousel() {
+    this.interval = setInterval(() => {
+      this.nextImage();
+    }, 5000);
+  }
+
+  nextImage() {
+    this.fadeClass = 'desvanecimiento'; // Reinicia la clase de animación
+    
+    setTimeout(() => {
+      this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      this.fadeClass = 'desvanecimiento-top'; // Vuelve a aplicar el desvanecimiento a la nueva imagen
+    }, 1500); // Breve espera para que la clase se reactive
   }
 }

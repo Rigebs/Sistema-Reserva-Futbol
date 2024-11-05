@@ -1,15 +1,13 @@
 .home-container {
   display: flex;
   justify-content: center;
-  padding: 20px;
-  margin-top: 70px; /* Ajusta este valor según la altura de tu navbar */
+  padding-top: 50px; /* Ajusta este valor según la altura de tu navbar */
   overflow-x: hidden; /* Evita desbordamiento horizontal */
 }
 
 /* Centrar el home-container correctamente */
 .content-container {
   display: flex;
-  max-width: 1200px; /* Limita el ancho máximo en pantallas grandes */
   width: 100%;
   align-items: center;
   gap: 20px;
@@ -24,6 +22,10 @@
 
 app-carousel {
   flex: 1;
+}
+
+#carusel {
+  padding-top: 50px;
 }
 
 /* Estilos para el selector de distrito */
@@ -70,6 +72,7 @@ app-carousel {
   justify-content: center;
   gap: 20px;
   width: 100%;
+  padding-bottom: 20px;
 }
 
 /* Asegura que las tarjetas de campo tengan un tamaño adecuado */
@@ -94,10 +97,6 @@ app-campo-card {
 
   .invitation-text {
     text-align: center;
-  }
-
-  app-carousel {
-    margin-top: 20px;
   }
 
   .district-selector {

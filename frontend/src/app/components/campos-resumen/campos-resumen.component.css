@@ -7,6 +7,9 @@
 .campo-card {
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding-top: 16px;
+  box-sizing: border-box;
 }
 
 .reserva-detalles {
@@ -24,4 +27,12 @@
 
 mat-icon {
   color: #4caf50; /* Color del ícono */
+}
+
+.close-button {
+  position: absolute;
+  top: 8px; /* Espaciado desde la parte superior */
+  right: 8px; /* Espaciado desde el lado derecho */
+  color: red; /* Cambiar el color del icono */
+  z-index: 1; /* Asegurarse de que el botón esté por encima del contenido */
 }

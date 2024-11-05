@@ -1,7 +1,5 @@
-<h2 mat-dialog-title>Detalles de la reserva</h2>
+<h2 mat-dialog-title>Selecciona la fecha y horas del alquiler</h2>
 <div mat-dialog-content>
-  <p><strong>Nombre del Campo:</strong> {{ data.nombreCampo }}</p>
-  <p><strong>Estado:</strong> {{ data.estado }}</p>
   <mat-stepper [linear]="isLinear" #stepper orientation="vertical">
     <!-- Paso 1: Seleccionar fecha -->
     <mat-step [stepControl]="firstFormGroup">
@@ -38,39 +36,44 @@
           Selecciona la hora de inicio y fin
         </ng-template>
 
-        <!-- Selector de hora de inicio -->
-        <mat-form-field appearance="fill">
-          <mat-label>Hora de inicio</mat-label>
-          <mat-select
-            formControlName="horaInicio"
-            (selectionChange)="onHourSelected($event, true)"
-          >
-            <mat-option
-              *ngFor="let hour of availableHours"
-              [value]="hour"
-              [disabled]="unavailableHours.includes(hour)"
+        <!-- Contenedor flex para las horas de inicio y fin -->
+        <div class="hours-container">
+          <!-- Selector de hora de inicio -->
+          <mat-form-field appearance="fill">
+            <mat-label>Hora de inicio</mat-label>
+            <mat-select
+              formControlName="horaInicio"
+              (selectionChange)="onHourSelected($event, true)"
             >
-              {{ hour }}:00
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              <mat-option
+                *ngFor="let hour of availableHours"
+                [value]="hour"
+                [disabled]="unavailableHours.includes(hour)"
+              >
+                {{ formatHour(hour) }}
+                <!-- Cambiado aquí -->
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-        <!-- Selector de hora de fin -->
-        <mat-form-field appearance="fill">
-          <mat-label>Hora de fin</mat-label>
-          <mat-select
-            formControlName="horaFin"
-            (selectionChange)="onHourSelected($event, false)"
-          >
-            <mat-option
-              *ngFor="let hour of filteredEndHours"
-              [value]="hour"
-              [disabled]="unavailableHours.includes(hour)"
+          <!-- Selector de hora de fin -->
+          <mat-form-field appearance="fill">
+            <mat-label>Hora de fin</mat-label>
+            <mat-select
+              formControlName="horaFin"
+              (selectionChange)="onHourSelected($event, false)"
             >
-              {{ hour }}:00
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              <mat-option
+                *ngFor="let hour of filteredEndHours"
+                [value]="hour"
+                [disabled]="unavailableHours.includes(hour)"
+              >
+                {{ formatHour(hour) }}
+                <!-- Cambiado aquí -->
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <div>
           <button mat-button matStepperPrevious>Regresar</button>

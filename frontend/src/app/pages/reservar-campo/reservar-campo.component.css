@@ -4,7 +4,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  margin-top: 60px;
+  padding-top: 60px;
   box-sizing: border-box;
   overflow: hidden; /* Evitar overflow en el contenedor */
 }
@@ -66,15 +66,16 @@ app-campos-resumen {
 
 /* Estilos para el botón */
 button {
-  margin-top: 10px; /* Separar el botón del componente de resumen */
-  align-self: flex-end; /* Alinear el botón a la derecha */
-  padding: 10px 20px; /* Añadir padding al botón */
-  background-color: #3f51b5; /* Color de fondo del botón */
-  color: white; /* Color del texto del botón */
-  border: none; /* Sin borde */
-  border-radius: 5px; /* Bordes redondeados */
+  margin-top: 10px;
+  align-self: flex-end;
+  padding: 7px 20px;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 5px;
   width: 100%;
-  cursor: pointer; /* Cambiar el cursor a mano */
+  cursor: pointer;
+  font-size: 16px;
 }
 
 button:hover {

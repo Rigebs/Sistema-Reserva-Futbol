@@ -1,0 +1,59 @@
+.container {
+  padding: 20px;
+
+  mat-form-field {
+    margin-right: 10px;
+  }
+
+  table {
+    margin-top: 20px;
+    width: 100%;
+  }
+}
+
+.example-container {
+  width: 100%;
+  overflow: auto;
+}
+
+.action {
+  display: flex;
+  gap: 7px;
+}
+
+.tag-enabled {
+  display: flex;
+  justify-content: center;
+  background-color: #e6f7ec; /* Suave fondo verde */
+  color: #2e7d32; /* Texto verde oscuro */
+  text-align: center;
+  border: 1px solid #4caf50; /* Borde verde */
+  border-radius: 20px; /* Borde redondeado */
+  padding: 5px 10px; /* Espaciado interno */
+  font-weight: 500; /* Peso de fuente medio */
+  font-size: 14px; /* Tamaño de fuente */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  width: 77px;
+}
+
+.tag-disabled {
+  display: flex;
+  justify-content: center;
+  background-color: #f9e6e6; /* Suave fondo rojo */
+  color: #d32f2f; /* Texto rojo oscuro */
+  text-align: center;
+  border: 1px solid #e57373; /* Borde rojo */
+  border-radius: 20px; /* Borde redondeado */
+  padding: 5px 10px; /* Espaciado interno */
+  font-weight: 500; /* Peso de fuente medio */
+  font-size: 14px; /* Tamaño de fuente */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.descripcion {
+  padding: 0px 66px 0px 16px;
+}
+
+.check {
+  color: #1cb524;
+}
