@@ -8,7 +8,7 @@ RUN mvn dependency:go-offline -B
 
 # Copiar todo el proyecto y construir
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Usar una imagen base de Java más ligera para ejecutar el JAR
 FROM eclipse-temurin:17-jdk-alpine
