@@ -10,6 +10,8 @@ const envFile = `export const environment = {
 };
 `;
 const targetPath = path.join(__dirname, './src/environments/environment.development.ts');
+console.log("123");
+
 fs.writeFile(targetPath, envFile, (err) => {
     if (err) {
         console.error(err);
