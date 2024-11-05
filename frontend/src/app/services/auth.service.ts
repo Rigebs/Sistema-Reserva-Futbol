@@ -9,7 +9,7 @@ import { environment } from "../../environments/environment";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = environment.apiUrlAuth;
+  private apiUrl = environment.NG_APP_URL_API_AUTH;
   private authTokenKey = "authToken";
 
   private currentUserSubject = new BehaviorSubject<string | null>(null);

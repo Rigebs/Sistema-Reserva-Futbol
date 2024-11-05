@@ -9,7 +9,7 @@ import { CampoSede } from "../models/campo-sede";
   providedIn: "root",
 })
 export class CampoService {
-  private apiUrl = `${environment.apiUrlGeneral}/campos`;
+  private apiUrl = `${environment.NG_APP_URL_API_GENERAL}/campos`;
 
   constructor(private http: HttpClient) {}
 
