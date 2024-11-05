@@ -31,6 +31,20 @@ public class CampoController {
         return campoDTO.<ResponseEntity<Object>>map(dto -> new ResponseEntity<>(dto, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("Campo no encontrado", HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/usuario/{usuarioId}/with-sede")
+    public ResponseEntity<List<CampoDTO>> getCamposByUsuarioIdWithSede(@PathVariable Long usuarioId) {
+        List<CampoDTO> campos = campoService.findByUsuarioIdWithSede(usuarioId);
+        return campos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(campos, HttpStatus.OK);
+    }
+    @GetMapping("/with-sede")
+    public ResponseEntity<List<CampoDTO>> getAllCamposWithSede() {
+        List<CampoDTO> campos = campoService.findAllWithSede();
+        return campos.isEmpty()
+                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(campos, HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<String> save(@RequestBody Campo campo) {

@@ -12,4 +12,8 @@ public interface ICampoService {
     List<CampoDTO> all();
     Campo changeStatus(Long id, Integer status);
     Optional<CampoDTO> byId(Long id);
+
+    List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId);
+
+    List<CampoDTO> findAllWithSede();
 }

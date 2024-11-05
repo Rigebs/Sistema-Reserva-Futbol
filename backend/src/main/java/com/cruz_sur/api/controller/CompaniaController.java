@@ -1,5 +1,6 @@
 package com.cruz_sur.api.controller;
 
+import com.cruz_sur.api.dto.CompaniaDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.service.ICompaniaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,8 +49,8 @@ public class CompaniaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Compania>> all() {
-        List<Compania> companias = companiaService.all();
+    public ResponseEntity<List<CompaniaDTO>> all() {
+        List<CompaniaDTO> companias = companiaService.all();
         return new ResponseEntity<>(companias, HttpStatus.OK);
     }
 

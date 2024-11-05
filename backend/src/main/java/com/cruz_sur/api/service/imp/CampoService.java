@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -96,6 +97,29 @@ public class CampoService implements ICampoService {
                         campo.getEstado(),
                         campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
                 ));
+    }
+
+    @Override
+    public List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId) {
+        List<Campo> campos = campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuarioId);
+        return campos.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    @Override
+    public List<CampoDTO> findAllWithSede() {
+        List<Campo> campos = campoRepository.findByUsuario_SedeIsNotNull();
+        return campos.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+
+    private CampoDTO toDTO(Campo campo) {
+        return new CampoDTO(
+                campo.getId(),
+                campo.getNombre(),
+                campo.getPrecio(),
+                campo.getDescripcion(),
+                campo.getEstado(),
+                campo.getUsuario() != null ? campo.getUsuario().getId() : null
+        );
     }
 
 }

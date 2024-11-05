@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.dto.CompaniaDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.model.Imagen;
 import com.cruz_sur.api.repository.CompaniaRepository;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -64,10 +66,7 @@ public class CompaniaService implements ICompaniaService {
         return companiaRepository.save(companiaExistente);
     }
 
-    @Override
-    public List<Compania> all() {
-        return companiaRepository.findAll();
-    }
+
 
     @Override
     public Optional<Compania> byId(Long id) {
@@ -94,6 +93,19 @@ public class CompaniaService implements ICompaniaService {
             compania.setFechaModificacion(LocalDateTime.now());
         }
         return companiaRepository.save(compania);
+    }
+    @Override
+    public List<CompaniaDTO> all() {
+        return companiaRepository.findAll().stream()
+                .map(compania -> new CompaniaDTO(
+                        compania.getId(),
+                        compania.getNombre(),
+                        compania.getConcepto(),
+                        compania.getCorreo(),
+                        compania.getPagWeb(),
+                        compania.getImagen() != null ? compania.getImagen().getImageUrl() : null // Obtiene la URL de la imagen si existe
+                ))
+                .collect(Collectors.toList());
     }
 
 }
