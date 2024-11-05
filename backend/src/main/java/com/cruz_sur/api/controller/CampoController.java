@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.dto.CampoDTO;
+import com.cruz_sur.api.dto.CampoSedeDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
@@ -24,11 +25,11 @@ public class CampoController {
         return new ResponseEntity<>(campos, HttpStatus.OK);
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Object> byId(@PathVariable Long id) {
         Optional<CampoDTO> campoDTO = campoService.byId(id);
-        return campoDTO.<ResponseEntity<Object>>map(dto -> new ResponseEntity<>(dto, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>("Campo no encontrado", HttpStatus.NOT_FOUND));
+        return campoDTO.<ResponseEntity<Object>>map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("Campo no encontrado", HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/usuario/{usuarioId}/with-sede")
@@ -38,9 +39,10 @@ public class CampoController {
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(campos, HttpStatus.OK);
     }
+
     @GetMapping("/with-sede")
-    public ResponseEntity<List<CampoDTO>> getAllCamposWithSede() {
-        List<CampoDTO> campos = campoService.findAllWithSede();
+    public ResponseEntity<List<CampoSedeDTO>> getAllCamposWithSede() {
+        List<CampoSedeDTO> campos = campoService.findAllSedeInfo();
         return campos.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(campos, HttpStatus.OK);

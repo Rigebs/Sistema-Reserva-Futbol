@@ -9,8 +9,4 @@ import java.util.List;
 @Repository
 public interface CampoRepository extends JpaRepository<Campo, Long> {
     List<Campo> findByUsuario_IdAndUsuario_SedeIsNotNull(Long usuarioId);
-    List<Campo> findByUsuario_SedeIsNotNull();  // Nuevo método
 }
-
-
-

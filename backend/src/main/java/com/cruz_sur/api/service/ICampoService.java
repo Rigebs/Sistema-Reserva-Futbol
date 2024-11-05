@@ -1,6 +1,7 @@
 package com.cruz_sur.api.service;
 
 import com.cruz_sur.api.dto.CampoDTO;
+import com.cruz_sur.api.dto.CampoSedeDTO;
 import com.cruz_sur.api.model.Campo;
 
 import java.util.List;
@@ -12,8 +13,6 @@ public interface ICampoService {
     List<CampoDTO> all();
     Campo changeStatus(Long id, Integer status);
     Optional<CampoDTO> byId(Long id);
-
     List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId);
-
-    List<CampoDTO> findAllWithSede();
+    List<CampoSedeDTO> findAllSedeInfo();
 }

@@ -1,6 +1,7 @@
 package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.dto.CampoDTO;
+import com.cruz_sur.api.dto.CampoSedeDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.CampoRepository;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,21 +27,17 @@ public class CampoService implements ICampoService {
     @Override
     public Campo save(Campo campo) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // Obtiene el usuario autenticado
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verifica que el usuario tenga un sedeId
         if (usuario.getSede() == null || usuario.getSede().getId() == null) {
             throw new RuntimeException("El usuario debe estar asociado a una sede para crear un campo.");
         }
 
-        // Establece la información del campo
         campo.setUsuarioCreacion(authenticatedUsername);
         campo.setFechaCreacion(LocalDateTime.now());
         campo.setEstado('1');
-        campo.setUsuario(usuario); // Asignar el usuario al campo
+        campo.setUsuario(usuario);
 
         return campoRepository.save(campo);
     }
@@ -62,20 +60,10 @@ public class CampoService implements ICampoService {
 
     @Override
     public List<CampoDTO> all() {
-        List<Campo> campos = campoRepository.findAll();
-        // Convert Campo to CampoDTO
-        return campos.stream()
-                .map(campo -> new CampoDTO(
-                        campo.getId(),
-                        campo.getNombre(),
-                        campo.getPrecio(),
-                        campo.getDescripcion(),
-                        campo.getEstado(),
-                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
-                ))
-                .toList(); // Using Java 16+ stream method
+        return campoRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
-
 
     @Override
     public Campo changeStatus(Long id, Integer status) {
@@ -89,27 +77,36 @@ public class CampoService implements ICampoService {
     @Override
     public Optional<CampoDTO> byId(Long id) {
         return campoRepository.findById(id)
-                .map(campo -> new CampoDTO(
-                        campo.getId(),
-                        campo.getNombre(),
-                        campo.getPrecio(),
-                        campo.getDescripcion(),
-                        campo.getEstado(),
-                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
-                ));
+                .map(this::toDTO);
     }
 
     @Override
     public List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId) {
-        List<Campo> campos = campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuarioId);
-        return campos.stream().map(this::toDTO).collect(Collectors.toList());
-    }
-    @Override
-    public List<CampoDTO> findAllWithSede() {
-        List<Campo> campos = campoRepository.findByUsuario_SedeIsNotNull();
-        return campos.stream().map(this::toDTO).collect(Collectors.toList());
+        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuarioId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
+
+    @Override
+    public List<CampoSedeDTO> findAllSedeInfo() {
+        return new ArrayList<>(campoRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        campo -> campo.getUsuario().getId(),  // Agrupar por usuarioId
+                        campo -> new CampoSedeDTO(
+                                campo.getUsuario().getId(),
+                                campo.getUsuario().getSede() != null ? campo.getUsuario().getSede().getNombre() : null,
+                                campo.getUsuario().getSede() != null && campo.getUsuario().getSede().getSucursal() != null ? campo.getUsuario().getSede().getSucursal().getNombre() : null,
+                                campo.getUsuario().getSede() != null && campo.getUsuario().getSede().getSucursal() != null && campo.getUsuario().getSede().getSucursal().getCompania() != null ? campo.getUsuario().getSede().getSucursal().getCompania().getNombre() : null,
+                                campo.getUsuario().getSede() != null && campo.getUsuario().getSede().getSucursal() != null && campo.getUsuario().getSede().getSucursal().getCompania() != null ? campo.getUsuario().getSede().getSucursal().getCompania().getCorreo() : null,
+                                campo.getUsuario().getSede() != null && campo.getUsuario().getSede().getSucursal() != null && campo.getUsuario().getSede().getSucursal().getCompania() != null ? campo.getUsuario().getSede().getSucursal().getCompania().getPagWeb() : null,
+                                campo.getUsuario().getSede() != null && campo.getUsuario().getSede().getSucursal() != null && campo.getUsuario().getSede().getSucursal().getCompania() != null && campo.getUsuario().getSede().getSucursal().getCompania().getImagen() != null ? campo.getUsuario().getSede().getSucursal().getCompania().getImagen().getImageUrl() : null
+                        ),
+                        (existing, replacement) -> existing  // Mantener el primer elemento encontrado por usuario
+                ))
+                .values());
+    }
 
     private CampoDTO toDTO(Campo campo) {
         return new CampoDTO(
@@ -121,5 +118,4 @@ public class CampoService implements ICampoService {
                 campo.getUsuario() != null ? campo.getUsuario().getId() : null
         );
     }
-
 }
