@@ -1,6 +1,8 @@
 export interface Campo {
-    id: number;
-    nombre: string;
-    imagen: string;
-    ubicacion: string;
+  id?: number;
+  nombre: string;
+  precio: number;
+  descripcion: string;
+  estado?: string;
+  usuarioId?: number;
 }

@@ -1,16 +1,17 @@
-<mat-card class="campo-card">
+<mat-card class="campo-card" *ngIf="campo">
   <mat-card-header>
-    <mat-card-title>{{ campo.nombre }}</mat-card-title>
+    <mat-card-title>{{ campo.sedeNombre }}</mat-card-title>
   </mat-card-header>
 
-  <img mat-card-image [src]="campo.imagen" alt="{{ campo.nombre }}" />
+  <div class="image">
+    <img
+      mat-card-image
+      [src]="campo.companiaImageUrl"
+      alt="{{ campo.sedeNombre }}"
+    />
+  </div>
 
-  <mat-card-content>
-    <p>{{ campo.descripcion }}</p>
-    <p><strong>Precio:</strong> {{ campo.precio }}</p>
-  </mat-card-content>
-
-  <mat-card-actions>
+  <mat-card-actions align="end">
     <button mat-button color="info">Reservar</button>
   </mat-card-actions>
 </mat-card>
