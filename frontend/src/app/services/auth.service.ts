@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { Usuario } from "../models/usuario";
 import { BehaviorSubject, tap } from "rxjs";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { environment } from "../../environments/environment.development";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -17,7 +17,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     console.log("HOLA", "API: ", this.apiUrl);
-    
+
     this.loadUserFromToken();
   }
 
@@ -25,7 +25,6 @@ export class AuthService {
     return this.http.post<{ token: string }>(`${this.apiUrl}/login`, user).pipe(
       tap((response) => {
         if (response && response.token) {
-          
           this.storeToken(response.token);
         }
       })
