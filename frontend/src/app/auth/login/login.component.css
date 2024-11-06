@@ -1,8 +1,214 @@
-mat-form-field {
+/* Asegurar que el contenedor de la ventana ocupe todo el alto disponible */
+.dialog-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  height: 93vh; /* Esto hace que ocupe el 100% de la altura de la ventana */
+  box-sizing: border-box; /* Incluye el padding dentro del cálculo del alto */
+}
+
+/* Estilo para la imagen a la izquierda */
+.left-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centra la imagen verticalmente */
+  height: 100%; /* Hace que el contenedor ocupe todo el alto disponible */
+
+  min-width: 58%;
+}
+
+/* Estilo para la parte del formulario a la derecha */
+.right-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0px 22px 0px 35px;
+}
+
+/* Para que el contenido no se desborde si el contenido es largo */
+.right-side,
+.left-side {
+  overflow: auto;
+}
+
+/* Estilos generales para los botones */
+.button {
+  width: 100%; /* Los botones ocupan el 100% del ancho */
+  padding: 12px;
+  font-size: 1.1rem;
+  text-transform: uppercase; /* Hacer el texto en mayúsculas */
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn {
+  margin-top: 15px;
+}
+
+.final {
+  display: flex;
+  justify-content: center;
+}
+
+.button.verify {
+  background-color: #4caf50; /* Verde para indicar éxito o verificación */
+  color: #ffffff;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
   width: 100%;
+  border: none;
+}
+
+.button.change-password {
+  background-color: #074d57; /* Verde para indicar éxito o verificación */
+  color: #ffffff;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+  width: 100%;
+  border: none;
+}
+
+.button.verify:hover {
+  background-color: #43a047; /* Color más oscuro al hacer hover */
+}
+
+.button.verify:active {
+  background-color: #388e3c; /* Color aún más oscuro al hacer clic */
+}
+
+.button.verify:disabled {
+  background-color: #a5d6a7; /* Color gris-verde para el estado deshabilitado */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login {
+  background-color: #3f51b5; /* Color de fondo para el botón de login */
+  color: white;
+  border: none;
+}
+
+.register {
+  background-color: #4caf50; /* Color de fondo para el botón de registro */
+  color: white;
+  border: none;
+}
+
+/* Estilo para el enlace de reenviar código */
+.resend-container {
+  margin-top: -16px;
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.resend-container h6 {
+  margin-bottom: 0; /* Asegura que el texto esté junto al enlace sin un espacio adicional */
+  font-size: 14px;
+}
+
+.resend-link {
+  color: #1976d2; /* Color azul del enlace */
+  font-size: 14px; /* Asegura que el tamaño de fuente sea el mismo que el texto */
+  text-decoration: underline; /* Subraya solo el enlace */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.resend-link:hover {
+  color: #0d47a1; /* Color más oscuro al hacer hover */
+}
+
+/* Ocultar la imagen en dispositivos móviles */
+@media (max-width: 768px) {
+  .left-side {
+    display: none; /* Oculta la imagen en móviles */
+  }
+}
+
+/* Estilo para la parte del formulario a la derecha */
+.right-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* padding-left: 20px; */
+  padding: 0px 10px 0px 30px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* Estilo de los campos del formulario */
+.input-field {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Estilo del botón de error */
+.error-message {
+  color: red;
   margin-top: 10px;
 }
 
-mat-dialog-actions {
-  justify-content: space-between;
+/* Botones de texto para alternar entre login y registro */
+.button.mat-button {
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Responsividad para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .dialog-content {
+    flex-direction: column;
+    align-items: center;
+    height: auto; /* En pantallas pequeñas, puede ajustarse automáticamente */
+  }
+
+  .left-side,
+  .right-side {
+    flex: none;
+    width: 100%;
+    padding: 0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}
+
+/* Estilos adicionales para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
+
+/* Estilo para la imagen en desktop (ajustar y hacer zoom si es necesario) */
+@media (min-width: 769px) {
+  .left-side img {
+    width: 100%; /* La imagen ocupa el 100% del contenedor */
+    height: 100%; /* Asegura que la imagen cubra todo el espacio disponible */
+    object-fit: cover; /* Ajusta la imagen para llenar el contenedor, permitiendo el zoom */
+    object-position: center; /* Centra la imagen */
+  }
 }

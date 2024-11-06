@@ -98,7 +98,7 @@ body {
 @media (max-width: 768px) {
   .nav-links {
     position: absolute;
-    top: 57px;
+    top: 53px;
     right: 0;
     background-color: #4a90e2; /* Color de fondo más atractivo */
     flex-direction: column;

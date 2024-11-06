@@ -20,6 +20,10 @@ mat-card-title {
   object-fit: cover; /* Recorta la imagen para ajustarse sin distorsión */
 }
 
+.image {
+  margin-top: 10px;
+}
+
 /* Estilos específicos para pantallas pequeñas */
 @media (max-width: 768px) {
   .campo-card {

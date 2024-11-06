@@ -9,6 +9,10 @@ import { AuthService } from "../../services/auth.service";
 import { catchError, of } from "rxjs";
 import { Usuario } from "../../models/usuario";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { UsuarioRegistro } from "../../models/usuario-registro";
+import { Verify } from "../../models/verify-code";
+import { PasswordResetRequest } from "../../models/password-reset-request";
+import { PasswordReset } from "../../models/password-reset";
 
 @Component({
   selector: "app-login",
@@ -18,14 +22,26 @@ import { MatSnackBar } from "@angular/material/snack-bar";
     MatButtonModule,
     FormsModule,
     MatInputModule,
-    MatDialogModule,
+    CommonModule,
   ],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.css",
 })
 export class LoginComponent {
-  user: Usuario = { identifier: "", password: "" };
+  isLogin: boolean = true; // Alternar entre login y registro
+  isVerification: boolean = false; // Estado para mostrar la verificación de código
+  isPasswordReset: boolean = false; // Estado para la recuperación de contraseña
+  isPasswordChange: boolean = false; // Estado para el cambio de contraseña
+  loginUser: Usuario = { identifier: "", password: "" };
+  registerUser: UsuarioRegistro = { email: "", password: "", username: "" };
+  verificationCode: string = ""; // Código de verificación de 6 dígitos
   loginError: boolean = false;
+  resetPasswordEmail: string = ""; // Correo para solicitar el restablecimiento de contraseña
+  resetPassword: PasswordReset = {
+    email: "",
+    verificationCode: "",
+    newPassword: "",
+  };
 
   constructor(
     public dialogRef: MatDialogRef<LoginComponent>,
@@ -35,9 +51,9 @@ export class LoginComponent {
 
   onLogin() {
     this.loginError = false;
-    if (this.user.identifier && this.user.password) {
+    if (this.loginUser.identifier && this.loginUser.password) {
       this.authService
-        .login(this.user)
+        .login(this.loginUser)
         .pipe(
           catchError(() => {
             this.loginError = true;
@@ -66,7 +82,177 @@ export class LoginComponent {
     }
   }
 
-  onGoogleLogin() {
-    this.dialogRef.close();
+  onRegister() {
+    this.authService.register(this.registerUser).subscribe({
+      next: () => {
+        this.snackBar.open(
+          "Registro exitoso, por favor verifica tu email",
+          "Cerrar",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          }
+        );
+        this.isVerification = true;
+      },
+      error: (error) => {
+        this.snackBar.open(`Error: ${error.message}`, "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        console.error("Error capturado en onRegister:", error.message);
+      },
+    });
+  }
+
+  onVerifyCode() {
+    const verify: Verify = {
+      email: this.registerUser.email,
+      verificationCode: this.verificationCode,
+    };
+
+    this.authService.verifyCode(verify).subscribe({
+      next: (response) => {
+        this.snackBar.open("Código verificado exitosamente", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        this.isVerification = false; // Oculta la verificación del código
+        this.isLogin = true; // Regresa al formulario de inicio de sesión
+      },
+      error: (error) => {
+        this.snackBar.open(`Error: ${error.message}`, "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        console.error("Error al verificar el código:", error.message);
+      },
+    });
+  }
+
+  onResendVerificationCode() {
+    this.authService.resendVerificationCode(this.registerUser.email).subscribe({
+      next: (response) => {
+        this.snackBar.open(
+          "El código de verificación ha sido reenviado",
+          "Cerrar",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          }
+        );
+      },
+      error: (error) => {
+        this.snackBar.open("Ocurrio un error", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
+        console.error("Error al reenviar código:", error.message);
+      },
+    });
+  }
+
+  onResetPassword() {
+    this.isPasswordReset = true;
+    this.isLogin = false;
+  }
+
+  onRequestPasswordReset() {
+    if (this.resetPasswordEmail) {
+      const resetRequest: PasswordResetRequest = {
+        email: this.resetPasswordEmail,
+      };
+
+      this.authService.requestPasswordReset(resetRequest).subscribe({
+        next: (response) => {
+          this.snackBar.open(
+            "Si el correo existe, se ha enviado un código de verificación",
+            "Cerrar",
+            {
+              duration: 3000,
+              horizontalPosition: "right",
+              verticalPosition: "top",
+            }
+          );
+          // Aquí copiamos el correo de resetPasswordEmail a resetPassword.email
+          this.resetPassword.email = this.resetPasswordEmail;
+          this.isPasswordChange = true; // Pasamos a la pantalla de cambio de contraseña
+          this.isPasswordReset = false;
+        },
+        error: (error) => {
+          this.snackBar.open(`Error: ${error.message}`, "Cerrar", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          });
+          console.error(
+            "Error al solicitar restablecimiento de contraseña:",
+            error.message
+          );
+        },
+      });
+    } else {
+      this.snackBar.open("Por favor ingresa tu correo", "Cerrar", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+      });
+    }
+  }
+
+  onChangePassword() {
+    if (
+      this.resetPassword.email &&
+      this.resetPassword.verificationCode &&
+      this.resetPassword.newPassword
+    ) {
+      this.authService.resetPassword(this.resetPassword).subscribe({
+        next: (response) => {
+          this.snackBar.open("Contraseña cambiada exitosamente", "Cerrar", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          });
+
+          // Cambiar a la vista de inicio de sesión
+          this.isLogin = true; // Asegura que se muestre el formulario de inicio de sesión
+          this.isPasswordChange = false; // Reinicia el estado de cambio de contraseña
+
+          // Reiniciar los campos de restablecimiento de contraseña
+          this.resetPassword = {
+            email: "",
+            verificationCode: "",
+            newPassword: "",
+          };
+        },
+        error: (error) => {
+          this.snackBar.open(`Error: ${error.message}`, "Cerrar", {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          });
+          console.error("Error al cambiar la contraseña:", error.message);
+        },
+      });
+    } else {
+      this.snackBar.open("Por favor completa todos los campos", "Cerrar", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+      });
+    }
+  }
+
+  toggleForm() {
+    this.isLogin = !this.isLogin;
+    this.isVerification = false;
+    this.isPasswordReset = false;
+    this.isPasswordChange = false; // Reinicia el estado de cambio de contraseña
   }
 }

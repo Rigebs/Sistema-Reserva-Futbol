@@ -1,9 +1,13 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Usuario } from "../models/usuario";
-import { BehaviorSubject, tap } from "rxjs";
+import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { environment } from "../../environments/environment";
+import { UsuarioRegistro } from "../models/usuario-registro";
+import { Verify } from "../models/verify-code";
+import { PasswordReset } from "../models/password-reset";
+import { PasswordResetRequest } from "../models/password-reset-request";
 
 @Injectable({
   providedIn: "root",
@@ -27,6 +31,86 @@ export class AuthService {
         }
       })
     );
+  }
+
+  register(user: any): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/signup`, user, { responseType: "text" })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (
+            error.status === 200 &&
+            !error.ok &&
+            typeof error.error === "string"
+          ) {
+            console.log("String de error recibido:", error.error);
+            return throwError(() => new Error(error.error));
+          } else {
+            return throwError(() => error);
+          }
+        })
+      );
+  }
+
+  verifyCode(verification: Verify): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/verify`, verification, { responseType: "text" })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (
+            error.status === 200 &&
+            !error.ok &&
+            typeof error.error === "string"
+          ) {
+            console.log("String de error recibido:", error.error);
+            return throwError(() => new Error(error.error));
+          } else {
+            return throwError(() => error);
+          }
+        })
+      );
+  }
+
+  resendVerificationCode(email: string): Observable<any> {
+    return this.http
+      .post(
+        `${this.apiUrl}/resend?email=${encodeURIComponent(email)}`,
+        {},
+        { responseType: "text" }
+      )
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Solicitar restablecimiento de contraseña
+  requestPasswordReset(
+    passwordResetRequest: PasswordResetRequest
+  ): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/password/reset-request`, passwordResetRequest, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Restablecer contraseña
+  resetPassword(passwordReset: PasswordReset): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/password/reset`, passwordReset, {
+        responseType: "text",
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
   }
 
   private storeToken(token: string) {

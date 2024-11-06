@@ -1,32 +1,158 @@
-<h2 mat-dialog-title>Iniciar sesión</h2>
-<mat-dialog-content>
-  <form>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Usuario</mat-label>
-      <input
-        matInput
-        placeholder="Usuario"
-        [(ngModel)]="user.identifier"
-        name="username"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Contraseña</mat-label>
-      <input
-        matInput
-        type="password"
-        placeholder="Contraseña"
-        [(ngModel)]="user.password"
-        name="password"
-      />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button (click)="onGoogleLogin()">
-    Iniciar sesión con Google
-  </button>
-  <button mat-flat-button color="primary" (click)="onLogin()">
-    Iniciar Sesión
-  </button>
-</mat-dialog-actions>
+<div class="dialog-content">
+  <div class="left-side">
+    <img src="campo4.jpg" alt="Login Image" />
+  </div>
+
+  <div class="right-side">
+    <h2 *ngIf="isLogin">Iniciar sesión</h2>
+    <h2
+      *ngIf="
+        !isLogin && !isVerification && !isPasswordReset && !isPasswordChange
+      "
+    >
+      Registrarse
+    </h2>
+    <h2 *ngIf="isVerification">Verificar Código</h2>
+    <h2 *ngIf="isPasswordReset">Recuperar Contraseña</h2>
+    <h2 *ngIf="isPasswordChange">Cambiar Contraseña</h2>
+
+    <!-- Formulario de Login -->
+    <div *ngIf="isLogin">
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Correo</mat-label>
+        <input matInput [(ngModel)]="loginUser.identifier" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="loginUser.password" />
+      </mat-form-field>
+
+      <div class="resend-container">
+        ¿Te has olvidado tu contraseña?
+        <a class="resend-link" (click)="onResetPassword()"> Recuperar aquí </a>
+      </div>
+
+      <div class="login-container">
+        <button class="button login" (click)="onLogin()">Iniciar sesión</button>
+      </div>
+
+      <div *ngIf="loginError" class="error-message">
+        <p>Usuario o contraseña incorrectos</p>
+      </div>
+
+      <div class="final">
+        <button class="btn" mat-button (click)="toggleForm()">
+          ¿No tienes cuenta? Regístrate
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <div
+      *ngIf="
+        !isLogin && !isVerification && !isPasswordReset && !isPasswordChange
+      "
+    >
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Correo</mat-label>
+        <input matInput [(ngModel)]="registerUser.email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Nombre de usuario</mat-label>
+        <input matInput [(ngModel)]="registerUser.username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="registerUser.password" />
+      </mat-form-field>
+
+      <button class="button register" color="primary" (click)="onRegister()">
+        Registrarse
+      </button>
+
+      <div class="final">
+        <button align="end" class="btn" mat-button (click)="toggleForm()">
+          ¿Ya tienes cuenta? Inicia sesión
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulario de Verificación -->
+    <div *ngIf="isVerification">
+      <p>
+        Se envió un código de verificación al correo:
+        <strong>{{ registerUser.email }}</strong>
+      </p>
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Código de Verificación</mat-label>
+        <input matInput [(ngModel)]="verificationCode" maxlength="6" />
+      </mat-form-field>
+
+      <div class="resend-container">
+        ¿No te llegó el código?
+        <a class="resend-link" (click)="onResendVerificationCode()">
+          Reenviar
+        </a>
+      </div>
+
+      <button class="button verify" color="primary" (click)="onVerifyCode()">
+        Verificar
+      </button>
+    </div>
+
+    <!-- Formulario de Recuperación de Contraseña -->
+    <div *ngIf="isPasswordReset && !isPasswordChange">
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Correo para recuperación</mat-label>
+        <input matInput [(ngModel)]="resetPasswordEmail" />
+      </mat-form-field>
+
+      <button
+        class="button verify"
+        color="primary"
+        (click)="onRequestPasswordReset()"
+      >
+        Solicitar Código de Verificación
+      </button>
+    </div>
+
+    <!-- Formulario para cambiar la contraseña -->
+    <div *ngIf="isPasswordChange">
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Correo</mat-label>
+        <input matInput disabled [(ngModel)]="resetPassword.email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Código de Verificación</mat-label>
+        <input matInput [(ngModel)]="resetPassword.verificationCode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Nueva Contraseña</mat-label>
+        <input
+          matInput
+          type="password"
+          [(ngModel)]="resetPassword.newPassword"
+        />
+      </mat-form-field>
+
+      <button
+        class="button change-password"
+        color="primary"
+        (click)="onChangePassword()"
+      >
+        Cambiar Contraseña
+      </button>
+
+      <div class="final">
+        <button class="btn" mat-button (click)="toggleForm()">
+          ¿Ya tienes cuenta? Inicia sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

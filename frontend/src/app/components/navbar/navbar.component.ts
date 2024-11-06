@@ -8,7 +8,7 @@ import { CommonModule } from "@angular/common";
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [MatToolbarModule, MatDialogModule, CommonModule],
+  imports: [MatToolbarModule, CommonModule],
   templateUrl: "./navbar.component.html",
   styleUrl: "./navbar.component.css",
 })
@@ -29,9 +29,17 @@ export class NavbarComponent implements OnInit {
   }
 
   openLoginDialog() {
-    this.dialog.open(LoginComponent, {
-      width: "380px",
-    });
+    // Verifica el tamaño de la pantalla
+    const isMobile = window.innerWidth <= 768;
+
+    // Configura el tamaño del diálogo según el tipo de dispositivo
+    const dialogConfig = {
+      minWidth: isMobile ? "" : "900px", // En móvil, el ancho es el 100% de la pantalla
+      minHeight: isMobile ? "auto" : "600px", // En móvil, la altura puede ser 'auto' o ajustada según el contenido
+    };
+
+    // Abre el diálogo con las configuraciones ajustadas
+    this.dialog.open(LoginComponent, dialogConfig);
   }
 
   logout() {
