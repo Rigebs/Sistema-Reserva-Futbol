@@ -16,8 +16,6 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    console.log("HOLA", "API: ", this.apiUrl);
-
     this.loadUserFromToken();
   }
 

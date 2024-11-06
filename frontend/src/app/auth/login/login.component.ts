@@ -39,7 +39,7 @@ export class LoginComponent {
       this.authService
         .login(this.user)
         .pipe(
-          catchError((error) => {
+          catchError(() => {
             this.loginError = true;
             this.snackBar.open("Error en el inicio de sesión", "Cerrar", {
               duration: 3000,

@@ -4,8 +4,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const autoToken = localStorage.getItem("authToken");
 
   if (autoToken) {
-    console.log("Token encontrado:", autoToken);
-
     const clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${autoToken}`,
@@ -13,8 +11,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
 
     return next(clonedRequest);
-  } else {
-    console.log("No se encontró token");
   }
 
   return next(req);
