@@ -16,9 +16,7 @@
             "outputPath": "dist/frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -34,23 +32,16 @@
           },
           "configurations": {
             "production": {
-              "budgets": [
+              "outputHashing": "all",
+              "fileReplacements": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ts"
                 }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
-              "extractLicenses": false,
               "sourceMap": true,
               "fileReplacements": [
                 {
@@ -80,10 +71,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
