@@ -31,9 +31,9 @@ public class SucursalController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createSucursal(@RequestBody Sucursal sucursal) {
-        sucursalService.save(sucursal);
-        return new ResponseEntity<>("Sucursal creada con éxito", HttpStatus.CREATED);
+    public ResponseEntity<Sucursal> save(@RequestBody Sucursal sucursal) {
+        Sucursal sucursal1=sucursalService.save(sucursal);
+        return new ResponseEntity<>(sucursal1, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

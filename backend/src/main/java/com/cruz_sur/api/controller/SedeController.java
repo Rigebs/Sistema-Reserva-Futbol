@@ -31,9 +31,9 @@ public class SedeController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createSede(@RequestBody Sede sede) {
-        sedeService.save(sede);
-        return new ResponseEntity<>("Sede creada con éxito", HttpStatus.CREATED);
+    public ResponseEntity<Sede> save(@RequestBody Sede sede) {
+       Sede sede1=  sedeService.save(sede);
+        return new ResponseEntity<>(sede1, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
