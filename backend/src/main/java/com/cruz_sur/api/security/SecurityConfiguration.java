@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/v1/campos/with-sede").permitAll()
+                        .requestMatchers("/api/v1/campos/available-sedes").permitAll()
                         .requestMatchers("/api/v1/campos//usuario/{usuarioId}/with-sede").permitAll()
                         .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()

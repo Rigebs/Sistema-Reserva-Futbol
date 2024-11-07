@@ -2,12 +2,14 @@ package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.dto.CampoSedeDTO;
+import com.cruz_sur.api.dto.CamposHomeDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.CampoRepository;
 import com.cruz_sur.api.repository.UserRepository;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class CampoService implements ICampoService {
 
     private final CampoRepository campoRepository;
     private final UserRepository userRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Campo save(Campo campo) {
@@ -116,6 +119,28 @@ public class CampoService implements ICampoService {
                 campo.getDescripcion(),
                 campo.getEstado(),
                 campo.getUsuario() != null ? campo.getUsuario().getId() : null
+        );
+    }
+
+    /**
+     * Llama al procedimiento almacenado `GetAvailableSedes` y devuelve la lista de resultados.
+     *
+     * @param distritoNombre El nombre del distrito.
+     * @param provinciaNombre El nombre de la provincia.
+     * @param departamentoNombre El nombre del departamento.
+     * @param fechaReserva La fecha de la reserva.
+     * @return Lista de CampoSedeDTO con los resultados.
+     */
+    @Override
+    public List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva) {
+        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?)}";
+        return jdbcTemplate.query(sql, new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva},
+                (rs, rowNum) -> new CamposHomeDTO(
+                        rs.getLong("user_id"),
+                        rs.getString("compania_nombre"),
+                        rs.getString("compania_imagen_url"),
+                        rs.getString("direccion")
+                )
         );
     }
 }
