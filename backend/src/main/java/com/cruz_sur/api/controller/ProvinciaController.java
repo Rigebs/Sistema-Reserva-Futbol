@@ -28,7 +28,7 @@ public class ProvinciaController {
     }
 
     @GetMapping("/departamento/{departamentoId}")
-    public List<Provincia> findDepartamentoById(@PathVariable Long departamentoId){
-        return iProvinciaService.findDepartamentoById(departamentoId);
+    public List<Provincia> findByDepartamentoId(@PathVariable Long departamentoId){
+        return iProvinciaService.findByDepartamentoId(departamentoId);
     }
 }

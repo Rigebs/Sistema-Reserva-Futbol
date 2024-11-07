@@ -25,7 +25,7 @@ public class ProvinciaService implements IProvinciaService {
     }
 
     @Override
-    public List<Provincia> findDepartamentoById(Long departamentoId) {
-        return provinciaRepository.findDepartamentoById(departamentoId);
+    public List<Provincia> findByDepartamentoId(Long departamentoId) {
+        return provinciaRepository.findByDepartamentoId(departamentoId);
     }
 }
