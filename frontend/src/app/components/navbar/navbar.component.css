@@ -18,7 +18,7 @@ body {
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 15px;
   display: flex;
@@ -71,6 +71,22 @@ body {
     255,
     0.3
   ); /* Resaltar botones de iniciar y cerrar sesión */
+}
+
+/* Estilo específico para el botón "Únete como sede" */
+.join-us-button {
+  background-color: #ffc107; /* Color destacado */
+  color: #213759;
+  font-weight: bold;
+  padding: 12px 25px; /* Tamaño un poco mayor */
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s; /* Transición suave */
+}
+
+.join-us-button:hover {
+  background-color: #ff9800; /* Color al hacer hover */
+  transform: scale(1.1); /* Zoom más marcado en hover */
 }
 
 .welcome-message {

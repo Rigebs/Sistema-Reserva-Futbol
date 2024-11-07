@@ -3,8 +3,17 @@
     <div class="logo">Zemply</div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li><button class="nav-button">Servicios</button></li>
-        <li><button class="nav-button">Sobre Nosotros</button></li>
+        <li>
+          <button
+            class="nav-button join-us-button"
+            (click)="openFieldOfferDialog()"
+          >
+            Ofrece tus campos
+          </button>
+        </li>
+        <li>
+          <button class="nav-button">Sobre Nosotros</button>
+        </li>
         <li *ngIf="!currentUser">
           <button class="nav-button highlight" (click)="openLoginDialog()">
             Iniciar sesión

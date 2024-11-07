@@ -4,6 +4,8 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { LoginComponent } from "../../auth/login/login.component";
 import { AuthService } from "../../services/auth.service";
 import { CommonModule } from "@angular/common";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-navbar",
@@ -16,7 +18,12 @@ export class NavbarComponent implements OnInit {
   menuOpen = false;
   currentUser: string | null = null;
 
-  constructor(private dialog: MatDialog, private authService: AuthService) {}
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.authService.currentUser$.subscribe((user) => {
@@ -29,20 +36,41 @@ export class NavbarComponent implements OnInit {
   }
 
   openLoginDialog() {
-    // Verifica el tamaño de la pantalla
     const isMobile = window.innerWidth <= 768;
 
-    // Configura el tamaño del diálogo según el tipo de dispositivo
     const dialogConfig = {
-      minWidth: isMobile ? "" : "900px", // En móvil, el ancho es el 100% de la pantalla
-      minHeight: isMobile ? "auto" : "600px", // En móvil, la altura puede ser 'auto' o ajustada según el contenido
+      minWidth: isMobile ? "" : "900px",
+      minHeight: isMobile ? "" : "600px",
     };
 
-    // Abre el diálogo con las configuraciones ajustadas
     this.dialog.open(LoginComponent, dialogConfig);
   }
 
   logout() {
     this.authService.logout();
+  }
+
+  registrarSede() {
+    this.router.navigate(["/registrar-sede"]);
+  }
+
+  openFieldOfferDialog() {
+    if (!this.currentUser) {
+      // Si el usuario no está autenticado, muestra el snackbar
+
+      // Abre el diálogo de inicio de sesión
+      this.openLoginDialog();
+      this.snackBar.open(
+        "Debes iniciar sesión para ofrecer tus campos",
+        "Cerrar",
+        {
+          duration: 3000,
+          verticalPosition: "top",
+          horizontalPosition: "center",
+        }
+      );
+    } else {
+      this.registrarSede();
+    }
   }
 }

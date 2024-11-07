@@ -4,19 +4,16 @@
   <app-carousel [images]="images"></app-carousel>
 </section>
 
-<div class="district-selector">
-  <h5>Selecciona tu distrito</h5>
-  <mat-form-field appearance="outline" class="district-select">
-    <mat-select [(value)]="selectedDistrict">
-      <mat-option *ngFor="let district of districts" [value]="district">
-        {{ district }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-
 <div class="campos-container">
   <div class="demo-inline-calendar-card">
+    <h5>Selecciona tu distrito</h5>
+    <mat-form-field appearance="outline" class="district-select">
+      <mat-select [(value)]="selectedDistrict">
+        <mat-option *ngFor="let district of districts" [value]="district">
+          {{ district }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
     <mat-calendar [(selected)]="selected" class="calendar"></mat-calendar>
   </div>
 

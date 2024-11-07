@@ -5,6 +5,7 @@ import { PasarelaPagoComponent } from "./pages/pasarela-pago/pasarela-pago.compo
 import { PanelAdminComponent } from "./pages/panel-admin/panel-admin.component";
 import { GestionarCamposComponent } from "./admin/gestionar-campos/gestionar-campos.component";
 import { ReservacionesComponent } from "./admin/reservaciones/reservaciones.component";
+import { RegistrarSedeComponent } from "./pages/registrar-sede/registrar-sede.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -14,4 +15,5 @@ export const routes: Routes = [
   { path: "panel-admin", component: PanelAdminComponent },
   { path: "panel-admin/campos", component: GestionarCamposComponent },
   { path: "panel-admin/reservaciones", component: ReservacionesComponent },
+  { path: "registrar-sede", component: RegistrarSedeComponent },
 ];

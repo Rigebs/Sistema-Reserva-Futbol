@@ -14,7 +14,7 @@
 
 .content {
   margin-left: 250px; /* Separa el contenido del sidebar */
-  max-width: 1200px; /* Máximo ancho del contenido */
+  max-width: 1800px; /* Máximo ancho del contenido */
   padding-top: 7px;
   background-color: #f5f5f5; /* Color de fondo opcional */
   margin: 0 auto; /* Centra el contenido cuando no ocupa toda la pantalla */

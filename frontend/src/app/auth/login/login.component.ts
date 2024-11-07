@@ -13,6 +13,7 @@ import { UsuarioRegistro } from "../../models/usuario-registro";
 import { Verify } from "../../models/verify-code";
 import { PasswordResetRequest } from "../../models/password-reset-request";
 import { PasswordReset } from "../../models/password-reset";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "app-login",
@@ -23,6 +24,7 @@ import { PasswordReset } from "../../models/password-reset";
     FormsModule,
     MatInputModule,
     CommonModule,
+    MatIconModule,
   ],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.css",

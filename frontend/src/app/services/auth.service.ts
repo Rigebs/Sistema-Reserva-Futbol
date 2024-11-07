@@ -8,6 +8,7 @@ import { UsuarioRegistro } from "../models/usuario-registro";
 import { Verify } from "../models/verify-code";
 import { PasswordReset } from "../models/password-reset";
 import { PasswordResetRequest } from "../models/password-reset-request";
+import { UpdateClientSede } from "../models/update-client-sede";
 
 @Injectable({
   providedIn: "root",

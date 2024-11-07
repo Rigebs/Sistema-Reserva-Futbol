@@ -1,0 +1,217 @@
+<div class="container">
+  <div class="intro-text">
+    <h2>¡Bienvenido a nuestro sistema de registro de sedes!</h2>
+    <p>
+      Completa los pasos a continuación para registrar tu sede y comenzar a
+      publicar tus campos de fútbol. Este proceso permitirá que tu sede sea
+      visible en nuestro sistema, facilitando que más personas puedan descubrir
+      y reservar tus instalaciones.
+    </p>
+  </div>
+  <div class="stepper">
+    <mat-stepper [orientation]="orientation">
+      <!-- Paso 1: Registrar Empresa -->
+      <mat-step
+        [stepControl]="empresaFormGroup"
+        [completed]="empresaFormGroup.valid"
+      >
+        <form [formGroup]="empresaFormGroup">
+          <ng-template matStepLabel>Registrar Empresa</ng-template>
+
+          <div class="grid-container">
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>RUC</mat-label>
+              <input matInput formControlName="ruc" required />
+              <button mat-icon-button matSuffix (click)="consultarReniec()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Razón Social</mat-label>
+              <input matInput formControlName="razonSocial" readonly />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" required />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Dirección</mat-label>
+              <input matInput formControlName="direccion" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Departamento</mat-label>
+              <mat-select
+                formControlName="departamento"
+                (selectionChange)="onDepartamentoChange()"
+              >
+                <mat-option
+                  *ngFor="let dept of departamentos"
+                  [value]="dept.id"
+                >
+                  {{ dept.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Provincia</mat-label>
+              <mat-select
+                formControlName="provincia"
+                (selectionChange)="onProvinciaChange()"
+              >
+                <mat-option
+                  *ngFor="let prov of filteredProvincias"
+                  [value]="prov.id"
+                >
+                  {{ prov.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Distrito</mat-label>
+              <mat-select formControlName="distrito">
+                <mat-option
+                  *ngFor="let dist of filteredDistritos"
+                  [value]="dist.id"
+                >
+                  {{ dist.nombre }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="button-container">
+            <button
+              mat-button
+              matStepperNext
+              [disabled]="!empresaFormGroup.valid"
+            >
+              Siguiente
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Paso 2: Registrar Compañía -->
+      <mat-step
+        [stepControl]="companiaFormGroup"
+        [completed]="companiaFormGroup.valid"
+      >
+        <form [formGroup]="companiaFormGroup">
+          <ng-template matStepLabel>Registrar Compañía</ng-template>
+
+          <div class="grid-container">
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Nombre de la Compañía</mat-label>
+              <input matInput formControlName="nombre" required />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Concepto</mat-label>
+              <input matInput formControlName="concepto" required />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Correo Electrónico</mat-label>
+              <input matInput formControlName="correo" required type="email" />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Página Web</mat-label>
+              <input matInput formControlName="pagWeb" />
+            </mat-form-field>
+
+            <div class="grid-item">
+              <label>Selecciona una imagen</label>
+              <input type="file" (change)="onFileSelected($event)" />
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button mat-button matStepperPrevious>Anterior</button>
+            <button
+              mat-button
+              matStepperNext
+              [disabled]="!companiaFormGroup.valid"
+            >
+              Siguiente
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Paso 3: Registrar Sucursal -->
+      <mat-step
+        [stepControl]="sucursalFormGroup"
+        [completed]="sucursalFormGroup.valid"
+      >
+        <form [formGroup]="sucursalFormGroup">
+          <ng-template matStepLabel>Registrar Sucursal</ng-template>
+
+          <div class="grid-container">
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Nombre de la Sucursal</mat-label>
+              <input matInput formControlName="nombre" required />
+            </mat-form-field>
+          </div>
+
+          <div class="button-container">
+            <button mat-button matStepperPrevious>Anterior</button>
+            <button
+              mat-button
+              matStepperNext
+              [disabled]="!sucursalFormGroup.valid"
+            >
+              Siguiente
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Paso 4: Registrar Sede -->
+      <mat-step [stepControl]="sedeFormGroup" [completed]="sedeFormGroup.valid">
+        <form [formGroup]="sedeFormGroup">
+          <ng-template matStepLabel>Registrar Sede</ng-template>
+
+          <div class="grid-container">
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Nombre de la Sede</mat-label>
+              <input matInput formControlName="nombre" required />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Hora de Inicio</mat-label>
+              <input
+                matInput
+                formControlName="horaInicio"
+                required
+                type="time"
+              />
+            </mat-form-field>
+
+            <mat-form-field class="grid-item" appearance="outline">
+              <mat-label>Hora de Fin</mat-label>
+              <input matInput formControlName="horaFin" required type="time" />
+            </mat-form-field>
+          </div>
+
+          <div class="button-container">
+            <button mat-button matStepperPrevious>Anterior</button>
+            <button
+              mat-button
+              [disabled]="!sedeFormGroup.valid"
+              (click)="submitForm()"
+            >
+              Finalizar
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
+  </div>
+</div>

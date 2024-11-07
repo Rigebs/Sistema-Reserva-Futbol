@@ -47,8 +47,9 @@ app-carousel {
 
 /* Ajuste del calendario */
 .demo-inline-calendar-card {
-  width: 100%; /* Asegura que ocupe todo el ancho disponible del contenedor */
-  max-width: 300px; /* Máximo ancho del calendario */
+  width: 100%;
+  max-width: 300px;
+  margin-left: 35px;
 }
 
 .calendar {
@@ -59,11 +60,12 @@ app-carousel {
 /* Estilos para el contenedor de los campos */
 .campos-container {
   display: flex;
-  max-width: 1200px;
+  max-width: 1800px;
   width: 100%;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
+  justify-content: center;
 }
 
 .campos-lista {
@@ -71,7 +73,6 @@ app-carousel {
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  width: 100%;
   padding-bottom: 20px;
 }
 
