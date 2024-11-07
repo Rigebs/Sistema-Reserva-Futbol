@@ -152,12 +152,11 @@ public class ReservaService implements IReservaService {
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String query = "EXEC ALL_RESERVAS @UserId = ?, @ACTION = 'C'";
+        String query = "CALL ALL_RESERVAS(?, 'C')";
         Long total = jdbcTemplate.queryForObject(query, new Object[]{userId}, Long.class);
 
         return new TotalReservasResponse(total);
     }
-
 
     @Override
     public List<ReservaDisplayDTO> getReservasForLoggedUser() {
@@ -166,7 +165,7 @@ public class ReservaService implements IReservaService {
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String query = "EXEC ALL_RESERVAS ?, @ACTION = 'L'";
+        String query = "CALL ALL_RESERVAS(?, 'L')";
 
         return jdbcTemplate.query(query, new Object[]{userId}, (rs, rowNum) -> new ReservaDisplayDTO(
                 rs.getLong(1),
