@@ -48,6 +48,24 @@ body {
   margin-left: 20px;
 }
 
+/* Estilo específico para el botón "Ir al panel admin" */
+.admin-button {
+  background-color: #9c27b0;
+  color: #ffffff;
+  /* font-weight: bold; */
+  padding: 10px 25px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+  font-size: 16px;
+}
+
+.admin-button:hover {
+  background-color: #7b1fa2; /* Púrpura más oscuro para hover */
+  transform: scale(1.1); /* Zoom más marcado en hover */
+}
+
+
 .nav-button {
   color: white;
   background: transparent; /* Botones transparentes para resaltar el fondo */

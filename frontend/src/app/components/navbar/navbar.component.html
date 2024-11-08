@@ -3,12 +3,14 @@
     <div class="logo">Zemply</div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li>
-          <button
-            class="nav-button join-us-button"
-            (click)="openFieldOfferDialog()"
-          >
+        <li *ngIf="!isAdmin">
+          <button class="nav-button join-us-button" (click)="openFieldOfferDialog()">
             Ofrece tus campos
+          </button>
+        </li>
+        <li *ngIf="isAdmin">
+          <button class="admin-button" (click)="goToAdminPanel()">
+            Ir al panel admin
           </button>
         </li>
         <li>

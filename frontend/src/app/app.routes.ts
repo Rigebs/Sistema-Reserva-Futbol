@@ -6,14 +6,20 @@ import { PanelAdminComponent } from "./pages/panel-admin/panel-admin.component";
 import { GestionarCamposComponent } from "./admin/gestionar-campos/gestionar-campos.component";
 import { ReservacionesComponent } from "./admin/reservaciones/reservaciones.component";
 import { RegistrarSedeComponent } from "./pages/registrar-sede/registrar-sede.component";
+import { AuthGuard } from "./auth.guard";
+import { AdminGuard } from "./guards/admin.guard";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
   { path: "home", component: HomeComponent },
   { path: "pasarela-pago", component: PasarelaPagoComponent },
   { path: "reservar-campo", component: ReservarCampoComponent },
-  { path: "panel-admin", component: PanelAdminComponent },
+  {
+    path: ':usuario/panel-admin',
+    component: PanelAdminComponent,
+    canActivate: [AuthGuard, AdminGuard]
+  },
   { path: "panel-admin/campos", component: GestionarCamposComponent },
   { path: "panel-admin/reservaciones", component: ReservacionesComponent },
-  { path: "registrar-sede", component: RegistrarSedeComponent },
+  { path: "registrar-sede", component: RegistrarSedeComponent, canActivate: [AuthGuard] },
 ];

@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  height: 93vh; /* Esto hace que ocupe el 100% de la altura de la ventana */
+  height: 83vh; /* Esto hace que ocupe el 100% de la altura de la ventana */
   box-sizing: border-box; /* Incluye el padding dentro del cálculo del alto */
 }
 

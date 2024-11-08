@@ -26,6 +26,8 @@ import { EmpresaService } from "../../services/empresa.service";
 import { CompaniaService } from "../../services/compania.service";
 import { UpdateClientCompania } from "../../models/update-client-sede";
 import { UsuarioService } from "../../services/usuario.service";
+import { Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: "app-registrar-sede",
@@ -65,7 +67,9 @@ export class RegistrarSedeComponent implements OnInit {
     private distritoService: DistritoService,
     private empresaService: EmpresaService,
     private companiaService: CompaniaService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   consultarReniec() {
@@ -172,9 +176,9 @@ export class RegistrarSedeComponent implements OnInit {
   submitForm() {
     const empresaFormValue = this.empresaFormGroup.value;
     const distritoId = empresaFormValue.distrito;
-    const distrito: Distrito = { id: distritoId };
+    const distrito = { id: distritoId };
 
-    const empresa: Empresa = {
+    const empresa = {
       ruc: empresaFormValue.ruc,
       razonSocial: empresaFormValue.razonSocial,
       telefono: empresaFormValue.telefono,
@@ -183,8 +187,6 @@ export class RegistrarSedeComponent implements OnInit {
     };
 
     this.empresaService.createEmpresa(empresa).subscribe((empresaData) => {
-      console.log("Empresa creada:", empresaData);
-
       let horaInicio = this.companiaFormGroup.get("horaInicio")?.value;
       let horaFin = this.companiaFormGroup.get("horaFin")?.value;
 
@@ -196,7 +198,7 @@ export class RegistrarSedeComponent implements OnInit {
         horaFin += ":00";
       }
 
-      const compania: Compania = {
+      const compania = {
         nombre: this.companiaFormGroup.get("nombre")?.value,
         concepto: this.companiaFormGroup.get("concepto")?.value,
         correo: this.companiaFormGroup.get("correo")?.value,
@@ -209,17 +211,26 @@ export class RegistrarSedeComponent implements OnInit {
       this.companiaService
         .saveCompania(this.qrFile!, this.file!, compania)
         .subscribe((companiaData) => {
-          const updateRequest: UpdateClientCompania = {
+          // Suscribirse a currentUser$ para obtener el nombre de usuario (sub) desde el token
+          this.authService.currentUser$.subscribe((usuario) => {
+            if (usuario) {
+              // Redirigir a la ruta del panel de administración de la compañía
+              this.router.navigate([`/${usuario}/panel-admin`]);
+            } else {
+              console.error("No se pudo obtener el usuario desde el token");
+            }
+          });
+
+          const updateRequest = {
             clienteId: null,
             companiaId: companiaData.id,
           };
 
-          this.usuarioService
-            .updateClientOrSede(updateRequest)
-            .subscribe((response) => {
-              console.log("Relación cliente-sede actualizada:", response);
-            });
+          this.usuarioService.updateClientOrSede(updateRequest).subscribe((response) => {
+            console.log("Relación cliente-sede actualizada:", response);
+          });
         });
     });
   }
+  
 }

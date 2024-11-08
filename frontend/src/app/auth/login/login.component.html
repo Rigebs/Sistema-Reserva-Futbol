@@ -62,6 +62,10 @@
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Nombre de usuario</mat-label>
         <input matInput [(ngModel)]="registerUser.username" />
+        <mat-error *ngIf="!isUsernameValid">
+          El nombre de usuario solo debe contener letras y números, sin
+          espacios.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="input-field">

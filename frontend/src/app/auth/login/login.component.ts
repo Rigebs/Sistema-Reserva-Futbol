@@ -45,6 +45,10 @@ export class LoginComponent {
     newPassword: "",
   };
 
+  usernamePattern: RegExp = /^[a-zA-Z0-9]+$/;
+
+  isUsernameValid: boolean = true;
+
   constructor(
     public dialogRef: MatDialogRef<LoginComponent>,
     private authService: AuthService,
@@ -85,17 +89,24 @@ export class LoginComponent {
   }
 
   onRegister() {
+    this.isUsernameValid = this.usernamePattern.test(this.registerUser.username);
+    
+    if (!this.isUsernameValid) {
+      this.snackBar.open("El nombre de usuario solo debe contener letras y números, sin espacios.", "Cerrar", {
+        duration: 3000,
+        horizontalPosition: "right",
+        verticalPosition: "top",
+      });
+      return;
+    }
+
     this.authService.register(this.registerUser).subscribe({
       next: () => {
-        this.snackBar.open(
-          "Registro exitoso, por favor verifica tu email",
-          "Cerrar",
-          {
-            duration: 3000,
-            horizontalPosition: "right",
-            verticalPosition: "top",
-          }
-        );
+        this.snackBar.open("Registro exitoso, por favor verifica tu email", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        });
         this.isVerification = true;
       },
       error: (error) => {
@@ -108,7 +119,6 @@ export class LoginComponent {
       },
     });
   }
-
   onVerifyCode() {
     const verify: Verify = {
       email: this.registerUser.email,

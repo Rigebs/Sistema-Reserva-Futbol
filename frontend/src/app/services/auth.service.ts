@@ -111,6 +111,10 @@ export class AuthService {
       );
   }
 
+  decodeToken(token: string): any {
+    return jwtDecode(token);
+  }
+
   private storeToken(token: string) {
     localStorage.setItem(this.authTokenKey, token);
     this.setUserFromToken(token);
