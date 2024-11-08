@@ -7,12 +7,14 @@ import com.cruz_sur.api.repository.BoletaRepository;
 import com.cruz_sur.api.repository.FacturaRepository;
 import com.cruz_sur.api.repository.TicketRepository;
 import com.cruz_sur.api.repository.DetalleVentaRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class ReservaResponseBuilder {
 
     private final BoletaRepository boletaRepository;
@@ -20,14 +22,10 @@ public class ReservaResponseBuilder {
     private final TicketRepository ticketRepository;
     private final DetalleVentaRepository detalleVentaRepository;
 
-    public ReservaResponseBuilder(BoletaRepository boletaRepository, FacturaRepository facturaRepository, TicketRepository ticketRepository, DetalleVentaRepository detalleVentaRepository) {
-        this.boletaRepository = boletaRepository;
-        this.facturaRepository = facturaRepository;
-        this.ticketRepository = ticketRepository;
-        this.detalleVentaRepository = detalleVentaRepository;
-    }
+
 
     public ReservaResponseDTO build(Reserva reserva) {
+        // Obtener datos del cliente
         String cliente = reserva.getCliente().getPersona() != null
                 ? reserva.getCliente().getPersona().getNombreCompleto()
                 : reserva.getCliente().getEmpresa().getRazonSocial();
@@ -44,6 +42,7 @@ public class ReservaResponseBuilder {
                 ? reserva.getCliente().getPersona().getCelular()
                 : reserva.getCliente().getEmpresa().getTelefono();
 
+        // Obtenemos el número y serie del comprobante según el tipo
         String numero = null;
         String serie = null;
 
@@ -73,6 +72,7 @@ public class ReservaResponseBuilder {
                 throw new RuntimeException("Invalid comprobante type");
         }
 
+        // Detalles de venta
         List<DetalleVenta> detallesVenta = detalleVentaRepository.findByVenta(reserva);
         List<DetalleVentaDTO> detalleVentaDTOs = detallesVenta.stream()
                 .map(detalle -> DetalleVentaDTO.builder()
@@ -84,13 +84,14 @@ public class ReservaResponseBuilder {
                         .build())
                 .collect(Collectors.toList());
 
+        // Obtenemos los datos de la compañía a partir del campo
         Campo campo = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo();
-        Compania compania = campo != null && campo.getUsuario() != null && campo.getUsuario().getSede() != null
-                ? campo.getUsuario().getSede().getSucursal().getCompania()
-                : null;
+        Compania compania = campo != null ? campo.getUsuario().getSede() : null;  // Ahora obtenemos directamente de 'Compania'
 
+        // Obtenemos la imagen de la compañía
         Imagen imagen = compania != null ? compania.getImagen() : null;
 
+        // Construcción del DTO de respuesta
         return ReservaResponseDTO.builder()
                 .reservaId(reserva.getId())
                 .cliente(cliente)
@@ -114,11 +115,6 @@ public class ReservaResponseBuilder {
                 .direccionEmpresa(compania != null ? compania.getEmpresa().getDireccion() : null)
                 .concepto(compania != null ? compania.getConcepto() : null)
                 .imageUrl(imagen != null ? imagen.getImageUrl() : null)
-                .sucursalNombre(campo != null && campo.getUsuario().getSede() != null
-                        ? campo.getUsuario().getSede().getSucursal().getNombre() : null)
-                .paginaWeb(compania != null ? compania.getPagWeb() : null)
-                .sedeNombre(campo != null && campo.getUsuario().getSede() != null
-                        ? campo.getUsuario().getSede().getNombre() : null)
                 .detallesVenta(detalleVentaDTOs)
                 .build();
     }

@@ -1,7 +1,6 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.dto.CampoDTO;
-import com.cruz_sur.api.dto.CampoSedeDTO;
 import com.cruz_sur.api.dto.CamposHomeDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.service.ICampoService;
@@ -41,14 +40,6 @@ public class CampoController {
                 : new ResponseEntity<>(campos, HttpStatus.OK);
     }
 
-    @GetMapping("/with-sede")
-    public ResponseEntity<List<CampoSedeDTO>> getAllCamposWithSede() {
-        List<CampoSedeDTO> campos = campoService.findAllSedeInfo();
-        return campos.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(campos, HttpStatus.OK);
-    }
-
     @PostMapping
     public ResponseEntity<String> save(@RequestBody Campo campo) {
         campoService.save(campo);
@@ -67,15 +58,7 @@ public class CampoController {
         String statusMessage = status == 1 ? "activado" : "desactivado";
         return new ResponseEntity<>("Campo " + statusMessage + " con éxito", HttpStatus.OK);
     }
-    /**
-     * Endpoint que ejecuta el procedimiento almacenado GetAvailableSedes.
-     *
-     * @param distritoNombre El nombre del distrito.
-     * @param provinciaNombre El nombre de la provincia.
-     * @param departamentoNombre El nombre del departamento.
-     * @param fechaReserva La fecha de la reserva.
-     * @return Lista de CampoSedeDTO con los resultados.
-     */
+
     @GetMapping("/available-sedes")
     public ResponseEntity<List<CamposHomeDTO>> getAvailableSedes(
             @RequestParam String distritoNombre,

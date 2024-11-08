@@ -14,4 +14,5 @@ public class CampoDTO {
     private String descripcion;
     private Character estado;
     private Long usuarioId;
+    private Long tipoDeporteId;
 }

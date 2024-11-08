@@ -1,6 +1,5 @@
 package com.cruz_sur.api.controller;
 
-import com.cruz_sur.api.dto.CompaniaDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.service.ICompaniaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,20 +22,19 @@ public class CompaniaController {
 
     @PostMapping
     public ResponseEntity<Compania> save(@RequestParam("file") MultipartFile file,
+                                         @RequestParam("qrFile") MultipartFile qrFile,
                                          @RequestParam("compania") String companiaJson) throws IOException {
-        // Convierte el JSON a un objeto Compania
         ObjectMapper objectMapper = new ObjectMapper();
         Compania compania = objectMapper.readValue(companiaJson, Compania.class);
 
-        // Llama al servicio para guardar la compañía y el archivo
-        Compania savedCompania = companiaService.save(compania, file);
+        Compania savedCompania = companiaService.save(compania, file, qrFile);
 
         return ResponseEntity.ok(savedCompania);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Compania> update(@PathVariable Long id, @RequestParam("compania") String companiaJson) throws IOException {
-        // Convierte el JSON a un objeto Compania
+    public ResponseEntity<Compania> update(@PathVariable Long id,
+                                           @RequestParam("compania") String companiaJson) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Compania compania = objectMapper.readValue(companiaJson, Compania.class);
 
@@ -49,8 +47,8 @@ public class CompaniaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CompaniaDTO>> all() {
-        List<CompaniaDTO> companias = companiaService.all();
+    public ResponseEntity<List<Compania>> all() {
+        List<Compania> companias = companiaService.all();
         return new ResponseEntity<>(companias, HttpStatus.OK);
     }
 
@@ -72,16 +70,14 @@ public class CompaniaController {
     }
 
     @PutMapping("/{id}/imagen")
-    public ResponseEntity<Compania> updateCompaniaImage(@PathVariable Long id,
-                                                        @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Compania> updateCompaniaImages(@PathVariable Long id,
+                                                         @RequestParam("file") MultipartFile file,
+                                                         @RequestParam("qrFile") MultipartFile qrFile) throws IOException {
         Optional<Compania> companiaOpt = companiaService.byId(id);
-
         if (companiaOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
-        Compania updatedCompania = companiaService.updateCompaniaImage(file, companiaOpt.get());
+        Compania updatedCompania = companiaService.updateCompaniaImages(file, qrFile, companiaOpt.get());
         return ResponseEntity.ok(updatedCompania);
     }
-
 }

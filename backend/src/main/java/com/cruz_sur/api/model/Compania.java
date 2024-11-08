@@ -1,9 +1,13 @@
 package com.cruz_sur.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,7 +25,17 @@ public class Compania {
     private String nombre;
     private String concepto;
     private String correo;
-    private String pagWeb;
+    private String celular;
+
+    @Column(name = "horaInicio", nullable = false)
+    private Time horaInicio;
+
+    @Column(name = "horaFin", nullable = false)
+    private Time horaFin;
+
+    @OneToMany(mappedBy = "compania", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Opinion> opiniones = new ArrayList<>();
 
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;
@@ -29,13 +43,17 @@ public class Compania {
     private LocalDateTime fechaModificacion;
 
     @Column(name = "estado", nullable = false)
-    private Character estado = '1';
-
-    @ManyToOne
-    @JoinColumn(name = "imagen_id", nullable = false)
-    private Imagen imagen;
+    private Character estado ;
 
     @ManyToOne
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;
+
+    @ManyToOne
+    @JoinColumn(name = "imagen_id", nullable = false)
+    private Imagen imagen; // Imagen principal
+
+    @ManyToOne
+    @JoinColumn(name = "qr_imagen_id", nullable = true)
+    private Imagen qrImagen; // Imagen para el código QR
 }

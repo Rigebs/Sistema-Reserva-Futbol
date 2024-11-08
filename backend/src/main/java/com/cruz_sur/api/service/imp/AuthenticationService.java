@@ -7,12 +7,12 @@ import com.cruz_sur.api.dto.RegisterUserDto;
 import com.cruz_sur.api.dto.UpdateClientAndSedeDto;
 import com.cruz_sur.api.dto.VerifyUserDto;
 import com.cruz_sur.api.model.Cliente;
+import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.model.Role;
-import com.cruz_sur.api.model.Sede;
 import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.ClienteRepository;
+import com.cruz_sur.api.repository.CompaniaRepository;
 import com.cruz_sur.api.repository.RoleRepository;
-import com.cruz_sur.api.repository.SedeRepository;
 import com.cruz_sur.api.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
@@ -35,9 +35,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final RoleRepository roleRepository;
-    private final SedeRepository sedeRepository;
+    private final CompaniaRepository companiaRepository;
     private final ClienteRepository clienteRepository;
-
+    private final JwtService jwtService;
 
     public User signup(RegisterUserDto registerUserDto) {
         if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
@@ -73,18 +73,14 @@ public class AuthenticationService {
         return newUser;
     }
 
-    public void updateClientAndSede(Long userId, UpdateClientAndSedeDto dto) {
+    public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setCliente(null);
-        user.setSede(null);
-        user.getRoles().clear();
-
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if (dto.getClienteId() != null && dto.getSedeId() != null) {
-            throw new IllegalArgumentException("User cannot have both cliente and sede.");
+        if (dto.getClienteId() != null && dto.getCompaniaId() != null) {
+            throw new IllegalArgumentException("User cannot have both cliente and compania.");
         }
 
         if (dto.getClienteId() != null) {
@@ -94,24 +90,42 @@ public class AuthenticationService {
 
             Role userRole = roleRepository.findByName("ROLE_USER")
                     .orElseThrow(() -> new RuntimeException("User role not found"));
-            user.getRoles().add(userRole);
-        }
 
-        if (dto.getSedeId() != null) {
-            Sede sede = sedeRepository.findById(dto.getSedeId())
-                    .orElseThrow(() -> new RuntimeException("Sede not found."));
-            user.setSede(sede);
+            if (!user.getRoles().contains(userRole)) {
+                user.getRoles().add(userRole);
+            }
 
             Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                     .orElseThrow(() -> new RuntimeException("Admin role not found"));
-            user.getRoles().add(adminRole);
+            user.getRoles().remove(adminRole);
+        }
+
+        if (dto.getCompaniaId() != null) {
+            Compania compania = companiaRepository.findById(dto.getCompaniaId())
+                    .orElseThrow(() -> new RuntimeException("Compania not found."));
+            user.setSede(compania);
+
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Admin role not found"));
+
+            if (!user.getRoles().contains(adminRole)) {
+                user.getRoles().add(adminRole);
+            }
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("User role not found"));
+            user.getRoles().remove(userRole);
         }
 
         user.setUsuarioModificacion(authenticatedUsername);
         user.setFechaModificacion(LocalDateTime.now());
 
+        // Actualizamos el usuario en la base de datos
         userRepository.save(user);
+
+        // Generamos el nuevo token con los roles actualizados
+        return jwtService.generateToken(user);
     }
+
 
     public User authenticate(LoginUserDto loginUserDto) {
         User user;

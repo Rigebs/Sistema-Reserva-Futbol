@@ -40,7 +40,6 @@ public class ReservaResponseDTO {
     private String concepto;
     private String imageUrl;
     private String sucursalNombre;
-    private String paginaWeb;
     private String sedeNombre;
     private List<DetalleVentaDTO> detallesVenta; // Existing field
 }

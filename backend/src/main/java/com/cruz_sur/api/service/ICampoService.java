@@ -1,7 +1,6 @@
 package com.cruz_sur.api.service;
 
 import com.cruz_sur.api.dto.CampoDTO;
-import com.cruz_sur.api.dto.CampoSedeDTO;
 import com.cruz_sur.api.dto.CamposHomeDTO;
 import com.cruz_sur.api.model.Campo;
 
@@ -15,7 +14,6 @@ public interface ICampoService {
     Campo changeStatus(Long id, Integer status);
     Optional<CampoDTO> byId(Long id);
     List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId);
-    List<CampoSedeDTO> findAllSedeInfo();
 
     List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva);
 }
