@@ -47,20 +47,6 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    // CORS global para todas las rutas
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration globalConfiguration = new CorsConfiguration();
-        globalConfiguration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
-        globalConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
-        globalConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        globalConfiguration.setAllowCredentials(true); // Permitir credenciales
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", globalConfiguration); // Aplica a todas las rutas
-
-        return source;
-    }
 
     // CORS específico para las rutas permitidas
     @Bean
