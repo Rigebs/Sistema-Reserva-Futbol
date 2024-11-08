@@ -40,6 +40,10 @@ export class CampoService {
     return this.http.get<Campo>(`${this.apiUrl}/${id}`);
   }
 
+  getCamposByUsuarioId(usuarioId: number): Observable<Campo[]> {
+    return this.http.get<Campo[]>(`${this.apiUrl}/usuario/${usuarioId}/with-sede`);
+  }
+
   // Guardar un nuevo campo
   save(campo: Campo): Observable<Campo> {
     return this.http.post<Campo>(this.apiUrl, campo);

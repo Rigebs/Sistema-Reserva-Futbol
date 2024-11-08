@@ -22,6 +22,9 @@
   </mat-card-content>
 
   <mat-card-actions align="end">
-    <button mat-button color="info">Reservar</button>
+    <!-- Botón de Reservar que redirige al campo correspondiente -->
+    <button mat-button color="info" (click)="reservarCampo(campo.userId)">
+      Reservar
+    </button>
   </mat-card-actions>
 </mat-card>

@@ -77,6 +77,8 @@ export class HomeComponent implements OnInit {
     this.campoService.getAllCampoSede("", "", "", fechaReserva).subscribe({
       next: (data: CampoSede[]) => {
         this.campos = data;
+        console.log("DATA: ", this.campos);
+        
       },
       error: (err) => {
         console.error("Error al cargar los campos", err);

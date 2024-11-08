@@ -1,5 +1,5 @@
 export interface CampoSede {
-  usuarioId: number;
+  userId: number;
   sucursalNombre: string;
   companiaNombre: string;
   companiaCorreo: string;

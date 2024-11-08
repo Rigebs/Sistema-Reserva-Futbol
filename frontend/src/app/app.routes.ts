@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
   { path: "home", component: HomeComponent },
   { path: "pasarela-pago", component: PasarelaPagoComponent },
-  { path: "reservar-campo", component: ReservarCampoComponent },
+  { path: ':userId/reservar-campo', component: ReservarCampoComponent },
   {
     path: ':usuario/panel-admin',
     component: PanelAdminComponent,
