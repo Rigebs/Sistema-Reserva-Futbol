@@ -13,10 +13,19 @@ export class CompaniaService {
   constructor(private http: HttpClient) {}
 
   // Guardar una nueva compañía
-  saveCompania(file: File, compania: Compania): Observable<Compania> {
+  saveCompania(
+    qrFile: File,
+    file: File,
+    compania: Compania
+  ): Observable<Compania> {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("qrFile", qrFile);
     formData.append("compania", JSON.stringify(compania));
+    console.log("FILE: ", file);
+    console.log("FILE qr: ", qrFile);
+
+    console.log("FORM: ", formData);
 
     return this.http.post<Compania>(this.apiUrl, formData);
   }

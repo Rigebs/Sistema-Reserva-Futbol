@@ -14,9 +14,8 @@ export class EmpresaService {
 
   // Consultar RUC
   consultarRuc(ruc: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/consultar-ruc`, {
-      params: { ruc },
-    });
+    // Hacemos una solicitud POST, pero pasamos el parámetro 'ruc' en la URL
+    return this.http.post(`${this.apiUrl}/consultar-ruc?ruc=${ruc}`, {});
   }
 
   // Obtener todas las empresas

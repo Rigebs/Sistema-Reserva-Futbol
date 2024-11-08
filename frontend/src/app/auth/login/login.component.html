@@ -14,13 +14,12 @@
     </h2>
     <h2 *ngIf="isVerification">Verificar Código</h2>
 
-    <h2 *ngIf="isPasswordReset">Recuperar Contraseña</h2>
     <h2 *ngIf="isPasswordChange">Cambiar Contraseña</h2>
 
     <!-- Formulario de Login -->
     <div *ngIf="isLogin">
       <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Correo</mat-label>
+        <mat-label>Usuario o correo electrónico</mat-label>
         <input matInput [(ngModel)]="loginUser.identifier" />
       </mat-form-field>
 
@@ -106,6 +105,14 @@
 
     <!-- Formulario de Recuperación de Contraseña -->
     <div *ngIf="isPasswordReset && !isPasswordChange">
+      <div class="back-button-container">
+        <!-- Botón con flecha para regresar al inicio de sesión -->
+        <button mat-icon-button color="primary" (click)="toggleForm()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="back-text">Volver</span>
+      </div>
+      <h2>Recuperar contraseña</h2>
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Correo para recuperación</mat-label>
         <input matInput [(ngModel)]="resetPasswordEmail" />

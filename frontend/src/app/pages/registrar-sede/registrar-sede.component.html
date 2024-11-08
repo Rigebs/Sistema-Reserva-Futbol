@@ -9,7 +9,7 @@
     </p>
   </div>
   <div class="stepper">
-    <mat-stepper [orientation]="orientation">
+    <mat-stepper [orientation]="orientation" [linear]="true">
       <!-- Paso 1: Registrar Empresa -->
       <mat-step
         [stepControl]="empresaFormGroup"
@@ -122,67 +122,27 @@
             </mat-form-field>
 
             <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Página Web</mat-label>
-              <input matInput formControlName="pagWeb" />
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="telefono" required type="tel" />
             </mat-form-field>
 
+            <!-- Apartado para Foto de la Sede -->
             <div class="grid-item">
-              <label>Selecciona una imagen</label>
-              <input type="file" (change)="onFileSelected($event)" />
+              <label>Foto de la Sede</label>
+              <input
+                type="file"
+                (change)="onFileSelected($event, 'imagenSede')"
+              />
             </div>
-          </div>
 
-          <div class="button-container">
-            <button mat-button matStepperPrevious>Anterior</button>
-            <button
-              mat-button
-              matStepperNext
-              [disabled]="!companiaFormGroup.valid"
-            >
-              Siguiente
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- Paso 3: Registrar Sucursal -->
-      <mat-step
-        [stepControl]="sucursalFormGroup"
-        [completed]="sucursalFormGroup.valid"
-      >
-        <form [formGroup]="sucursalFormGroup">
-          <ng-template matStepLabel>Registrar Sucursal</ng-template>
-
-          <div class="grid-container">
-            <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Nombre de la Sucursal</mat-label>
-              <input matInput formControlName="nombre" required />
-            </mat-form-field>
-          </div>
-
-          <div class="button-container">
-            <button mat-button matStepperPrevious>Anterior</button>
-            <button
-              mat-button
-              matStepperNext
-              [disabled]="!sucursalFormGroup.valid"
-            >
-              Siguiente
-            </button>
-          </div>
-        </form>
-      </mat-step>
-
-      <!-- Paso 4: Registrar Sede -->
-      <mat-step [stepControl]="sedeFormGroup" [completed]="sedeFormGroup.valid">
-        <form [formGroup]="sedeFormGroup">
-          <ng-template matStepLabel>Registrar Sede</ng-template>
-
-          <div class="grid-container">
-            <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Nombre de la Sede</mat-label>
-              <input matInput formControlName="nombre" required />
-            </mat-form-field>
+            <!-- Apartado para QR de Yape -->
+            <div class="grid-item">
+              <label>QR de Yape</label>
+              <input
+                type="file"
+                (change)="onFileSelected($event, 'imagenQrYape')"
+              />
+            </div>
 
             <mat-form-field class="grid-item" appearance="outline">
               <mat-label>Hora de Inicio</mat-label>
@@ -204,10 +164,11 @@
             <button mat-button matStepperPrevious>Anterior</button>
             <button
               mat-button
-              [disabled]="!sedeFormGroup.valid"
+              matStepperNext
+              [disabled]="!companiaFormGroup.valid"
               (click)="submitForm()"
             >
-              Finalizar
+              Siguiente
             </button>
           </div>
         </form>

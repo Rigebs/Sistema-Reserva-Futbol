@@ -1,4 +1,4 @@
-export interface UpdateClientSede {
+export interface UpdateClientCompania {
   clienteId: number | null;
-  sedeId: number;
+  companiaId?: number;
 }

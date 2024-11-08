@@ -5,7 +5,8 @@ export interface Compania {
   nombre?: string;
   concepto?: string;
   correo?: string;
-  pagWeb?: string;
-  estado?: string;
+  celular?: string;
+  horaInicio?: string;
+  horaFin?: string;
   empresa?: Empresa;
 }

@@ -1,15 +1,25 @@
 <mat-card class="campo-card" *ngIf="campo">
   <mat-card-header>
-    <mat-card-title>{{ campo.sedeNombre }}</mat-card-title>
+    <!-- Icono antes del nombre de la compañía -->
+    <mat-icon mat-card-avatar>location_city</mat-icon>
+    <mat-card-title>{{ campo.companiaNombre }}</mat-card-title>
   </mat-card-header>
 
   <div class="image">
     <img
       mat-card-image
-      [src]="campo.companiaImageUrl"
-      alt="{{ campo.sedeNombre }}"
+      [src]="campo.companiaImagenUrl"
+      alt="{{ campo.companiaNombre }}"
     />
   </div>
+
+  <!-- Dirección debajo de la imagen -->
+  <mat-card-content>
+    <div class="direccion">
+      <mat-icon>location_on</mat-icon>
+      <span>{{ campo.direccion }}</span>
+    </div>
+  </mat-card-content>
 
   <mat-card-actions align="end">
     <button mat-button color="info">Reservar</button>

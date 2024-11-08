@@ -43,3 +43,27 @@ mat-card-title {
     object-fit: cover;
   }
 }
+
+.campo-card {
+  max-width: 400px;
+  margin: 10px;
+}
+
+.image {
+  height: 200px;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.direccion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+mat-icon {
+  font-size: 20px;
+}

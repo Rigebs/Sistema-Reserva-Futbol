@@ -4,11 +4,12 @@ import { MatCardModule } from "@angular/material/card";
 import { Campo } from "../../models/campo";
 import { CommonModule } from "@angular/common";
 import { CampoSede } from "../../models/campo-sede";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "app-campo-card",
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, CommonModule],
+  imports: [MatCardModule, MatButtonModule, CommonModule, MatIconModule],
   templateUrl: "./campo-card.component.html",
   styleUrl: "./campo-card.component.css",
 })

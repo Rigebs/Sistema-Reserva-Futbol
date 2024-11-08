@@ -4,12 +4,9 @@ import { Usuario } from "../models/usuario";
 import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { environment } from "../../environments/environment";
-import { UsuarioRegistro } from "../models/usuario-registro";
 import { Verify } from "../models/verify-code";
 import { PasswordReset } from "../models/password-reset";
 import { PasswordResetRequest } from "../models/password-reset-request";
-import { UpdateClientSede } from "../models/update-client-sede";
-
 @Injectable({
   providedIn: "root",
 })

@@ -14,7 +14,14 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-calendar [(selected)]="selected" class="calendar"></mat-calendar>
+
+    <!-- Calendario con fecha seleccionada -->
+    <mat-calendar
+      [(selected)]="selected"
+      class="calendar"
+      [minDate]="minDate"
+      [maxDate]="maxDate"
+    ></mat-calendar>
   </div>
 
   <div class="campos-lista">

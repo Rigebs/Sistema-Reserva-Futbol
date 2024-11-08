@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Campo } from "../models/campo";
 import { environment } from "../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { CampoSede } from "../models/campo-sede";
 
@@ -18,8 +18,21 @@ export class CampoService {
     return this.http.get<Campo[]>(this.apiUrl);
   }
 
-  getAllCampoSede(): Observable<CampoSede[]> {
-    return this.http.get<CampoSede[]>(`${this.apiUrl}/with-sede`);
+  getAllCampoSede(
+    distritoNombre: string = "",
+    provinciaNombre: string = "",
+    departamentoNombre: string = "",
+    fechaReserva: string
+  ): Observable<CampoSede[]> {
+    let params = new HttpParams()
+      .set("distritoNombre", distritoNombre)
+      .set("provinciaNombre", provinciaNombre)
+      .set("departamentoNombre", departamentoNombre)
+      .set("fechaReserva", fechaReserva);
+
+    return this.http.get<CampoSede[]>(`${this.apiUrl}/available-sedes`, {
+      params,
+    });
   }
 
   // Obtener un campo por ID

@@ -1,19 +1,15 @@
-import { Component, model, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { MatButtonModule } from "@angular/material/button";
 import { CarouselComponent } from "../../components/carousel/carousel.component";
 import { MatSelectModule } from "@angular/material/select";
-import { NgClass, NgForOf } from "@angular/common";
-import { ChangeDetectionStrategy } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { CampoCardComponent } from "../../components/campo-card/campo-card.component";
-import { ReservaCalendarComponent } from "../../components/reserva-calendar/reserva-calendar.component";
-import { ProcesoReservaComponent } from "../../components/proceso-reserva/proceso-reserva.component";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { CampoService } from "../../services/campo.service";
-import { Campo } from "../../models/campo";
 import { CampoSede } from "../../models/campo-sede";
 
 @Component({
@@ -28,11 +24,8 @@ import { CampoSede } from "../../models/campo-sede";
     CarouselComponent,
     MatSelectModule,
     MatGridListModule,
-    NgClass,
-    NgForOf,
     CampoCardComponent,
-    ReservaCalendarComponent,
-    ProcesoReservaComponent,
+    CommonModule,
   ],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",
@@ -56,10 +49,18 @@ export class HomeComponent implements OnInit {
     "Cerro Colorado",
   ];
 
-  selected = model<Date | null>(null);
+  // Cambiar a tipo Date | null directamente, sin usar ModelSignal
+  selected: Date | null = new Date(); // Valor por defecto de hoy
+
+  // Variables para las fechas de restricción
+  minDate: Date = new Date(); // Fecha de hoy
+  maxDate: Date = new Date(); // Fecha máxima (un mes después de hoy)
 
   constructor(private campoService: CampoService) {
     this.selectedDistrict = this.districts[0];
+
+    // Establecer la fecha máxima a un mes después de hoy
+    this.maxDate.setMonth(this.maxDate.getMonth() + 1);
   }
 
   ngOnInit(): void {
@@ -67,7 +68,13 @@ export class HomeComponent implements OnInit {
   }
 
   loadCampos(): void {
-    this.campoService.getAllCampoSede().subscribe({
+    // Si no hay fecha seleccionada, usamos la fecha actual
+    const fechaSeleccionada = this.selected ? this.selected : new Date(); // Usar fecha actual si es null
+
+    const fechaReserva = this.formatDate(fechaSeleccionada);
+
+    // Llamar al servicio con la fecha seleccionada y el distrito actual
+    this.campoService.getAllCampoSede("", "", "", fechaReserva).subscribe({
       next: (data: CampoSede[]) => {
         this.campos = data;
       },
@@ -75,5 +82,13 @@ export class HomeComponent implements OnInit {
         console.error("Error al cargar los campos", err);
       },
     });
+  }
+
+  // Método para formatear la fecha en el formato 'yyyy-MM-dd'
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 }
