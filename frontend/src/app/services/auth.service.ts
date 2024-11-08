@@ -31,6 +31,15 @@ export class AuthService {
     );
   }
 
+  hasRole(role: string): boolean {
+    const token = localStorage.getItem(this.authTokenKey);
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.roles && decodedToken.roles.includes(role);
+    }
+    return false;
+  }
+
   register(user: any): Observable<any> {
     return this.http
       .post(`${this.apiUrl}/signup`, user, { responseType: "text" })
