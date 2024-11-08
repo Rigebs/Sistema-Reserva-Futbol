@@ -113,15 +113,19 @@ public class CampoService implements ICampoService {
     }
 
     @Override
-    public List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva) {
-        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?)}";
-        return jdbcTemplate.query(sql, new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva},
+    public List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre) {
+        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?, ?)}";  // Modificado para aceptar el nuevo parámetro
+
+        return jdbcTemplate.query(sql, new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre},
                 (rs, rowNum) -> new CamposHomeDTO(
                         rs.getLong("user_id"),
                         rs.getString("compania_nombre"),
                         rs.getString("compania_imagen_url"),
-                        rs.getString("direccion")
+                        rs.getString("direccion"),
+                        rs.getString("tipo_deporte_nombre")  // Mapear el nuevo campo
                 )
         );
     }
+
+
 }

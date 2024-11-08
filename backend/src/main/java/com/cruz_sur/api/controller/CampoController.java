@@ -64,12 +64,14 @@ public class CampoController {
             @RequestParam String distritoNombre,
             @RequestParam String provinciaNombre,
             @RequestParam String departamentoNombre,
-            @RequestParam String fechaReserva) {
+            @RequestParam String fechaReserva,
+            @RequestParam(required = false, defaultValue = "") String tipoDeporteNombre) {  // Parámetro opcional para tipo de deporte
 
-        List<CamposHomeDTO> availableSedes = campoService.getAvailableSedes(distritoNombre, provinciaNombre, departamentoNombre, fechaReserva);
+        List<CamposHomeDTO> availableSedes = campoService.getAvailableSedes(distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre);
 
         return availableSedes.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(availableSedes, HttpStatus.OK);
     }
+
 }

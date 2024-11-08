@@ -10,4 +10,5 @@ public class CamposHomeDTO {
     private String companiaNombre;
     private String companiaImagenUrl;
     private String direccion;
+    private String tipoDeporteNombre;  // Nuevo campo
 }
