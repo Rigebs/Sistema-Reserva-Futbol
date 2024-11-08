@@ -29,15 +29,15 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuración CORS global
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll() // Rutas permitidas sin autenticación
                         .requestMatchers("/api/v1/campos/available-sedes").permitAll()
                         .requestMatchers("/api/v1/departamento").permitAll()
                         .requestMatchers("/api/v1/distrito").permitAll()
                         .requestMatchers("/api/v1/provincia").permitAll()
                         .requestMatchers("/api/v1/campos//usuario/{usuarioId}/with-sede").permitAll()
-                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN") // Rutas protegidas
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,17 +47,39 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    // CORS global para todas las rutas
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Permitir credenciales
+        CorsConfiguration globalConfiguration = new CorsConfiguration();
+        globalConfiguration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
+        globalConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
+        globalConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        globalConfiguration.setAllowCredentials(true); // Permitir credenciales
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", globalConfiguration); // Aplica a todas las rutas
+
         return source;
     }
 
+    // CORS específico para las rutas permitidas
+    @Bean
+    public CorsConfigurationSource permitAllCorsConfigurationSource() {
+        CorsConfiguration permitAllConfiguration = new CorsConfiguration();
+        permitAllConfiguration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
+        permitAllConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
+        permitAllConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        permitAllConfiguration.setAllowCredentials(true); // Permitir credenciales
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Registra el CORS solo para las rutas que están permitidas sin autenticación
+        source.registerCorsConfiguration("/auth/**", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/campos/available-sedes", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/departamento", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/distrito", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/provincia", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/campos//usuario/{usuarioId}/with-sede", permitAllConfiguration);
+
+        return source;
+    }
 }
