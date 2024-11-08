@@ -29,14 +29,14 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuración CORS global
+                .cors(cors -> cors.configurationSource(permitAllCorsConfigurationSource())) // Configuración CORS específica
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll() // Rutas permitidas sin autenticación
+                        .requestMatchers("/auth/**").permitAll() // Rutas públicas
                         .requestMatchers("/api/v1/campos/available-sedes").permitAll()
                         .requestMatchers("/api/v1/departamento").permitAll()
                         .requestMatchers("/api/v1/distrito").permitAll()
                         .requestMatchers("/api/v1/provincia").permitAll()
-                        .requestMatchers("/api/v1/campos//usuario/{usuarioId}/with-sede").permitAll()
+                        .requestMatchers("/api/v1/campos/usuario/{usuarioId}/with-sede").permitAll()
                         .requestMatchers("/**").hasAnyRole("USER", "ADMIN") // Rutas protegidas
                         .anyRequest().authenticated()
                 )
@@ -47,24 +47,23 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-
-    // CORS específico para las rutas permitidas
+    // Configuración CORS específica para rutas públicas
     @Bean
     public CorsConfigurationSource permitAllCorsConfigurationSource() {
         CorsConfiguration permitAllConfiguration = new CorsConfiguration();
-        permitAllConfiguration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
+        permitAllConfiguration.setAllowedOrigins(List.of("http://localhost:4200", "https://zemply.vercel.app"));
         permitAllConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
         permitAllConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         permitAllConfiguration.setAllowCredentials(true); // Permitir credenciales
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Registra el CORS solo para las rutas que están permitidas sin autenticación
+        // Solo aplica CORS a las rutas permitidas
         source.registerCorsConfiguration("/auth/**", permitAllConfiguration);
         source.registerCorsConfiguration("/api/v1/campos/available-sedes", permitAllConfiguration);
         source.registerCorsConfiguration("/api/v1/departamento", permitAllConfiguration);
         source.registerCorsConfiguration("/api/v1/distrito", permitAllConfiguration);
         source.registerCorsConfiguration("/api/v1/provincia", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/campos//usuario/{usuarioId}/with-sede", permitAllConfiguration);
+        source.registerCorsConfiguration("/api/v1/campos/usuario/{usuarioId}/with-sede", permitAllConfiguration);
 
         return source;
     }
