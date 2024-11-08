@@ -29,15 +29,15 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(permitAllCorsConfigurationSource())) // Configuración CORS específica
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll() // Rutas públicas
+                        .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/v1/campos/available-sedes").permitAll()
                         .requestMatchers("/api/v1/departamento").permitAll()
                         .requestMatchers("/api/v1/distrito").permitAll()
                         .requestMatchers("/api/v1/provincia").permitAll()
-                        .requestMatchers("/api/v1/campos/usuario/{usuarioId}/with-sede").permitAll()
-                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN") // Rutas protegidas
+                        .requestMatchers("/api/v1/campos//usuario/{usuarioId}/with-sede").permitAll()
+                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,24 +47,17 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    // Configuración CORS específica para rutas públicas
     @Bean
-    public CorsConfigurationSource permitAllCorsConfigurationSource() {
-        CorsConfiguration permitAllConfiguration = new CorsConfiguration();
-        permitAllConfiguration.setAllowedOrigins(List.of("http://localhost:4200", "https://zemply.vercel.app"));
-        permitAllConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
-        permitAllConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        permitAllConfiguration.setAllowCredentials(true); // Permitir credenciales
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true); // Permitir credenciales
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Solo aplica CORS a las rutas permitidas
-        source.registerCorsConfiguration("/auth/**", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/campos/available-sedes", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/departamento", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/distrito", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/provincia", permitAllConfiguration);
-        source.registerCorsConfiguration("/api/v1/campos/usuario/{usuarioId}/with-sede", permitAllConfiguration);
-
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
