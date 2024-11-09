@@ -19,8 +19,9 @@ public class DetalleVenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Time horaInicio;
-
     private Time horaFinal;
+    private String precio;
+
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;
