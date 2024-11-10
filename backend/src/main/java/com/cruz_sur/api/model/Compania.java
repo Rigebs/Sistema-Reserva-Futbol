@@ -51,7 +51,7 @@ public class Compania {
 
     @ManyToOne
     @JoinColumn(name = "imagen_id", nullable = false)
-    private Imagen imagen; // Imagen principal
+    private Imagen imagen;
 
     @ManyToOne
     @JoinColumn(name = "qr_imagen_id", nullable = true)

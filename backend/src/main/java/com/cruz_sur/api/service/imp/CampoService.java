@@ -93,8 +93,8 @@ public class CampoService implements ICampoService {
     }
 
     @Override
-    public List<CampoDTO> findByUsuarioIdWithSede( Long usuarioId) {
-        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado('1',usuarioId)
+    public List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId) {
+        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuarioId)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
