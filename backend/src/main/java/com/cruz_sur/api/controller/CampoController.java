@@ -2,6 +2,7 @@ package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.dto.CamposHomeDTO;
+import com.cruz_sur.api.dto.SedeConCamposDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
@@ -33,8 +34,8 @@ public class CampoController {
     }
 
     @GetMapping("/usuario/{usuarioId}/with-sede")
-    public ResponseEntity<List<CampoDTO>> getCamposByUsuarioIdWithSede(@PathVariable Long usuarioId) {
-        List<CampoDTO> campos = campoService.findByUsuarioIdWithSede(usuarioId);
+    public ResponseEntity<List<SedeConCamposDTO>> getCamposByUsuarioIdWithSede(@PathVariable Long usuarioId) {
+        List<SedeConCamposDTO> campos = campoService.findByUsuarioIdWithSede(usuarioId);
         return campos.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(campos, HttpStatus.OK);

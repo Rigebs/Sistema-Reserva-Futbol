@@ -2,6 +2,7 @@ package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.dto.CamposHomeDTO;
+import com.cruz_sur.api.dto.SedeConCamposDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.model.TipoDeporte;
 import com.cruz_sur.api.model.User;
@@ -72,7 +73,7 @@ public class CampoService implements ICampoService {
     @Override
     public List<CampoDTO> all() {
         return campoRepository.findAll().stream()
-                .map(this::toDTO)
+                .map(this::toDTO) // Método `toDTO` implementado abajo
                 .collect(Collectors.toList());
     }
 
@@ -88,32 +89,14 @@ public class CampoService implements ICampoService {
     @Override
     public Optional<CampoDTO> byId(Long id) {
         return campoRepository.findById(id)
-                .map(this::toDTO);
+                .map(this::toDTO); // Método `toDTO` implementado abajo
     }
 
     @Override
-    public List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId) {
-        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado(usuarioId, '1')
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    private CampoDTO toDTO(Campo campo) {
-        return new CampoDTO(
-                campo.getId(),
-                campo.getNombre(),
-                campo.getPrecio(),
-                campo.getDescripcion(),
-                campo.getEstado(),
-                campo.getUsuario() != null ? campo.getUsuario().getId() : null,
-                campo.getTipoDeporte() != null ? campo.getTipoDeporte().getId() : null
-        );
-    }
-
     public List<CamposHomeDTO> getAvailableSedesAndCamposWithSede(Long usuarioId, String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre) {
         String sql = "{CALL GetAvailableSedes(?, ?, ?, ?, ?)}";
 
+        // Ejecutar la consulta y mapear los resultados directamente a CamposHomeDTO
         List<CamposHomeDTO> availableSedes = jdbcTemplate.query(
                 sql,
                 new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre},
@@ -126,18 +109,67 @@ public class CampoService implements ICampoService {
                             rs.getString("compania_nombre"),
                             rs.getString("compania_imagen_url"),
                             rs.getString("direccion"),
-                            tipoDeporteList,
-                            new ArrayList<>()
+                            tipoDeporteList
                     );
                 }
         );
 
-        availableSedes.forEach(sede -> {
-            List<CampoDTO> camposWithSede = findByUsuarioIdWithSede(sede.getUserId());
-            sede.setCamposWithSede(camposWithSede);
-        });
-
         return availableSedes;
+    }
+
+    @Override
+    public List<SedeConCamposDTO> findByUsuarioIdWithSede(Long usuarioId) {
+        // Llamada al procedimiento almacenado para obtener la información de sedes y compañías
+        List<CamposHomeDTO> camposHomeList = getCamposDetailsByUsuarioId(usuarioId);
+
+        // Obtención de los campos asociados a la sede usando el repositorio
+        List<CampoDTO> camposWithSede = campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado(usuarioId, '1')
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        // Construir la lista de SedeConCamposDTO, combinando los datos de sede y campos
+        List<SedeConCamposDTO> sedeConCamposList = camposHomeList.stream()
+                .map(sede -> new SedeConCamposDTO(
+                        sede.getUserId(),
+                        sede.getCompaniaId(),
+                        sede.getCompaniaNombre(),
+                        sede.getCompaniaImagenUrl(),
+                        sede.getDireccion(),
+                        camposWithSede // Asigna los campos a cada sede
+                ))
+                .collect(Collectors.toList());
+
+        return sedeConCamposList;
+    }
+
+
+    // Método privado `toDTO` para convertir `Campo` a `CampoDTO`
+    private CampoDTO toDTO(Campo campo) {
+        return new CampoDTO(
+                campo.getId(),
+                campo.getNombre(),
+                campo.getPrecio(),
+                campo.getDescripcion(),
+                campo.getEstado(),
+                campo.getUsuario() != null ? campo.getUsuario().getId() : null,
+                campo.getTipoDeporte() != null ? campo.getTipoDeporte().getId() : null
+        );
+    }
+    public List<CamposHomeDTO> getCamposDetailsByUsuarioId(Long usuarioId) {
+        String sql = "{CALL campos(?)}";
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{usuarioId},
+                (rs, rowNum) -> new CamposHomeDTO(
+                        rs.getLong("user_id"),
+                        rs.getLong("compania_id"),
+                        rs.getString("compania_nombre"),
+                        rs.getString("compania_imagen_url"),
+                        rs.getString("direccion"),
+                        new ArrayList<>() // Lista vacía para deportes, podría personalizarse
+                )
+        );
     }
 
 

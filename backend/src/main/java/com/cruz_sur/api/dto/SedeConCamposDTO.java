@@ -9,11 +9,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CamposHomeDTO {
+public class SedeConCamposDTO {
     private Long userId;
     private Long companiaId;
     private String companiaNombre;
     private String companiaImagenUrl;
     private String direccion;
-    private List<String> tipoDeporteNombre; // Lista de tipos de deportes asociados a la sede
+    private List<CampoDTO> camposWithSede; // Lista de campos asociados a la sede
 }
