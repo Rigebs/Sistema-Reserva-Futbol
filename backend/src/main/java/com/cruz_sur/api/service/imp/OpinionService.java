@@ -55,8 +55,6 @@ public class OpinionService implements IOpinionService {
         return opiniones.stream().map(this::convertToDTO).toList();
     }
 
-
-
     @Override
     public List<OpinionDTO> getOpinionsByAuthenticatedUser() {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -70,7 +68,7 @@ public class OpinionService implements IOpinionService {
     @Override
     public OpinionDTO changeStatus(Long id, Integer status) {
         Opinion opinion = opinionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Método de pago no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Opinion not found"));
 
         opinion.setEstado(status == 1 ? '1' : '0');
         Opinion updatedOpinion = opinionRepository.save(opinion);
@@ -78,13 +76,18 @@ public class OpinionService implements IOpinionService {
     }
 
     @Override
-    public OpinionDTO updateOpinion(OpinionDTO opinionDTO) {
-        Opinion opinion = opinionRepository.findById(opinionDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Opinion not found with id: " + opinionDTO.getId()));
+    public OpinionDTO updateOpinion(Long id, OpinionDTO opinionDTO) {
+        Opinion opinion = opinionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Opinion not found with id: " + id));
 
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User authenticatedUser = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUsername));
+
+        // Verificar que el usuario autenticado es el propietario de la opinión
+        if (!opinion.getUser().getUsername().equals(authenticatedUsername)) {
+            throw new RuntimeException("No tienes permiso para editar esta opinión.");
+        }
 
         Compania compania = companiaRepository.findById(opinionDTO.getCompaniaId())
                 .orElseThrow(() -> new RuntimeException("Compania not found with id: " + opinionDTO.getCompaniaId()));

@@ -33,11 +33,10 @@ public class OpinionController {
         return ResponseEntity.ok(opiniones);
     }
 
-
+    // Aseguramos que solo el autor de la opinión pueda actualizarla
     @PutMapping("/{id}")
     public ResponseEntity<OpinionDTO> updateOpinion(@PathVariable Long id, @RequestBody OpinionDTO opinionDTO) {
-        opinionDTO.setId(id); // Asignar el ID de la opinión desde el parámetro de ruta
-        OpinionDTO updatedOpinion = opinionService.updateOpinion(opinionDTO);
+        OpinionDTO updatedOpinion = opinionService.updateOpinion(id, opinionDTO);
         return ResponseEntity.ok(updatedOpinion);
     }
 }

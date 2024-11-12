@@ -3,6 +3,7 @@ package com.cruz_sur.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDateTime;
 
@@ -20,7 +21,7 @@ public class DetalleVenta {
     private Long id;
     private Time horaInicio;
     private Time horaFinal;
-    private String precio;
+    private BigDecimal precio;
 
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;

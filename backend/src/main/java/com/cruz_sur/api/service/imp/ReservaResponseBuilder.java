@@ -22,8 +22,6 @@ public class ReservaResponseBuilder {
     private final TicketRepository ticketRepository;
     private final DetalleVentaRepository detalleVentaRepository;
 
-
-
     public ReservaResponseDTO build(Reserva reserva) {
         // Obtener datos del cliente
         String cliente = reserva.getCliente().getPersona() != null
@@ -42,7 +40,7 @@ public class ReservaResponseBuilder {
                 ? reserva.getCliente().getPersona().getCelular()
                 : reserva.getCliente().getEmpresa().getTelefono();
 
-        // Obtenemos el número y serie del comprobante según el tipo
+        // Obtener el número y serie del comprobante según el tipo
         String numero = null;
         String serie = null;
 
@@ -78,15 +76,14 @@ public class ReservaResponseBuilder {
                 .map(detalle -> DetalleVentaDTO.builder()
                         .campoId(detalle.getCampo().getId())
                         .campoNombre(detalle.getCampo().getNombre())
-                        .precio(detalle.getCampo().getPrecio())
+                        .precio(detalle.getPrecio()) // Aquí tomamos el precio del detalle de venta
                         .horaInicio(detalle.getHoraInicio())
                         .horaFinal(detalle.getHoraFinal())
                         .build())
                 .collect(Collectors.toList());
 
         // Obtenemos los datos de la compañía a partir del campo
-        Campo campo = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo();
-        Compania compania = campo != null ? campo.getUsuario().getSede() : null;  // Ahora obtenemos directamente de 'Compania'
+        Compania compania = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo().getUsuario().getSede();
 
         // Obtenemos la imagen de la compañía
         Imagen imagen = compania != null ? compania.getImagen() : null;
@@ -105,8 +102,6 @@ public class ReservaResponseBuilder {
                 .fechaCreacion(reserva.getFechaCreacion())
                 .subtotal(reserva.getSubtotal())
                 .total(reserva.getTotal())
-                .campo(campo != null ? campo.getNombre() : null)
-                .precio(campo != null ? campo.getPrecio() : null)
                 .numero(numero)
                 .serie(serie)
                 .razonSocial(compania != null ? compania.getEmpresa().getRazonSocial() : null)

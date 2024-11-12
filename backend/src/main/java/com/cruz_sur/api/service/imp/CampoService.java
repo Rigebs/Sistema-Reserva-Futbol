@@ -15,8 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,7 +93,7 @@ public class CampoService implements ICampoService {
 
     @Override
     public List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId) {
-        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuarioId)
+        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado(usuarioId, '1')
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -112,19 +111,33 @@ public class CampoService implements ICampoService {
         );
     }
 
-    @Override
-    public List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre) {
-        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?, ?)}";  // Modificado para aceptar el nuevo parámetro
+    public List<CamposHomeDTO> getAvailableSedesAndCamposWithSede(Long usuarioId, String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre) {
+        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?, ?)}";
 
-        return jdbcTemplate.query(sql, new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre},
-                (rs, rowNum) -> new CamposHomeDTO(
-                        rs.getLong("user_id"),
-                        rs.getString("compania_nombre"),
-                        rs.getString("compania_imagen_url"),
-                        rs.getString("direccion"),
-                        rs.getString("tipo_deporte_nombre")  // Mapear el nuevo campo
-                )
+        List<CamposHomeDTO> availableSedes = jdbcTemplate.query(
+                sql,
+                new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre},
+                (rs, rowNum) -> {
+                    String tipoDeporteStr = rs.getString("tipo_deporte_nombre");
+                    List<String> tipoDeporteList = tipoDeporteStr != null ? Arrays.asList(tipoDeporteStr.split(",")) : new ArrayList<>();
+                    return new CamposHomeDTO(
+                            rs.getLong("user_id"),
+                            rs.getLong("compania_id"),
+                            rs.getString("compania_nombre"),
+                            rs.getString("compania_imagen_url"),
+                            rs.getString("direccion"),
+                            tipoDeporteList,
+                            new ArrayList<>()
+                    );
+                }
         );
+
+        availableSedes.forEach(sede -> {
+            List<CampoDTO> camposWithSede = findByUsuarioIdWithSede(sede.getUserId());
+            sede.setCamposWithSede(camposWithSede);
+        });
+
+        return availableSedes;
     }
 
 

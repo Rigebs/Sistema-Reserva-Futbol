@@ -16,5 +16,6 @@ public interface ICampoService {
     List<CampoDTO> findByUsuarioIdWithSede(Long usuarioId);
 
 
-    List<CamposHomeDTO> getAvailableSedes(String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre);
+
+    List<CamposHomeDTO> getAvailableSedesAndCamposWithSede(Long usuarioId, String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre);
 }

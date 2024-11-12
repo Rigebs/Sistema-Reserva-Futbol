@@ -58,20 +58,21 @@ public class CampoController {
         String statusMessage = status == 1 ? "activado" : "desactivado";
         return new ResponseEntity<>("Campo " + statusMessage + " con éxito", HttpStatus.OK);
     }
-
     @GetMapping("/available-sedes")
-    public ResponseEntity<List<CamposHomeDTO>> getAvailableSedes(
+    public ResponseEntity<List<CamposHomeDTO>> getAvailableSedesAndCampos(
+            @RequestParam(required = false) Long usuarioId,
             @RequestParam String distritoNombre,
             @RequestParam String provinciaNombre,
             @RequestParam String departamentoNombre,
             @RequestParam String fechaReserva,
-            @RequestParam(required = false, defaultValue = "") String tipoDeporteNombre) {  // Parámetro opcional para tipo de deporte
+            @RequestParam(required = false, defaultValue = "") String tipoDeporteNombre) {
 
-        List<CamposHomeDTO> availableSedes = campoService.getAvailableSedes(distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre);
+        List<CamposHomeDTO> combinedResults = campoService.getAvailableSedesAndCamposWithSede(
+                usuarioId, distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre);
 
-        return availableSedes.isEmpty()
+        return combinedResults.isEmpty()
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(availableSedes, HttpStatus.OK);
+                : new ResponseEntity<>(combinedResults, HttpStatus.OK);
     }
 
 }

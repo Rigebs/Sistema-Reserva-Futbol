@@ -54,19 +54,14 @@ public class ReservaService implements IReservaService {
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
 
-        BigDecimal subtotal = reservaCalculations.calculateSubtotal(detallesVenta);
-        BigDecimal totalDescuento = reservaCalculations.calculateDiscount(subtotal, reservaDTO.getDescuento());
-        BigDecimal igvAmount = reservaCalculations.calculateIgv(subtotal.subtract(totalDescuento), reservaDTO.getIgv());
-        BigDecimal total = subtotal.subtract(totalDescuento).add(igvAmount);
-
         LocalDateTime now = LocalDateTime.now();
         Reserva reserva = Reserva.builder()
                 .fecha(reservaDTO.getFecha())
                 .descuento(reservaDTO.getDescuento())
                 .igv(reservaDTO.getIgv())
-                .total(total)
-                .totalDescuento(totalDescuento)
-                .subtotal(subtotal)
+                .total(reservaDTO.getTotal())
+                .totalDescuento(reservaDTO.getTotalDescuento())
+                .subtotal(reservaDTO.getSubtotal())
                 .tipoComprobante(reservaDTO.getTipoComprobante())
                 .cliente(cliente)
                 .usuario(usuario)

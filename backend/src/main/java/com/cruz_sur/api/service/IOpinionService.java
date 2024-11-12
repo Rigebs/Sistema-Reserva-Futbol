@@ -8,5 +8,5 @@ public interface IOpinionService {
     List<OpinionDTO> getOpinionsByCompania(Long companiaId);
     List<OpinionDTO> getOpinionsByAuthenticatedUser();
     OpinionDTO changeStatus(Long id, Integer status);
-    OpinionDTO updateOpinion(OpinionDTO opinionDTO);
+    OpinionDTO updateOpinion(Long id, OpinionDTO opinionDTO);
 }
