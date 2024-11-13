@@ -1,36 +1,39 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
+import { AuthService } from "../services/auth.service";
+import { Observable } from "rxjs";
+import { AuthTokenUtil } from "../utils/auth-token-util";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AdminGuard implements CanActivate {
-
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router, private authTokenUtil: AuthTokenUtil) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     const usuarioEnRuta = next.url[0].path;
-    const token = localStorage.getItem('authToken');
-    
-    if (token) {
-      const decodedToken: any = this.authService.decodeToken(token);
-      const usuarioToken = decodedToken.sub;
-      console.log("USUARIO: ", usuarioToken);
-      
+    const token = localStorage.getItem("authToken");
 
-      if (usuarioToken === usuarioEnRuta) {
+    if (token) {
+      if (
+        this.authTokenUtil.getUserFromToken() === usuarioEnRuta &&
+        this.authTokenUtil.isAdmin()
+      ) {
         return true;
       } else {
-        this.router.navigate(['/access-denied']);
+        this.router.navigate(["/access-denied"]);
         return false;
       }
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(["/login"]);
       return false;
     }
   }

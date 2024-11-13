@@ -1,7 +1,7 @@
 .home-container {
   display: flex;
   justify-content: center;
-  padding-top: 50px; /* Ajusta este valor según la altura de tu navbar */
+  padding-top: 72px; /* Ajusta este valor según la altura de tu navbar */
   overflow-x: hidden; /* Evita desbordamiento horizontal */
 }
 
@@ -124,6 +124,5 @@ app-campo-card {
     justify-content: center;
     max-width: 100%;
     padding: 0 15px;
-    width: 85%;
   }
 }

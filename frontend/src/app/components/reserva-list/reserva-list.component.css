@@ -1,46 +1,45 @@
 /* Structure */
 .example-container {
-    position: relative;
-  }
-  
-  .example-table-container {
-    position: relative;
-    min-height: 200px;
-    max-height: 400px;
-    overflow: auto;
-  }
-  
-  table {
-    width: 100%;
-  }
-  
-  .example-loading-shade {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 56px;
-    right: 0;
-    background: rgba(0, 0, 0, 0.15);
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .example-rate-limit-reached {
-    max-width: 360px;
-    text-align: center;
-  }
-  
-  /* Column Widths */
-  .mat-column-number,
-  .mat-column-state {
-    width: 64px;
-  }
-  
-  .mat-column-created {
-    width: 124px;
-  }
+  position: relative;
+}
+
+.example-table-container {
+  position: relative;
+  max-height: 400px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.example-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 56px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.example-rate-limit-reached {
+  max-width: 360px;
+  text-align: center;
+}
+
+/* Column Widths */
+.mat-column-number,
+.mat-column-state {
+  width: 64px;
+}
+
+.mat-column-created {
+  width: 124px;
+}
 
 /* Estilos base para todos los estados */
 .estado-en-proceso,
@@ -103,7 +102,6 @@
   color: #155724; /* Mantiene el color del texto */
 }
 
-
 /* Animación para rotar el ícono */
 .rotate-icon mat-icon {
   animation: rotate 0.5s ease-in-out;
@@ -128,8 +126,6 @@
 .mat-column-seleccionar {
   text-align: center; /* Centra la palabra "Seleccionar" */
 }
-
-
 
 /* Elimina la animación del hover si está en estado finalizada */
 .green-button.finalizada:hover {

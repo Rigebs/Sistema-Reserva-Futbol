@@ -4,6 +4,7 @@ import { environment } from "../../environments/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { CampoSede } from "../models/campo-sede";
+import { SedeWithCampo } from "../models/sede-with-campo";
 
 @Injectable({
   providedIn: "root",
@@ -40,8 +41,10 @@ export class CampoService {
     return this.http.get<Campo>(`${this.apiUrl}/${id}`);
   }
 
-  getCamposByUsuarioId(usuarioId: number): Observable<Campo[]> {
-    return this.http.get<Campo[]>(`${this.apiUrl}/usuario/${usuarioId}/with-sede`);
+  getCamposByUsuarioId(usuarioId: number): Observable<SedeWithCampo> {
+    return this.http.get<SedeWithCampo>(
+      `${this.apiUrl}/usuario/${usuarioId}/with-sede`
+    );
   }
 
   // Guardar un nuevo campo

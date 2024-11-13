@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { LoginComponent } from "../../auth/login/login.component";
 import { AuthService } from "../../services/auth.service";
@@ -7,6 +7,7 @@ import { CommonModule } from "@angular/common";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { AuthNotificationService } from "../../services/auth-notification.service";
+import { AuthTokenUtil } from "../../utils/auth-token-util";
 
 @Component({
   selector: "app-navbar",
@@ -26,7 +27,8 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private authNotificationService: AuthNotificationService
+    private authNotificationService: AuthNotificationService,
+    private authTokenUtil: AuthTokenUtil
   ) {}
 
   ngOnInit(): void {
@@ -44,24 +46,22 @@ export class NavbarComponent implements OnInit {
     });
 
     this.authNotificationService.message$.subscribe((message) => {
-      if (message === 'Primero tienes que iniciar sesión') {
+      if (message === "Primero tienes que iniciar sesión") {
         this.openLoginDialog();
-        this.snackBar.open(message, 'Cerrar', {
+        this.snackBar.open(message, "Cerrar", {
           duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
+          verticalPosition: "top",
+          horizontalPosition: "center",
         });
       }
     });
   }
 
   checkAdminRole() {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log("PAU: ", payload);
-      
-      this.isAdmin = payload.roles && payload.roles.includes('ROLE_ADMIN');
+    const hasToken = this.authTokenUtil.hasToken();
+    if (hasToken) {
+      const payload = this.authTokenUtil.decodeToken();
+      this.isAdmin = this.authTokenUtil.isAdmin();
       this.adminUsername = payload.sub || null;
     }
   }
@@ -73,8 +73,8 @@ export class NavbarComponent implements OnInit {
   openLoginDialog() {
     const isMobile = window.innerWidth <= 768;
     const dialogConfig = {
-      minWidth: isMobile ? '' : '900px',
-      minHeight: isMobile ? '' : '600px',
+      minWidth: isMobile ? "" : "900px",
+      minHeight: isMobile ? "" : "500px",
     };
 
     this.dialog.open(LoginComponent, dialogConfig);
@@ -87,17 +87,21 @@ export class NavbarComponent implements OnInit {
   }
 
   registrarSede() {
-    this.router.navigate(['/registrar-sede']);
+    this.router.navigate(["/registrar-sede"]);
   }
 
   openFieldOfferDialog() {
     if (!this.currentUser) {
       this.openLoginDialog();
-      this.snackBar.open('Debes iniciar sesión para ofrecer tus campos', 'Cerrar', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-      });
+      this.snackBar.open(
+        "Debes iniciar sesión para ofrecer tus campos",
+        "Cerrar",
+        {
+          duration: 3000,
+          verticalPosition: "top",
+          horizontalPosition: "center",
+        }
+      );
     } else {
       this.registrarSede();
     }

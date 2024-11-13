@@ -29,7 +29,7 @@
 
 .carousel-image {
   width: 100%;
-  height: 90vh;
+  height: 93vh;
   object-fit: cover;
   transition: opacity 1s ease; /* Transición para el efecto de desvanecimiento */
   opacity: 0; /* Inicialmente invisible */

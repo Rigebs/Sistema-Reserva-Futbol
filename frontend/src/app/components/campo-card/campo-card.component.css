@@ -1,6 +1,5 @@
 .campo-card {
   max-width: 400px;
-  margin: 10px;
   width: 100%;
 }
 
@@ -28,7 +27,6 @@ mat-card-title {
 @media (max-width: 768px) {
   .campo-card {
     max-width: 100%;
-    margin: 0 10px;
   }
 
   mat-card {
@@ -39,14 +37,13 @@ mat-card-title {
 
   .image img {
     width: 100%;
-    height: 150px; /* Altura fija en pantallas pequeñas */
+    height: 200px; /* Altura fija en pantallas pequeñas */
     object-fit: cover;
   }
 }
 
 .campo-card {
   max-width: 400px;
-  margin: 10px;
 }
 
 .image {
@@ -55,6 +52,10 @@ mat-card-title {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+mat-card-content {
+  height: 60px;
 }
 
 .direccion {

@@ -3,6 +3,11 @@
 <!-- Contenedor principal para centrar el contenido -->
 <div class="container">
   <!-- Encabezado de la página -->
+  <img
+    class="image"
+    [src]="sedeConCampos?.companiaImagenUrl"
+    [alt]="sedeConCampos?.companiaNombre"
+  />
   <header class="page-header">
     <h1>Reservar Campo Deportivo</h1>
     <p>
@@ -17,7 +22,8 @@
       <!-- Tabla de reserva de campos -->
       <app-reserva-list
         #reservaList
-        [reservas]="reservas"
+        *ngIf="sedeConCampos"
+        [sede]="sedeConCampos"
         (reservaFinalizada)="agregarReservaFinalizada($event)"
       >
       </app-reserva-list>

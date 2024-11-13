@@ -11,6 +11,7 @@ import { CampoCardComponent } from "../../components/campo-card/campo-card.compo
 import { MatGridListModule } from "@angular/material/grid-list";
 import { CampoService } from "../../services/campo.service";
 import { CampoSede } from "../../models/campo-sede";
+import { AuthTokenUtil } from "../../utils/auth-token-util";
 
 @Component({
   selector: "app-home",
@@ -49,17 +50,13 @@ export class HomeComponent implements OnInit {
     "Cerro Colorado",
   ];
 
-  // Cambiar a tipo Date | null directamente, sin usar ModelSignal
-  selected: Date | null = new Date(); // Valor por defecto de hoy
+  selected: Date | null = new Date();
 
-  // Variables para las fechas de restricción
-  minDate: Date = new Date(); // Fecha de hoy
-  maxDate: Date = new Date(); // Fecha máxima (un mes después de hoy)
+  minDate: Date = new Date();
+  maxDate: Date = new Date();
 
   constructor(private campoService: CampoService) {
     this.selectedDistrict = this.districts[0];
-
-    // Establecer la fecha máxima a un mes después de hoy
     this.maxDate.setMonth(this.maxDate.getMonth() + 1);
   }
 
@@ -68,17 +65,14 @@ export class HomeComponent implements OnInit {
   }
 
   loadCampos(): void {
-    // Si no hay fecha seleccionada, usamos la fecha actual
-    const fechaSeleccionada = this.selected ? this.selected : new Date(); // Usar fecha actual si es null
+    const fechaSeleccionada = this.selected ? this.selected : new Date();
 
     const fechaReserva = this.formatDate(fechaSeleccionada);
 
-    // Llamar al servicio con la fecha seleccionada y el distrito actual
     this.campoService.getAllCampoSede("", "", "", fechaReserva).subscribe({
       next: (data: CampoSede[]) => {
         this.campos = data;
         console.log("DATA: ", this.campos);
-        
       },
       error: (err) => {
         console.error("Error al cargar los campos", err);
@@ -86,7 +80,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Método para formatear la fecha en el formato 'yyyy-MM-dd'
   formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
