@@ -21,7 +21,7 @@ public class Persona {
 
     private String dni;
 
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, length = 50)
     private String nombre;
 
     private String apePaterno;

@@ -42,13 +42,13 @@ public class EmpresaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createEmpresa(@RequestBody Empresa empresa) {
+    public ResponseEntity<Empresa> save(@RequestBody Empresa empresa) {
         Empresa newEmpresa = empresaService.save(empresa);
-        return new ResponseEntity<>("Empresa guardada con éxito: " + newEmpresa.getId(), HttpStatus.CREATED);
+        return new ResponseEntity<>(newEmpresa, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateEmpresa(@PathVariable Long id, @RequestBody Empresa empresa) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Empresa empresa) {
         try {
             Empresa updatedEmpresa = empresaService.update(id, empresa);
             return new ResponseEntity<>(updatedEmpresa, HttpStatus.OK);

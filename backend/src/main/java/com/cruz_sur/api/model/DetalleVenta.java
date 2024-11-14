@@ -3,6 +3,7 @@ package com.cruz_sur.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDateTime;
 
@@ -19,8 +20,9 @@ public class DetalleVenta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Time horaInicio;
-
     private Time horaFinal;
+    private BigDecimal precio;
+
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;

@@ -29,8 +29,6 @@ public class ReservaResponseDTO {
     private LocalDateTime fechaCreacion;
     private BigDecimal subtotal;
     private BigDecimal total;
-    private String campo;
-    private BigDecimal precio;
     private String numero;
     private String serie;
     private String razonSocial;
@@ -39,8 +37,5 @@ public class ReservaResponseDTO {
     private String direccionEmpresa;
     private String concepto;
     private String imageUrl;
-    private String sucursalNombre;
-    private String paginaWeb;
-    private String sedeNombre;
     private List<DetalleVentaDTO> detallesVenta; // Existing field
 }

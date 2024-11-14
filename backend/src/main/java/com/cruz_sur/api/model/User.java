@@ -1,5 +1,6 @@
 package com.cruz_sur.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 @Setter
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
@@ -50,7 +52,10 @@ public class User implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "sede_id")
-    private Sede sede;
+    private Compania sede;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Opinion> opiniones = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
