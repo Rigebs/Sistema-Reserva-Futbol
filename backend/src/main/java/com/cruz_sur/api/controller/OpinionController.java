@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.dto.OpinionDTO;
+import com.cruz_sur.api.dto.OpinionSummaryDTO;
 import com.cruz_sur.api.service.IOpinionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,10 @@ public class OpinionController {
     public ResponseEntity<OpinionDTO> updateOpinion(@PathVariable Long id, @RequestBody OpinionDTO opinionDTO) {
         OpinionDTO updatedOpinion = opinionService.updateOpinion(id, opinionDTO);
         return ResponseEntity.ok(updatedOpinion);
+    }
+
+    @GetMapping("/resumen/{companiaId}")
+    public OpinionSummaryDTO summaryOpinion(@PathVariable Long companiaId) {
+        return opinionService.summaryOpinion(companiaId);
     }
 }
