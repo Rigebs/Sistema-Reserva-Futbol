@@ -26,6 +26,12 @@ public class CampoController {
         return new ResponseEntity<>(campos, HttpStatus.OK);
     }
 
+    @GetMapping("/compania")
+    public ResponseEntity<List<CampoDTO>> campos() {
+        List<CampoDTO> campos = campoService.campos();
+        return new ResponseEntity<>(campos, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> byId(@PathVariable Long id) {
         Optional<CampoDTO> campoDTO = campoService.byId(id);

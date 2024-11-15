@@ -7,5 +7,10 @@ import java.util.List;
 
 public interface IVentasService {
     List<VentasMensualesDTO> all();
-    ContarReservasDTO allDay(String fecha);
+
+    ContarReservasDTO countTotalReservas(String fecha);
+
+    List<ContarReservasDTO> countCamposReservados();
+
+    ContarReservasDTO countTotalReservasDiarias(String fecha);
 }

@@ -1,11 +1,10 @@
 package com.cruz_sur.api.dto;
 
+import lombok.Data;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
+@Data
 public class ContarReservasDTO {
     private int totalReservas;
+    private String campo;       // Nombre del campo si se usa en 'campos_reservados'
+    private double TotalMonetario;
 }

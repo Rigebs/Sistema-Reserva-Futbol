@@ -111,7 +111,17 @@ public class CampoService implements ICampoService {
                 }
         );
     }
+    @Override
+    public List<CampoDTO> campos() {
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuario.getId())
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
     @Override
     public List<SedeConCamposDTO> findByUsuarioIdWithSede(Long usuarioId) {
         List<CamposHomeDTO> camposHomeList = getCamposDetailsByUsuarioId(usuarioId);
