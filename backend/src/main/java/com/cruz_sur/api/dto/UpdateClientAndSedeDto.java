@@ -1,17 +1,16 @@
 package com.cruz_sur.api.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateClientAndSedeDto {
     private Long clienteId;
-    private Long sedeId;
+    private Long companiaId;
 
-    // Constructor
-    public UpdateClientAndSedeDto() {}
-
-    public UpdateClientAndSedeDto(Long clienteId, Long sedeId) {
-        this.clienteId = clienteId;
-        this.sedeId = sedeId;
-    }
+    // Getters y setters
 }
+

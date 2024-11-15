@@ -39,7 +39,7 @@ public class ImagenService implements IImagenService {
             throw new IllegalArgumentException("El nombre del archivo no puede ser nulo.");
         }
 
-        Imagen image = new Imagen(name, imageUrl, imageId);
+        Imagen image = new Imagen(name, imageUrl.replace("http://","https://"), imageId);
         image.setEstado('1');
 
         String authenticatedUsername = getAuthenticatedUsername();

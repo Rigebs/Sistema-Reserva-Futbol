@@ -54,19 +54,14 @@ public class ReservaService implements IReservaService {
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
 
-        BigDecimal subtotal = reservaCalculations.calculateSubtotal(detallesVenta);
-        BigDecimal totalDescuento = reservaCalculations.calculateDiscount(subtotal, reservaDTO.getDescuento());
-        BigDecimal igvAmount = reservaCalculations.calculateIgv(subtotal.subtract(totalDescuento), reservaDTO.getIgv());
-        BigDecimal total = subtotal.subtract(totalDescuento).add(igvAmount);
-
         LocalDateTime now = LocalDateTime.now();
         Reserva reserva = Reserva.builder()
                 .fecha(reservaDTO.getFecha())
                 .descuento(reservaDTO.getDescuento())
                 .igv(reservaDTO.getIgv())
-                .total(total)
-                .totalDescuento(totalDescuento)
-                .subtotal(subtotal)
+                .total(reservaDTO.getTotal())
+                .totalDescuento(reservaDTO.getTotalDescuento())
+                .subtotal(reservaDTO.getSubtotal())
                 .tipoComprobante(reservaDTO.getTipoComprobante())
                 .cliente(cliente)
                 .usuario(usuario)
@@ -152,12 +147,11 @@ public class ReservaService implements IReservaService {
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String query = "EXEC ALL_RESERVAS @UserId = ?, @ACTION = 'C'";
+        String query = "CALL ALL_RESERVAS(?, 'C')";
         Long total = jdbcTemplate.queryForObject(query, new Object[]{userId}, Long.class);
 
         return new TotalReservasResponse(total);
     }
-
 
     @Override
     public List<ReservaDisplayDTO> getReservasForLoggedUser() {
@@ -166,7 +160,7 @@ public class ReservaService implements IReservaService {
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String query = "EXEC ALL_RESERVAS ?, @ACTION = 'L'";
+        String query = "CALL ALL_RESERVAS(?, 'L')";
 
         return jdbcTemplate.query(query, new Object[]{userId}, (rs, rowNum) -> new ReservaDisplayDTO(
                 rs.getLong(1),

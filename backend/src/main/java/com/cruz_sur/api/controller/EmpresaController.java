@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Empresa;
+import com.cruz_sur.api.responses.EmpresaClienteResponse;
 import com.cruz_sur.api.responses.ReniecSunatResponse;
 import com.cruz_sur.api.service.IEmpresaService;
 import lombok.AllArgsConstructor;
@@ -42,13 +43,17 @@ public class EmpresaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createEmpresa(@RequestBody Empresa empresa) {
-        Empresa newEmpresa = empresaService.save(empresa);
-        return new ResponseEntity<>("Empresa guardada con éxito: " + newEmpresa.getId(), HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> save(@RequestBody Empresa empresa) {
+        EmpresaClienteResponse response = empresaService.save(empresa);
+        return new ResponseEntity<>(Map.of(
+                "message", "Empresa creada con éxito",
+                "empresaId", response.getEmpresa().getId(),
+                "clienteId", response.getCliente().getId()
+        ), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateEmpresa(@PathVariable Long id, @RequestBody Empresa empresa) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Empresa empresa) {
         try {
             Empresa updatedEmpresa = empresaService.update(id, empresa);
             return new ResponseEntity<>(updatedEmpresa, HttpStatus.OK);

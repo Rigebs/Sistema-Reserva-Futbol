@@ -1,18 +1,23 @@
 package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.dto.CampoDTO;
+import com.cruz_sur.api.dto.CamposHomeDTO;
+import com.cruz_sur.api.dto.SedeConCamposDTO;
 import com.cruz_sur.api.model.Campo;
+import com.cruz_sur.api.model.TipoDeporte;
 import com.cruz_sur.api.model.User;
 import com.cruz_sur.api.repository.CampoRepository;
+import com.cruz_sur.api.repository.TipoDeporteRepository;
 import com.cruz_sur.api.repository.UserRepository;
 import com.cruz_sur.api.service.ICampoService;
 import lombok.AllArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,25 +25,27 @@ public class CampoService implements ICampoService {
 
     private final CampoRepository campoRepository;
     private final UserRepository userRepository;
+    private final TipoDeporteRepository tipoDeporteRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Campo save(Campo campo) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // Obtiene el usuario autenticado
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verifica que el usuario tenga un sedeId
         if (usuario.getSede() == null || usuario.getSede().getId() == null) {
             throw new RuntimeException("El usuario debe estar asociado a una sede para crear un campo.");
         }
 
-        // Establece la información del campo
+        TipoDeporte tipoDeporte = tipoDeporteRepository.findById(campo.getTipoDeporte().getId())
+                .orElseThrow(() -> new RuntimeException("Tipo de Deporte no encontrado"));
+
         campo.setUsuarioCreacion(authenticatedUsername);
         campo.setFechaCreacion(LocalDateTime.now());
         campo.setEstado('1');
-        campo.setUsuario(usuario); // Asignar el usuario al campo
+        campo.setUsuario(usuario);
+        campo.setTipoDeporte(tipoDeporte);
 
         return campoRepository.save(campo);
     }
@@ -47,10 +54,12 @@ public class CampoService implements ICampoService {
     public Campo update(Long id, Campo campo) {
         Campo campoExistente = campoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Campo no encontrado"));
-
+        TipoDeporte tipoDeporte = tipoDeporteRepository.findById(campo.getTipoDeporte().getId())
+                .orElseThrow(() -> new RuntimeException("Tipo de Deporte no encontrado"));
         campoExistente.setNombre(campo.getNombre());
         campoExistente.setPrecio(campo.getPrecio());
         campoExistente.setDescripcion(campo.getDescripcion());
+        campoExistente.setTipoDeporte(tipoDeporte);
 
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         campoExistente.setUsuarioModificacion(authenticatedUsername);
@@ -61,20 +70,10 @@ public class CampoService implements ICampoService {
 
     @Override
     public List<CampoDTO> all() {
-        List<Campo> campos = campoRepository.findAll();
-        // Convert Campo to CampoDTO
-        return campos.stream()
-                .map(campo -> new CampoDTO(
-                        campo.getId(),
-                        campo.getNombre(),
-                        campo.getPrecio(),
-                        campo.getDescripcion(),
-                        campo.getEstado(),
-                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
-                ))
-                .toList(); // Using Java 16+ stream method
+        return campoRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
-
 
     @Override
     public Campo changeStatus(Long id, Integer status) {
@@ -88,14 +87,86 @@ public class CampoService implements ICampoService {
     @Override
     public Optional<CampoDTO> byId(Long id) {
         return campoRepository.findById(id)
-                .map(campo -> new CampoDTO(
-                        campo.getId(),
-                        campo.getNombre(),
-                        campo.getPrecio(),
-                        campo.getDescripcion(),
-                        campo.getEstado(),
-                        campo.getUsuario() != null ? campo.getUsuario().getId() : null // Get user ID if available
-                ));
+                .map(this::toDTO);
     }
 
+    @Override
+    public List<CamposHomeDTO> getAvailableSedesAndCamposWithSede(Long usuarioId, String distritoNombre, String provinciaNombre, String departamentoNombre, String fechaReserva, String tipoDeporteNombre) {
+        String sql = "{CALL GetAvailableSedes(?, ?, ?, ?, ?)}";
+
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{distritoNombre, provinciaNombre, departamentoNombre, fechaReserva, tipoDeporteNombre},
+                (rs, rowNum) -> {
+                    String tipoDeporteStr = rs.getString("tipo_deporte_nombre");
+                    List<String> tipoDeporteList = tipoDeporteStr != null ? Arrays.asList(tipoDeporteStr.split(",")) : new ArrayList<>();
+                    return new CamposHomeDTO(
+                            rs.getLong("user_id"),
+                            rs.getLong("compania_id"),
+                            rs.getString("compania_nombre"),
+                            rs.getString("compania_imagen_url"),
+                            rs.getString("direccion"),
+                            tipoDeporteList
+                    );
+                }
+        );
+    }
+    @Override
+    public List<CampoDTO> campos() {
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User usuario = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNull(usuario.getId())
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<SedeConCamposDTO> findByUsuarioIdWithSede(Long usuarioId) {
+        List<CamposHomeDTO> camposHomeList = getCamposDetailsByUsuarioId(usuarioId);
+        List<CampoDTO> camposWithSede = campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado(usuarioId, '1')
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        return camposHomeList.stream()
+                .map(sede -> new SedeConCamposDTO(
+                        sede.getUserId(),
+                        sede.getCompaniaId(),
+                        sede.getCompaniaNombre(),
+                        sede.getCompaniaImagenUrl(),
+                        sede.getDireccion(),
+                        camposWithSede
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    private CampoDTO toDTO(Campo campo) {
+        return new CampoDTO(
+                campo.getId(),
+                campo.getNombre(),
+                campo.getPrecio(),
+                campo.getDescripcion(),
+                campo.getEstado(),
+                campo.getUsuario() != null ? campo.getUsuario().getId() : null,
+                campo.getTipoDeporte() != null ? campo.getTipoDeporte().getId() : null
+        );
+    }
+    public List<CamposHomeDTO> getCamposDetailsByUsuarioId(Long usuarioId) {
+        String sql = "{CALL campos(?)}";
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{usuarioId},
+                (rs, rowNum) -> new CamposHomeDTO(
+                        rs.getLong("user_id"),
+                        rs.getLong("compania_id"),
+                        rs.getString("compania_nombre"),
+                        rs.getString("compania_imagen_url"),
+                        rs.getString("direccion"),
+                        new ArrayList<>()
+                )
+        );
+    }
 }

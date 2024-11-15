@@ -29,7 +29,7 @@ public class DistritoController {
     }
 
     @GetMapping("/provincia/{provinciaId}")
-    public List<Distrito> findProvinciaById(@PathVariable Long provinciaId){
-        return iDistritoService.findProvinciaById(provinciaId);
+    public List<Distrito> findByProvinciaId(@PathVariable Long provinciaId){
+        return iDistritoService.findByProvinciaId(provinciaId);
     }
 }

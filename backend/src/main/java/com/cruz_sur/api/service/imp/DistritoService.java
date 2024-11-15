@@ -26,7 +26,7 @@ public class DistritoService implements IDistritoService {
     }
 
     @Override
-    public List<Distrito> findProvinciaById(Long provinciaId) {
-        return distritoRepository.findProvinciaById(provinciaId);
+    public List<Distrito> findByProvinciaId(Long provinciaId) {
+        return distritoRepository.findByProvinciaId(provinciaId);
     }
 }

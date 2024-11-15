@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface IDistritoService {
     List<Distrito> all();
     Optional<Distrito> byId(Long id);
-    List<Distrito> findProvinciaById(Long provinciaId);
+    List<Distrito> findByProvinciaId(Long provinciaId);
 }

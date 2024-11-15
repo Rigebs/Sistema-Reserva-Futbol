@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 public class ReservaDTO {
     private LocalDate fecha;
     private BigDecimal descuento;
+    private BigDecimal total;
     private BigDecimal igv;
+    private BigDecimal subtotal;        // New field
+    private BigDecimal totalDescuento;  // New field
     private Character tipoComprobante;
     private Long metodoPagoId;
 }
