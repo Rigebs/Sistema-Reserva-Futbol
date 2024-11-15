@@ -22,34 +22,52 @@ public class VentasService implements IVentasService {
 
     @Override
     public List<VentasMensualesDTO> all() {
-        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User authenticatedUser = userRepository.findByUsername(authenticatedUsername)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-
-        if (authenticatedUser.getSede() == null) {
-            throw new RuntimeException("User does not have a valid sede_id. Access denied.");
-        }
-
+        Long usuarioId = getAuthenticatedUserId();
         String sql = "{CALL ObtenerVentasMensualesPorUsuario(?)}";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(VentasMensualesDTO.class), authenticatedUser.getId());
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(VentasMensualesDTO.class), usuarioId);
     }
 
     @Override
-    public ContarReservasDTO allDay(String fecha) {
-        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User authenticatedUser = userRepository.findByUsername(authenticatedUsername)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-        if (authenticatedUser.getSede() == null) {
-            throw new RuntimeException("User does not have a valid sede_id. Access denied.");
-        }
-        Long usuarioId = authenticatedUser.getId();
-        String sql = "{CALL ContarReservasDia(?, ?)}";
-        return jdbcTemplate.queryForObject(sql, new Object[]{usuarioId, fecha}, (rs, rowNum) -> {
+    public ContarReservasDTO countTotalReservas(String fecha) {
+        return executeReservasProcedure(fecha, "total_reservas");
+    }
+
+    @Override
+    public List<ContarReservasDTO> countCamposReservados() {
+        String sql = "{CALL ContarReservasDia(?, NULL, ?)}";
+        Long usuarioId = getAuthenticatedUserId();
+        return jdbcTemplate.query(sql, new Object[]{usuarioId, "campos_reservados"},
+                new BeanPropertyRowMapper<>(ContarReservasDTO.class));
+    }
+
+    @Override
+    public ContarReservasDTO countTotalReservasDiarias(String fecha) {
+        return executeReservasProcedure(fecha, "total_reservas_diarias");
+    }
+
+    private ContarReservasDTO executeReservasProcedure(String fecha, String accion) {
+        Long usuarioId = getAuthenticatedUserId();
+        String sql = "{CALL ContarReservasDia(?, ?, ?)}";
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{usuarioId, fecha, accion}, (rs, rowNum) -> {
             ContarReservasDTO dto = new ContarReservasDTO();
-            dto.setTotalReservas(rs.getInt("TotalReservas"));
+            if ("total_reservas".equals(accion)) {
+                dto.setTotalReservas(rs.getInt("TotalReservas"));
+            } else if ("total_reservas_diarias".equals(accion)) {
+                dto.setTotalReservas(rs.getInt("cantidad_reservas"));
+                dto.setTotalMonetario(rs.getDouble("TotalReservasDiarias"));
+            }
             return dto;
         });
     }
 
-
+    private Long getAuthenticatedUserId() {
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User authenticatedUser = userRepository.findByUsername(authenticatedUsername)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+        if (authenticatedUser.getSede() == null) {
+            throw new RuntimeException("User does not have a valid sede_id. Access denied.");
+        }
+        return authenticatedUser.getId();
+    }
 }
