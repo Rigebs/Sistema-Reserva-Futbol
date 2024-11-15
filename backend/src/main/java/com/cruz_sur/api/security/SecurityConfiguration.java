@@ -37,7 +37,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/distrito").permitAll()
                         .requestMatchers("/api/v1/provincia").permitAll()
                         .requestMatchers("/api/v1/campos/usuario/{usuarioId}/with-sede").permitAll()
-                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN","CLIENTE")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,7 +50,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://127.0.0.1:3000","https://zemply.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200","https://zemply.vercel.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

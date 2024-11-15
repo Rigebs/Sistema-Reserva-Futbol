@@ -88,7 +88,7 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Cliente not found."));
             user.setCliente(cliente);
 
-            Role userRole = roleRepository.findByName("ROLE_USER")
+            Role userRole = roleRepository.findByName("ROLE_CLIENTE")
                     .orElseThrow(() -> new RuntimeException("User role not found"));
 
             if (!user.getRoles().contains(userRole)) {
@@ -111,7 +111,7 @@ public class AuthenticationService {
             if (!user.getRoles().contains(adminRole)) {
                 user.getRoles().add(adminRole);
             }
-            Role userRole = roleRepository.findByName("ROLE_USER")
+            Role userRole = roleRepository.findByName("ROLE_CLIENTE")
                     .orElseThrow(() -> new RuntimeException("User role not found"));
             user.getRoles().remove(userRole);
         }
