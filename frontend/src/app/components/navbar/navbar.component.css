@@ -24,6 +24,7 @@ body {
   display: flex;
   justify-content: space-between; /* Separar logo de los otros elementos */
   align-items: center;
+  height: 70px;
 }
 
 .logo {
@@ -64,7 +65,6 @@ body {
   background-color: #7b1fa2; /* Púrpura más oscuro para hover */
   transform: scale(1.1); /* Zoom más marcado en hover */
 }
-
 
 .nav-button {
   color: white;

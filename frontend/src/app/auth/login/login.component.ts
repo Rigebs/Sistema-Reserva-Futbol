@@ -89,24 +89,34 @@ export class LoginComponent {
   }
 
   onRegister() {
-    this.isUsernameValid = this.usernamePattern.test(this.registerUser.username);
-    
+    this.isUsernameValid = this.usernamePattern.test(
+      this.registerUser.username
+    );
+
     if (!this.isUsernameValid) {
-      this.snackBar.open("El nombre de usuario solo debe contener letras y números, sin espacios.", "Cerrar", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-      });
+      this.snackBar.open(
+        "El nombre de usuario solo debe contener letras y números, sin espacios.",
+        "Cerrar",
+        {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        }
+      );
       return;
     }
 
     this.authService.register(this.registerUser).subscribe({
       next: () => {
-        this.snackBar.open("Registro exitoso, por favor verifica tu email", "Cerrar", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-        });
+        this.snackBar.open(
+          "Registro exitoso, por favor verifica tu email",
+          "Cerrar",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          }
+        );
         this.isVerification = true;
       },
       error: (error) => {
@@ -259,6 +269,13 @@ export class LoginComponent {
         verticalPosition: "top",
       });
     }
+  }
+
+  onIdentifierInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Permitir solo letras, números, puntos y arroba
+    input.value = input.value.replace(/[^a-zA-Z0-9@.]/g, "");
+    this.loginUser.identifier = input.value; // Actualizar el valor de loginUser.identifier
   }
 
   toggleForm() {

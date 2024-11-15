@@ -1,14 +1,14 @@
 <div class="reserva-list-container">
   <h5>Campos disponibles</h5>
 
-  <div *ngIf="reservas.length === 0">
+  <div *ngIf="campos.length === 0">
     <p>No hay campos reservados. Agrega alguno para comenzar.</p>
   </div>
 
   <div class="table-container example-table-container">
     <table
       mat-table
-      [dataSource]="reservas"
+      [dataSource]="campos"
       class="mat-elevation-z8 example-table"
       matSort
       matSortActive="fecha"
@@ -17,7 +17,7 @@
     >
       <ng-container matColumnDef="nombreCampo" sticky>
         <th mat-header-cell *matHeaderCellDef>Campo</th>
-        <td mat-cell *matCellDef="let reserva">{{ reserva.nombre }}</td>
+        <td mat-cell *matCellDef="let campo">{{ campo.nombre }}</td>
       </ng-container>
 
       <ng-container matColumnDef="seleccionar" stickyEnd>
@@ -27,16 +27,14 @@
             <mat-icon>arrow_downward</mat-icon>
           </div>
         </th>
-        <td mat-cell *matCellDef="let reserva">
+        <td mat-cell *matCellDef="let campo">
           <button
             mat-mini-fab
-            matTooltip="Este campo ya está reservado"
-            [matTooltipDisabled]="!reserva.finalizada"
             class="green-button"
-            (click)="abrirDialogo(reserva)"
+            (click)="abrirDialogo(campo)"
             [ngClass]="{
-              'rotate-icon': reserva.rotating,
-              finalizada: reserva.finalizada
+              'rotate-icon': campo.rotating,
+              finalizada: campo.finalizada
             }"
           >
             <mat-icon>sports_soccer</mat-icon>
@@ -46,36 +44,22 @@
 
       <ng-container matColumnDef="precio">
         <th mat-header-cell *matHeaderCellDef>Precio/<br />Hora</th>
-        <td mat-cell *matCellDef="let reserva">
+        <td mat-cell *matCellDef="let campo">
           <div class="precio">
-            {{ "s/" + (reserva.precio | number : "1.2-2") }}
+            {{ "s/" + (campo.precio | number : "1.2-2") }}
           </div>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="descripcion">
         <th mat-header-cell *matHeaderCellDef>Descripción</th>
-        <td mat-cell *matCellDef="let reserva">
-          <mat-chip> {{ reserva.descripcion }} </mat-chip>
+        <td mat-cell *matCellDef="let campo">
+          <mat-chip> {{ campo.descripcion }} </mat-chip>
         </td>
       </ng-container>
 
-      <tr
-        mat-header-row
-        *matHeaderRowDef="[
-          'nombreCampo',
-          'descripcion',
-          'precio',
-          'seleccionar'
-        ]"
-      ></tr>
-      <tr
-        mat-row
-        *matRowDef="
-          let row;
-          columns: ['nombreCampo', 'descripcion', 'precio', 'seleccionar']
-        "
-      ></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
 </div>

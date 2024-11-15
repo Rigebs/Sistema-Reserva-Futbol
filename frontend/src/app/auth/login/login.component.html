@@ -20,7 +20,11 @@
     <div *ngIf="isLogin">
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Usuario o correo electrónico</mat-label>
-        <input matInput [(ngModel)]="loginUser.identifier" />
+        <input
+          matInput
+          [(ngModel)]="loginUser.identifier"
+          (input)="onIdentifierInput($event)"
+        />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="input-field">

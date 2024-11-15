@@ -1,0 +1,57 @@
+<div class="opiniones-container">
+  <h2>Opiniones</h2>
+
+  <!-- Formulario para agregar una nueva opinión -->
+  <div class="opinion-form">
+    <form [formGroup]="opinionForm" (ngSubmit)="enviarOpinion()">
+      <div class="form-group">
+        <label for="contenido">Comentario:</label>
+        <textarea
+          id="contenido"
+          formControlName="contenido"
+          class="form-control"
+          rows="3"
+          placeholder="Escribe tu comentario aquí..."
+          required
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="calificacion">Calificación:</label>
+        <div class="estrellas-calificacion">
+          <span
+            *ngFor="let estrella of [1, 2, 3, 4, 5]; let i = index"
+            class="star"
+            [class.selected]="i < opinionForm.value.calificacion"
+            (click)="seleccionarCalificacion(i + 1)"
+          >
+            ★
+          </span>
+        </div>
+      </div>
+      <button
+        type="submit"
+        [disabled]="opinionForm.invalid"
+        class="btn btn-primary"
+      >
+        Enviar Opinión
+      </button>
+    </form>
+  </div>
+
+  <!-- Mostrar las opiniones existentes -->
+  <div class="opiniones-list">
+    <div *ngFor="let opinion of opiniones" class="opinion">
+      <div class="opinion-header">
+        <strong>{{ opinion.usuarioCreacion }}</strong>
+        <div class="estrellas">
+          <span
+            *ngFor="let estrella of getEstrellas(opinion.calificacion)"
+            class="star selected"
+            >★</span
+          >
+        </div>
+      </div>
+      <p>{{ opinion.contenido }}</p>
+    </div>
+  </div>
+</div>

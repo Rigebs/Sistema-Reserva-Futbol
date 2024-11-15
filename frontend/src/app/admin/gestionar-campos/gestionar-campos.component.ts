@@ -7,22 +7,30 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialog } from "@angular/material/dialog";
 import { DialogFormComponent } from "../../components/dialog-form/dialog-form.component";
+import { CampoService } from "../../services/campo.service";
+import { Campo } from "../../models/campo";
 
 @Component({
   selector: "app-gestionar-campos",
   standalone: true,
-  imports: [
-    TableComponent,
-    SidebarComponent,
-    MatButtonModule,
-    MatIconModule,
-    NgClass,
-  ],
+  imports: [TableComponent, SidebarComponent, MatButtonModule, MatIconModule],
   templateUrl: "./gestionar-campos.component.html",
   styleUrl: "./gestionar-campos.component.css",
 })
-export class GestionarCamposComponent {
-  constructor(public dialog: MatDialog) {}
+export class GestionarCamposComponent implements OnInit {
+  constructor(public dialog: MatDialog, private campoService: CampoService) {}
+
+  campos: Campo[] = [];
+
+  ngOnInit(): void {
+    this.getAllCampos();
+  }
+
+  getAllCampos(): void {
+    this.campoService.getCamposByUsuarioId(2).subscribe((data) => {
+      console.log("DATA: ", data);
+    });
+  }
 
   columns: TableColumn[] = [
     { key: "id", label: "ID" },
