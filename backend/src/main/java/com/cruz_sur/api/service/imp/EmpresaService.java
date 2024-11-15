@@ -2,6 +2,7 @@ package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.model.Empresa;
 import com.cruz_sur.api.repository.EmpresaRepository;
+import com.cruz_sur.api.responses.EmpresaClienteResponse;
 import com.cruz_sur.api.service.IEmpresaService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class EmpresaService implements IEmpresaService {
 
     @Transactional
     @Override
-    public Empresa save(Empresa empresa) {
+    public EmpresaClienteResponse save(Empresa empresa) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         empresa.setUsuarioCreacion(authenticatedUsername);
         empresa.setFechaCreacion(LocalDateTime.now());
@@ -44,9 +45,11 @@ public class EmpresaService implements IEmpresaService {
         cliente.setUsuarioCreacion(authenticatedUsername);
         cliente.setFechaCreacion(LocalDateTime.now());
 
-        clienteRepository.save(cliente);
-        return newEmpresa;
+        Cliente newCliente = clienteRepository.save(cliente);
+
+        return new EmpresaClienteResponse(newEmpresa, newCliente);
     }
+
 
     @Override
     public Empresa update(Long id, Empresa empresa) {

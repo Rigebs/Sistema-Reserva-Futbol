@@ -1,6 +1,7 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.model.Persona;
+import com.cruz_sur.api.responses.PersonaClienteResponse;
 import com.cruz_sur.api.responses.ReniecSunatResponse;
 import com.cruz_sur.api.service.IPersonaService;
 import lombok.AllArgsConstructor;
@@ -45,9 +46,13 @@ public class PersonaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody Persona persona) {
-        personaService.save(persona);
-        return new ResponseEntity<>("Persona creada con éxito", HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> save(@RequestBody Persona persona) {
+        PersonaClienteResponse response = personaService.save(persona);
+        return new ResponseEntity<>(Map.of(
+                "message", "Persona creada con éxito",
+                "personaId", response.getPersona().getId(),
+                "clienteId", response.getCliente().getId()
+        ), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
