@@ -56,6 +56,8 @@ export class RegistrarSedeComponent implements OnInit {
   filteredProvincias: Provincia[] = [];
   filteredDistritos: Distrito[] = [];
 
+  companyRegistered: boolean = false;
+
   file: File | null = null;
   qrFile: File | null = null;
 
@@ -98,6 +100,15 @@ export class RegistrarSedeComponent implements OnInit {
 
     // Cargar departamentos
     this.cargarDepartamentos();
+
+    // Suscribir a los cambios del campo 'ruc' para ejecutar consultarReniec() cuando tenga 11 dígitos
+    this.empresaFormGroup
+      .get("ruc")
+      ?.valueChanges.subscribe((rucValue: string) => {
+        if (rucValue.length === 11) {
+          this.consultarReniec();
+        }
+      });
   }
 
   // Método para manejar la selección de archivos
@@ -223,16 +234,15 @@ export class RegistrarSedeComponent implements OnInit {
             .updateClientOrSede(updateRequest)
             .subscribe((response) => {
               console.log("Relación cliente-sede actualizada:", response);
-              this.authService.currentUser$.subscribe((usuario) => {
-                if (usuario) {
-                  this.router.navigate([`/${usuario}/panel-admin`]);
-                } else {
-                  console.error("No se pudo obtener el usuario desde el token");
-                }
-              });
+              // Cambio de estado para mostrar el mensaje de éxito
+              this.companyRegistered = true;
             });
         });
     });
+  }
+
+  goToHome() {
+    this.router.navigate(["/home"]);
   }
 
   private updateOrientation() {

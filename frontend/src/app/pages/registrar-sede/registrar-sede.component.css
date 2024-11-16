@@ -1,13 +1,17 @@
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px;
+  gap: 30px;
+}
+
 /* Configuración de cuadrícula con un máximo de 2 elementos por fila */
 .grid-container {
   padding-top: 20px;
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, 1fr); /* Limitar a 2 columnas */
-}
-
-.stepper {
-  padding: 16px;
 }
 
 /* Estilo para el texto introductorio */
@@ -17,11 +21,14 @@
   background-color: #eef2f7;
   padding: 20px;
   border-radius: 8px;
+  width: 25%;
+  max-height: 526px; /* Ajusta este valor según lo que necesites */
+  overflow-y: auto; /* Permite el desplazamiento si el contenido es más largo que la altura máxima */
 }
 
 .intro-text h2 {
   color: #3f51b5;
-  font-size: 24px;
+  font-size: 28px;
   margin-bottom: 10px;
 }
 
@@ -58,7 +65,6 @@ form {
 .button-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
 }
 
 /* Estilo para los botones */
@@ -89,4 +95,37 @@ button.submit-button:hover {
 
 .mat-form-field.ng-touched.ng-invalid input {
   border-color: red;
+}
+
+.confirmation-message {
+  text-align: center;
+  background-color: #e0f7fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 60%;
+  margin: 0 auto;
+}
+
+.confirmation-message h2 {
+  color: #00796b;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.confirmation-message p {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.confirmation-message button {
+  background-color: #00796b;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.confirmation-message button:hover {
+  background-color: #004d40;
 }

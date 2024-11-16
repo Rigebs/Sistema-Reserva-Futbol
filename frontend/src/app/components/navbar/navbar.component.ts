@@ -22,6 +22,8 @@ export class NavbarComponent implements OnInit {
   isCompania = false;
   adminUsername: string | null = null;
 
+  isEspera = false;
+
   constructor(
     private dialog: MatDialog,
     private authService: AuthService,
@@ -38,6 +40,7 @@ export class NavbarComponent implements OnInit {
       if (user) {
         // Check if the user has admin privileges after login
         this.checkAdminRole();
+        this.checkEsperaRole();
       } else {
         // Reset state when logged out
         this.isCompania = false;
@@ -62,6 +65,15 @@ export class NavbarComponent implements OnInit {
     if (hasToken) {
       const payload = this.authTokenUtil.decodeToken();
       this.isCompania = this.authTokenUtil.isCompania();
+      this.adminUsername = payload.sub || null;
+    }
+  }
+
+  checkEsperaRole() {
+    const hasToken = this.authTokenUtil.hasToken();
+    if (hasToken) {
+      const payload = this.authTokenUtil.decodeToken();
+      this.isEspera = this.authTokenUtil.isEspera();
       this.adminUsername = payload.sub || null;
     }
   }

@@ -1,9 +1,11 @@
 <nav class="navbar">
   <div class="navbar-container">
-    <div class="logo">Zemply</div>
+    <div class="logo">
+      <h1 class="logo">Zemply</h1>
+    </div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li *ngIf="!isCompania">
+        <li *ngIf="!isCompania && !isEspera">
           <button
             class="nav-button join-us-button"
             (click)="openFieldOfferDialog()"
