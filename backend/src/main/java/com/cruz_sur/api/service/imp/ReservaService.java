@@ -1,6 +1,5 @@
 package com.cruz_sur.api.service.imp;
 
-import com.cruz_sur.api.config.GlobalExceptionHandler;
 import com.cruz_sur.api.controller.AvailabilityController;
 import com.cruz_sur.api.dto.*;
 import com.cruz_sur.api.model.*;
@@ -10,14 +9,10 @@ import com.cruz_sur.api.service.IReservaService;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +27,6 @@ public class ReservaService implements IReservaService {
     private final DetalleVentaService detalleVentaService;
     private final ComprobanteService comprobanteService;
     private final ReservaValidationService reservaValidationService;
-    private final ReservaCalculations reservaCalculations;
-    private final DetalleVentaRepository detalleVentaRepository;
     private final CampoRepository campoRepository;
     private final AvailabilityController availabilityController;
     private final ReservaResponseBuilder reservaResponseBuilder;
