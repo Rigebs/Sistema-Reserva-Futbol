@@ -81,21 +81,20 @@ public class OpinionService implements IOpinionService {
         Opinion opinion = opinionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Opinion not found with id: " + id));
 
-        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        User authenticatedUser = userRepository.findByUsername(authenticatedUsername)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUsername));
+        Long authenticatedUserId = Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        // Verificar que el usuario autenticado es el propietario de la opinión
-        if (!opinion.getUser().getUsername().equals(authenticatedUsername)) {
+        if (!opinion.getUser().getId().equals(authenticatedUserId)) {
             throw new RuntimeException("No tienes permiso para editar esta opinión.");
         }
-
         Compania compania = companiaRepository.findById(opinionDTO.getCompaniaId())
                 .orElseThrow(() -> new RuntimeException("Compania not found with id: " + opinionDTO.getCompaniaId()));
 
+        User authenticatedUser = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + authenticatedUserId));
+
         opinion.setContenido(opinionDTO.getContenido());
         opinion.setCalificacion(opinionDTO.getCalificacion());
-        opinion.setUsuarioModificacion(authenticatedUsername);
+        opinion.setUsuarioModificacion(authenticatedUserId.toString());
         opinion.setFechaModificacion(LocalDateTime.now());
         opinion.setUser(authenticatedUser);
         opinion.setCompania(compania);

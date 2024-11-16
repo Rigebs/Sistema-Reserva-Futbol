@@ -1,31 +1,29 @@
 package com.cruz_sur.api.controller;
 
-
-
 import com.cruz_sur.api.config.AuthException;
 import com.cruz_sur.api.dto.LoginUserDto;
 import com.cruz_sur.api.dto.RegisterUserDto;
 import com.cruz_sur.api.dto.VerifyUserDto;
 import com.cruz_sur.api.model.User;
-import com.cruz_sur.api.repository.UserRepository;
 import com.cruz_sur.api.responses.LoginResponse;
+import com.cruz_sur.api.responses.TokenResponse;
+import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import com.cruz_sur.api.service.imp.AuthenticationService;
 import com.cruz_sur.api.service.imp.JwtService;
 import com.cruz_sur.api.service.imp.TokenBlacklistService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RequestMapping("/auth")
 @RestController
 @AllArgsConstructor
 public class AuthenticationController {
+    private final ApplicationEventPublisher eventPublisher;
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
     private final TokenBlacklistService tokenBlacklistService;
@@ -58,6 +56,16 @@ public class AuthenticationController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+
+    @GetMapping("/update-token")
+    public TokenResponse getUpdatedToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        eventPublisher.publishEvent(new RoleUpdatedEvent(user));
+        String token = jwtService.generateToken(user);
+        return new TokenResponse(token);
     }
 
     @PostMapping("/resend")
