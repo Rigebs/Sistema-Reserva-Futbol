@@ -6,14 +6,8 @@ import com.cruz_sur.api.dto.LoginUserDto;
 import com.cruz_sur.api.dto.RegisterUserDto;
 import com.cruz_sur.api.dto.UpdateClientAndSedeDto;
 import com.cruz_sur.api.dto.VerifyUserDto;
-import com.cruz_sur.api.model.Cliente;
-import com.cruz_sur.api.model.Compania;
-import com.cruz_sur.api.model.Role;
-import com.cruz_sur.api.model.User;
-import com.cruz_sur.api.repository.ClienteRepository;
-import com.cruz_sur.api.repository.CompaniaRepository;
-import com.cruz_sur.api.repository.RoleRepository;
-import com.cruz_sur.api.repository.UserRepository;
+import com.cruz_sur.api.model.*;
+import com.cruz_sur.api.repository.*;
 import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
@@ -44,6 +38,7 @@ public class AuthenticationService {
     private final ClienteRepository clienteRepository;
     private final JwtService jwtService;
     private final ApplicationEventPublisher eventPublisher;
+    private final EmpresaRepository empresaRepository;
 
     public void signup(RegisterUserDto registerUserDto) {
         if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
@@ -179,6 +174,34 @@ public class AuthenticationService {
         eventPublisher.publishEvent(new RoleUpdatedEvent(user));
     }
 
+    public void rejectCompania(Long companiaId) {
+        Compania compania = companiaRepository.findById(companiaId)
+                .orElseThrow(() -> new RuntimeException("Compañía no encontrada"));
+        User user = (User) userRepository.findFirstBySede(compania)
+                .orElseThrow(() -> new RuntimeException("No se encontró un usuario asociado con esta compañía"));
+        user.setSede(null);
+        sendCompaniaRejectedEmail(user, compania);
+
+        Role roleUser = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("El rol ROLE_USER no fue encontrado"));
+        user.getRoles().clear();
+        user.getRoles().add(roleUser);
+        userRepository.save(user);
+        Empresa empresa = compania.getEmpresa();
+        if (empresa != null) {
+            Cliente cliente = clienteRepository.findByEmpresa(empresa)
+                    .orElseThrow(() -> new RuntimeException("Cliente asociado a la empresa no encontrado"));
+            cliente.setEmpresa(null);
+            cliente.setUsuarioModificacion("SYSTEM");
+            cliente.setFechaModificacion(LocalDateTime.now());
+            clienteRepository.save(cliente);
+        }
+        companiaRepository.delete(compania);
+
+        if (empresa != null) {
+            empresaRepository.deleteById(empresa.getId());
+        }
+    }
 
     public User authenticate(LoginUserDto loginUserDto) {
         User user;
@@ -320,6 +343,34 @@ public class AuthenticationService {
                 + "Comenzar en Zemply"
                 + "</a>"
                 + "<p style='margin-top: 20px;'>Si tienes preguntas o necesitas ayuda, no dudes en contactarnos.</p>"
+                + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
+                + "<p>&copy; 2024 Zemply. Todos los derechos reservados.</p>"
+                + "</footer>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+    private void sendCompaniaRejectedEmail(User user, Compania compania) {
+        String subject = "Lamentamos informarte que tu compañía no ha sido admitida en Zemply";
+        String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
+        String zemplyUrl = "https://zemply.vercel.app/faq";
+
+        String htmlMessage = "<html>"
+                + "<body style='font-family: Arial, sans-serif; color: #333;'>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='color: #FF5252;'>Lo sentimos, " + compania.getNombre() + "</h1>"
+                + "<img src='" + imageUrl + "' alt='Zemply Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
+                + "<h2 style='margin-top: 20px;'>Tu compañía no ha sido admitida</h2>"
+                + "<p>Tras una revisión exhaustiva, lamentamos informarte que la compañía <strong>" + compania.getNombre()
+                + "</strong> no cumple con los requisitos necesarios para formar parte de Zemply en este momento.</p>"
+                + "<p>Te animamos a revisar los requisitos en nuestra <a href='" + zemplyUrl + "' style='color: #FF5252; text-decoration: none;'>sección de preguntas frecuentes</a> y realizar las mejoras necesarias.</p>"
+                + "<p>Estamos disponibles para responder cualquier duda o consulta que tengas sobre este proceso.</p>"
                 + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
                 + "<p>&copy; 2024 Zemply. Todos los derechos reservados.</p>"
                 + "</footer>"

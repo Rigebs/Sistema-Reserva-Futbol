@@ -47,5 +47,12 @@ public class UserController {
         response.put("message", "Role updated successfully");
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/compania/{idCompania}/reject")
+    public ResponseEntity<Map<String, String>> rejectCompania(@PathVariable Long idCompania) {
+        authenticationService.rejectCompania(idCompania);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Compañía rechazada y asociaciones eliminadas exitosamente");
+        return ResponseEntity.ok(response);
+    }
 
 }

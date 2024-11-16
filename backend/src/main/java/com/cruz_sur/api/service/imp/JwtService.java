@@ -58,7 +58,14 @@ public class JwtService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        return buildToken(claims, userDetails.getUsername(), jwtExpiration);
+
+        boolean isEsperaRole = userDetails.getAuthorities()
+                .stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ESPERA"));
+
+        long expiration = isEsperaRole ? 60000L  : jwtExpiration;
+
+        return buildToken(claims, userDetails.getUsername(), expiration);
     }
 
 
