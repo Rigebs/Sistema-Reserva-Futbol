@@ -81,11 +81,13 @@ public class AuthenticationService {
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        user.setCliente(null);
+        user.setSede(null);
+        user.getRoles().clear();
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (dto.getClienteId() != null && dto.getCompaniaId() != null) {
-            throw new IllegalArgumentException("User cannot have both cliente and compania.");
+            throw new RuntimeException("User cannot have both cliente and compania.");
         }
 
         if (dto.getClienteId() != null) {
@@ -93,24 +95,14 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Cliente not found."));
             user.setCliente(cliente);
 
-            Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
-
-            if (!user.getRoles().contains(esperaRole)) {
-                user.getRoles().add(esperaRole);
-            }
-
-            Role userRole = roleRepository.findByName("ROLE_USER")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
-            user.getRoles().remove(userRole);
-
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
-            user.getRoles().remove(adminRole);
+            updateRolesForCliente(user);
 
             Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
                     .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
-            user.getRoles().remove(clienteRole);
+            if (!user.getRoles().contains(clienteRole)) {
+                user.getRoles().add(clienteRole);
+            }
+
         }
 
         if (dto.getCompaniaId() != null) {
@@ -120,22 +112,11 @@ public class AuthenticationService {
 
             Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
                     .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
-
             if (!user.getRoles().contains(esperaRole)) {
                 user.getRoles().add(esperaRole);
             }
 
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
-            user.getRoles().remove(adminRole);
-
-            Role userRole = roleRepository.findByName("ROLE_USER")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
-            user.getRoles().remove(userRole);
-
-            Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
-            user.getRoles().remove(clienteRole);
+            updateRolesForCompania(user);
         }
 
         user.setUsuarioModificacion(authenticatedUsername);
@@ -143,6 +124,24 @@ public class AuthenticationService {
 
         userRepository.save(user);
         return jwtService.generateToken(user);
+    }
+
+    private void updateRolesForCliente(User user) {
+        removeRole(user, "ROLE_USER");
+        removeRole(user, "ROLE_ADMIN");
+        removeRole(user, "ROLE_ESPERA");
+    }
+
+    private void updateRolesForCompania(User user) {
+        removeRole(user, "ROLE_USER");
+        removeRole(user, "ROLE_ADMIN");
+        removeRole(user, "ROLE_CLIENTE");
+    }
+
+    private void removeRole(User user, String roleName) {
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
+        user.getRoles().remove(role);
     }
 
     public void updateRoleToCompania(Long companiaId) {
