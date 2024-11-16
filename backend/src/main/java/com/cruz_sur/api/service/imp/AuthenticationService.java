@@ -27,8 +27,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -140,7 +142,6 @@ public class AuthenticationService {
         user.setFechaModificacion(LocalDateTime.now());
 
         userRepository.save(user);
-        eventPublisher.publishEvent(new RoleUpdatedEvent(user));
         return jwtService.generateToken(user);
     }
 
@@ -154,42 +155,29 @@ public class AuthenticationService {
         if (!adminUser.getRoles().contains(adminRole)) {
             throw new RuntimeException("User is not authorized to change the compania role.");
         }
-
         Compania compania = companiaRepository.findById(companiaId)
                 .orElseThrow(() -> new RuntimeException("Compania not found"));
-            compania.setEstado('1');
-        List<User> usersInCompania = userRepository.findBySede(compania);
-        if (usersInCompania.isEmpty()) {
-            throw new RuntimeException("No user associated with the selected compania.");
-        }
+        compania.setEstado('1');
 
-        User user = usersInCompania.get(0);
-
+        User user = (User) userRepository.findFirstBySede(compania)
+                .orElseThrow(() -> new RuntimeException("No user associated with the selected compania."));
         user.setSede(compania);
 
-        Role companiaRole = roleRepository.findByName("ROLE_COMPANIA")
-                .orElseThrow(() -> new RuntimeException("Compania role not found"));
-        if (!user.getRoles().contains(companiaRole)) {
-            user.getRoles().add(companiaRole);
-        }
+        List<Role> rolesList = roleRepository.findByNameIn(List.of("ROLE_COMPANIA", "ROLE_ESPERA", "ROLE_CLIENTE", "ROLE_ADMIN"));
 
-        Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
-                .orElseThrow(() -> new RuntimeException("Esperar role not found"));
-        user.getRoles().remove(esperaRole);
+        Map<String, Role> roles = rolesList.stream()
+                .collect(Collectors.toMap(Role::getName, role -> role));
 
-        Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
-                .orElseThrow(() -> new RuntimeException("Cliente role not found"));
-        user.getRoles().remove(clienteRole);
-
-        Role adminRoleToRemove = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntimeException("Admin role not found"));
-        user.getRoles().remove(adminRoleToRemove);
+        user.getRoles().add(roles.get("ROLE_COMPANIA"));
+        user.getRoles().remove(roles.get("ROLE_ESPERA"));
+        user.getRoles().remove(roles.get("ROLE_CLIENTE"));
+        user.getRoles().remove(roles.get("ROLE_ADMIN"));
 
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
         userRepository.save(user);
+
         eventPublisher.publishEvent(new RoleUpdatedEvent(user));
-        jwtService.generateToken(user);
     }
 
 
