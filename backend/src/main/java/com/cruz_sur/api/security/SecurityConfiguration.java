@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/opiniones/compania/{companiaId}").permitAll()
                         .requestMatchers("/api/v1/provincia").permitAll()
                         .requestMatchers("/api/v1/campos/usuario/{usuarioId}/with-sede").permitAll()
-                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN","CLIENTE")
+                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN","CLIENTE", "ESPERA","COMPANIA")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -37,4 +38,12 @@ public class UserController {
         String updatedToken = authenticationService.updateClientAndCompania(currentUser.getId(), updateRequest);
         return ResponseEntity.ok(new TokenResponse(updatedToken));
     }
+
+    @PutMapping("/compania/{idCompania}/updateRoleCompania")
+    public ResponseEntity<TokenResponse> updateRoleToCompania(@PathVariable Long idCompania) {
+        String updatedToken = authenticationService.updateRoleToCompania(idCompania);
+        return ResponseEntity.ok(new TokenResponse(updatedToken));
+    }
+
+
 }
