@@ -19,7 +19,7 @@ import { AuthTokenUtil } from "../../utils/auth-token-util";
 export class NavbarComponent implements OnInit {
   menuOpen = false;
   currentUser: string | null = null;
-  isAdmin = false;
+  isCompania = false;
   adminUsername: string | null = null;
 
   constructor(
@@ -40,7 +40,7 @@ export class NavbarComponent implements OnInit {
         this.checkAdminRole();
       } else {
         // Reset state when logged out
-        this.isAdmin = false;
+        this.isCompania = false;
         this.adminUsername = null;
       }
     });
@@ -61,7 +61,7 @@ export class NavbarComponent implements OnInit {
     const hasToken = this.authTokenUtil.hasToken();
     if (hasToken) {
       const payload = this.authTokenUtil.decodeToken();
-      this.isAdmin = this.authTokenUtil.isAdmin();
+      this.isCompania = this.authTokenUtil.isCompania();
       this.adminUsername = payload.sub || null;
     }
   }
@@ -82,7 +82,7 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.isAdmin = false;
+    this.isCompania = false;
     this.adminUsername = null;
   }
 

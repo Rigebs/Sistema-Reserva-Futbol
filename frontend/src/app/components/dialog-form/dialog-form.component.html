@@ -2,6 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div mat-dialog-content>
     <ng-container *ngFor="let field of data">
+      <!-- Input de texto -->
       <div *ngIf="field.type === 'text'">
         <mat-form-field appearance="fill">
           <mat-label>{{ field.label }}</mat-label>
@@ -9,6 +10,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Textarea -->
       <div *ngIf="field.type === 'textarea'">
         <mat-form-field appearance="fill">
           <mat-label>{{ field.label }}</mat-label>
@@ -16,6 +18,7 @@
         </mat-form-field>
       </div>
 
+      <!-- Fecha -->
       <div *ngIf="field.type === 'date'">
         <mat-form-field appearance="fill">
           <mat-label>{{ field.label }}</mat-label>
@@ -32,10 +35,25 @@
         </mat-form-field>
       </div>
 
+      <!-- Checkbox -->
       <div *ngIf="field.type === 'checkbox'">
         <mat-checkbox [formControlName]="field.name">{{
           field.label
         }}</mat-checkbox>
+      </div>
+
+      <div *ngIf="field.type === 'select'">
+        <mat-form-field appearance="fill">
+          <mat-label>{{ field.label }}</mat-label>
+          <mat-select [formControlName]="field.name">
+            <mat-option
+              *ngFor="let option of field.options"
+              [value]="option.value"
+            >
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </ng-container>
   </div>

@@ -25,7 +25,7 @@ export class AdminGuard implements CanActivate {
     if (token) {
       if (
         this.authTokenUtil.getUserFromToken() === usuarioEnRuta &&
-        this.authTokenUtil.isAdmin()
+        this.authTokenUtil.isCompania()
       ) {
         return true;
       } else {

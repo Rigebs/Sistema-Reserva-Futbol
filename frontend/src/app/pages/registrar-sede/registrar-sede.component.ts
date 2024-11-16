@@ -208,7 +208,7 @@ export class RegistrarSedeComponent implements OnInit {
         celular: this.companiaFormGroup.get("telefono")?.value,
         horaInicio: horaInicio,
         horaFin: horaFin,
-        empresa: { id: empresaData.id },
+        empresa: { id: empresaData.empresaId },
       };
 
       this.companiaService

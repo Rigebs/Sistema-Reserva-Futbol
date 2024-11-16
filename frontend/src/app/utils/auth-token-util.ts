@@ -62,6 +62,11 @@ export class AuthTokenUtil {
     return payload?.roles && payload.roles.includes("ROLE_ADMIN");
   }
 
+  isCompania(): boolean {
+    const payload = this.decodeToken();
+    return payload?.roles && payload.roles.includes("ROLE_COMPANIA");
+  }
+
   isUser(): boolean {
     const payload = this.decodeToken();
     return payload?.roles && payload.roles.includes("ROLE_USER");

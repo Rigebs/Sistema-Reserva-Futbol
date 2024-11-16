@@ -1,8 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Campo } from "../models/campo";
 import { environment } from "../../environments/environment";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from "@angular/common/http";
+import { catchError, Observable, throwError } from "rxjs";
 import { CampoSede } from "../models/campo-sede";
 import { SedeWithCampo } from "../models/sede-with-campo";
 
@@ -47,11 +51,30 @@ export class CampoService {
     );
   }
 
-  // Guardar un nuevo campo
-  save(campo: Campo): Observable<Campo> {
-    return this.http.post<Campo>(this.apiUrl, campo);
+  getCamposByCompania(): Observable<Campo[]> {
+    return this.http.get<Campo[]>(`${this.apiUrl}/compania`);
   }
 
+  // Guardar un nuevo campo
+  save(campo: Campo): Observable<any> {
+    return this.http
+      .post(this.apiUrl, campo, { responseType: "text" }) // Espera un texto como respuesta
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          // Si hay un error y el backend responde con un texto
+          if (
+            error.status === 200 &&
+            !error.ok &&
+            typeof error.error === "string"
+          ) {
+            console.log("String de error recibido:", error.error);
+            return throwError(() => new Error(error.error)); // Lanza el error recibido
+          } else {
+            return throwError(() => error); // Lanza el error original
+          }
+        })
+      );
+  }
   // Actualizar un campo existente
   update(id: number, campo: Campo): Observable<string> {
     return this.http.put<string>(`${this.apiUrl}/${id}`, campo);

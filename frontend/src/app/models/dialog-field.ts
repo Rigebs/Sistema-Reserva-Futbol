@@ -3,4 +3,5 @@ export interface DialogField {
   label: string;
   name: string;
   value?: any;
+  options?: { label: string; value: any }[];
 }
