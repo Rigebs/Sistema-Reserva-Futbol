@@ -175,7 +175,7 @@ public class AuthenticationService {
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
         userRepository.save(user);
-
+        sendCompaniaApprovedEmail(user, compania);
         eventPublisher.publishEvent(new RoleUpdatedEvent(user));
     }
 
@@ -291,6 +291,37 @@ public class AuthenticationService {
                 + "<p>If you did not create an account, please ignore this email.</p>"
                 + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
                 + "<p>&copy; 2024 Reserva. All rights reserved.</p>"
+                + "</footer>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendCompaniaApprovedEmail(User user, Compania compania) {
+        String subject = "Tu compañía ha sido admitida en Zemply";
+        String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
+        String zemplyUrl = "https://zemply.vercel.app";
+
+        String htmlMessage = "<html>"
+                + "<body style='font-family: Arial, sans-serif; color: #333;'>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='color: #4CAF50;'>Felicidades, " + compania.getNombre() + "!</h1>"
+                + "<img src='" + imageUrl + "' alt='Zemply Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
+                + "<h2 style='margin-top: 20px;'>Tu compañía ha sido admitida</h2>"
+                + "<p>Nos complace informarte que la compañía <strong>" + compania.getNombre() + "</strong> ha sido aprobada para participar en Zemply.</p>"
+                + "<p>A partir de ahora, puedes comenzar a subir tus campos deportivos y gestionar tus reservas facilmente.</p>"
+                + "<a href='" + zemplyUrl + "' style='display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>"
+                + "Comenzar en Zemply"
+                + "</a>"
+                + "<p style='margin-top: 20px;'>Si tienes preguntas o necesitas ayuda, no dudes en contactarnos.</p>"
+                + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
+                + "<p>&copy; 2024 Zemply. Todos los derechos reservados.</p>"
                 + "</footer>"
                 + "</div>"
                 + "</body>"
