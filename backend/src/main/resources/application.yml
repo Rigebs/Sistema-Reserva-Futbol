@@ -40,3 +40,4 @@ apis:
 logging:
   level:
     org.springframework.web.servlet.resource: ERROR
+time-zone: "America/Lima"
