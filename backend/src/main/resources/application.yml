@@ -1,4 +1,6 @@
 spring:
+  jackson:
+    time-zone: America/Lima
   datasource:
     url: ${DB_BASEDEDATOS}
     username: ${DB_USERNAME}
@@ -40,4 +42,3 @@ apis:
 logging:
   level:
     org.springframework.web.servlet.resource: ERROR
-time-zone: "America/Lima"
