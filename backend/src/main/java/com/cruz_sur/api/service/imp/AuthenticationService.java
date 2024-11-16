@@ -143,31 +143,26 @@ public class AuthenticationService {
     }
 
     public String updateRoleToCompania(Long companiaId) {
-        // Obtener usuario autenticado (el administrador)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User adminUser = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Authenticated admin user not found"));
 
-        // Verificar si el usuario tiene el rol de admin
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                 .orElseThrow(() -> new RuntimeException("Admin role not found"));
         if (!adminUser.getRoles().contains(adminRole)) {
             throw new RuntimeException("User is not authorized to change the compania role.");
         }
 
-        // Obtener la compania
         Compania compania = companiaRepository.findById(companiaId)
                 .orElseThrow(() -> new RuntimeException("Compania not found"));
-
-        // Obtener al usuario que está asociado con la compañía (usa el campo 'sede' en 'User')
-        List<User> usersInCompania = userRepository.findBySede(compania); // Suponiendo que tienes un método en userRepository que busca por sede
+            compania.setEstado('1');
+        List<User> usersInCompania = userRepository.findBySede(compania);
         if (usersInCompania.isEmpty()) {
             throw new RuntimeException("No user associated with the selected compania.");
         }
 
-        User user = usersInCompania.get(0); // Si hay más de un usuario, selecciona el adecuado
+        User user = usersInCompania.get(0);
 
-        // Actualizar sede y roles del usuario
         user.setSede(compania);
 
         Role companiaRole = roleRepository.findByName("ROLE_COMPANIA")
@@ -176,7 +171,6 @@ public class AuthenticationService {
             user.getRoles().add(companiaRole);
         }
 
-        // Eliminar otros roles no deseados
         Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
                 .orElseThrow(() -> new RuntimeException("Esperar role not found"));
         user.getRoles().remove(esperaRole);
@@ -185,18 +179,15 @@ public class AuthenticationService {
                 .orElseThrow(() -> new RuntimeException("Cliente role not found"));
         user.getRoles().remove(clienteRole);
 
-        // Eliminar rol de admin si es necesario
         Role adminRoleToRemove = roleRepository.findByName("ROLE_ADMIN")
                 .orElseThrow(() -> new RuntimeException("Admin role not found"));
         user.getRoles().remove(adminRoleToRemove);
 
-        // Guardar cambios en la base de datos
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
         userRepository.save(user);
 
-        // Regenerar token para el usuario afectado (no para el admin)
-        return jwtService.generateToken(user);  // Aquí generamos un token para el usuario afectado
+        return jwtService.generateToken(user);
     }
 
 
