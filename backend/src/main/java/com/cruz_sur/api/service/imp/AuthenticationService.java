@@ -89,16 +89,24 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Cliente not found."));
             user.setCliente(cliente);
 
-            Role userRole = roleRepository.findByName("ROLE_CLIENTE")
-                    .orElseThrow(() -> new RuntimeException("User role not found"));
+            Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
 
-            if (!user.getRoles().contains(userRole)) {
-                user.getRoles().add(userRole);
+            if (!user.getRoles().contains(esperaRole)) {
+                user.getRoles().add(esperaRole);
             }
 
-            Role adminRole = roleRepository.findByName("ROLE_ESPERA")
-                    .orElseThrow(() -> new RuntimeException("Admin role not found"));
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
+            user.getRoles().remove(userRole);
+
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
             user.getRoles().remove(adminRole);
+
+            Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
+            user.getRoles().remove(clienteRole);
         }
 
         if (dto.getCompaniaId() != null) {
@@ -106,24 +114,31 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Compania not found."));
             user.setSede(compania);
 
-            Role adminRole = roleRepository.findByName("ROLE_ESPERA")
-                    .orElseThrow(() -> new RuntimeException("Admin role not found"));
+            Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
 
-            if (!user.getRoles().contains(adminRole)) {
-                user.getRoles().add(adminRole);
+            if (!user.getRoles().contains(esperaRole)) {
+                user.getRoles().add(esperaRole);
             }
-            Role userRole = roleRepository.findByName("ROLE_ESPERA")
-                    .orElseThrow(() -> new RuntimeException("User role not found"));
+
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
+            user.getRoles().remove(adminRole);
+
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
             user.getRoles().remove(userRole);
+
+            Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
+                    .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
+            user.getRoles().remove(clienteRole);
         }
 
         user.setUsuarioModificacion(authenticatedUsername);
         user.setFechaModificacion(LocalDateTime.now());
 
-        // Actualizamos el usuario en la base de datos
         userRepository.save(user);
 
-        // Generamos el nuevo token con los roles actualizados
         return jwtService.generateToken(user);
     }
 
