@@ -5,7 +5,6 @@ import {
   Router,
   RouterStateSnapshot,
 } from "@angular/router";
-import { AuthService } from "../services/auth.service";
 import { Observable } from "rxjs";
 import { AuthTokenUtil } from "../utils/auth-token-util";
 

@@ -14,6 +14,9 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatDividerModule } from "@angular/material/divider";
 import { OpinionesComponent } from "../../components/opiniones/opiniones.component";
 import { AuthTokenUtil } from "../../utils/auth-token-util";
+import { LoginComponent } from "../../auth/login/login.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "app-reservar-campo",
@@ -40,63 +43,87 @@ export class ReservarCampoComponent implements OnInit {
   userId!: number;
   sedeConCampos: SedeWithCampo | undefined;
   campos: Campo[] = [];
-  isLoading = true; // Variable para controlar la pantalla de carga
+  isLoading = true;
 
   constructor(
     private router: Router,
     private campoService: CampoService,
     private route: ActivatedRoute,
-    private authTokenUtil: AuthTokenUtil
+    private authTokenUtil: AuthTokenUtil,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    // Obtener el userId de la URL
     this.route.paramMap.subscribe((params) => {
       this.userId = +params.get("userId")!;
       this.obtenerCampos(this.userId);
     });
   }
 
-  // Método para obtener los campos desde la API
   obtenerCampos(userId: number): void {
-    this.isLoading = true; // Activamos la pantalla de carga al iniciar la petición
+    this.isLoading = true;
 
     this.campoService.getCamposByUsuarioId(userId).subscribe(
       (response) => {
         this.sedeConCampos = Array.isArray(response) ? response[0] : response;
         this.campos = this.sedeConCampos?.camposWithSede || [];
-        this.isLoading = false; // Desactivamos la pantalla de carga cuando los datos llegan
-        console.log("DA: ", response);
+        this.isLoading = false;
       },
       (error) => {
         console.error("Error al obtener los campos:", error);
-        this.isLoading = false; // Desactivamos la pantalla de carga incluso si ocurre un error
+        this.isLoading = false;
       }
     );
   }
 
-  // Método para agregar una reserva finalizada
   agregarReservaFinalizada(reserva: any) {
     this.reservasFinalizadas.push(reserva);
-    console.log("INDEFINIDO: ", reserva);
   }
 
-  // Método para navegar a la pasarela de pago
   irPasarelaDePago(): void {
-    // Verificar si el token contiene el rol ROLE_CLIENTE
-    const tokenValido = this.authTokenUtil.isTokenValid();
-    const esCliente =
-      tokenValido &&
-      this.authTokenUtil.decodeToken()?.roles?.includes("ROLE_CLIENTE");
-
-    if (esCliente) {
-      // Redirigir a pasarela-pago con estado
-      this.router.navigate(["/pasarela-pago"], {
-        state: { reservas: this.reservasFinalizadas },
+    if (this.isReservaFinalizadaEmpty) {
+      this.snackBar.open("Debes de seleccionar un campo", "Cerrar", {
+        duration: 3000,
+        horizontalPosition: "center",
+        verticalPosition: "top",
       });
     } else {
-      // Redirigir al formulario de registro
-      this.router.navigate(["/registro"]);
+      const tokenValido = this.authTokenUtil.isTokenValid();
+      const esCliente =
+        tokenValido &&
+        this.authTokenUtil.decodeToken()?.roles?.includes("ROLE_CLIENTE");
+
+      // Si no hay token o no es cliente
+      if (!tokenValido) {
+        const isMobile = window.innerWidth <= 768;
+        const dialogConfig = {
+          minWidth: isMobile ? "" : "900px",
+          minHeight: isMobile ? "" : "500px",
+        };
+
+        this.dialog.open(LoginComponent, dialogConfig);
+        this.snackBar.open("Primero debes iniciar sesión", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "center",
+          verticalPosition: "top",
+        });
+      } else if (!esCliente) {
+        // Si el token es válido pero el usuario no es cliente, redirigir a registrar cliente
+        this.snackBar.open("Primero debes registrarte como cliente", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "center",
+          verticalPosition: "top",
+        });
+
+        // Redirigir a la página de registro de cliente
+        this.router.navigate(["/registrar-cliente"]);
+      } else {
+        // Si el usuario tiene un token válido y es cliente, redirigir a la pasarela de pago
+        this.router.navigate(["/pasarela-pago"], {
+          state: { reservas: this.reservasFinalizadas },
+        });
+      }
     }
   }
 
@@ -107,5 +134,9 @@ export class ReservarCampoComponent implements OnInit {
     if (this.reservaListComponent) {
       this.reservaListComponent.hola(reserva);
     }
+  }
+
+  get isReservaFinalizadaEmpty(): boolean {
+    return this.reservasFinalizadas.length === 0;
   }
 }

@@ -1,4 +1,4 @@
 export interface UpdateClientCompania {
   clienteId: number | null;
-  companiaId?: number;
+  companiaId?: number | null;
 }

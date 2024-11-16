@@ -1,0 +1,58 @@
+<div class="container">
+  <h3>Bríndanos tu ubicación:</h3>
+  <form>
+    <div class="row">
+      <!-- Departamento -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Departamento</mat-label>
+        <mat-select
+          [(ngModel)]="selectedDepartamentoId"
+          (selectionChange)="onDepartamentoChange($event.value)"
+          name="departamento"
+        >
+          <mat-option
+            *ngFor="let departamento of departamentos"
+            [value]="departamento.id"
+          >
+            {{ departamento.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Provincia -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Provincia</mat-label>
+        <mat-select
+          [(ngModel)]="selectedProvinciaId"
+          (selectionChange)="onProvinciaChange($event.value)"
+          name="provincia"
+          [disabled]="!selectedDepartamentoId"
+        >
+          <mat-option
+            *ngFor="let provincia of provincias"
+            [value]="provincia.id"
+          >
+            {{ provincia.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Distrito -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Distrito</mat-label>
+        <mat-select
+          [(ngModel)]="selectedDistrito"
+          (selectionChange)="onDistritoChange($event.value)"
+          name="distrito"
+          [disabled]="!selectedProvinciaId"
+        >
+          <mat-option *ngFor="let distrito of distritos" [value]="distrito">
+            {{ distrito.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

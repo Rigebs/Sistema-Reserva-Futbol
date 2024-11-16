@@ -47,14 +47,9 @@ export class ReservaListComponent implements OnInit {
   ngOnInit(): void {}
 
   abrirDialogo(reserva: Campo): void {
-    console.log("R: ", reserva);
-
-    // Ahora recibe un Campo específico
     const dialogRef = this.dialog.open(ProcesoReservaComponent, {
       data: reserva,
     });
-
-    console.log("DATA: ", reserva.nombre);
 
     dialogRef.componentInstance.reservaFinalizada.subscribe(
       (reservaCompletada: any) => {

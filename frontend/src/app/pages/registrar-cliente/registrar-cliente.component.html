@@ -1,0 +1,144 @@
+<div class="container">
+  <!-- Instrucciones -->
+  <mat-card class="instruction-card">
+    <mat-card-content>
+      <h3>¿Eres Persona Natural o Empresa?</h3>
+      <p>
+        Por favor, selecciona si eres una persona natural o representas una
+        empresa. Esto es necesario para poder emitir correctamente la boleta o
+        factura, dependiendo del tipo de cliente.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Cards de selección (solo las de persona y empresa son clickeables) -->
+  <div class="selection-cards">
+    <mat-card
+      class="person-card"
+      [ngClass]="{ selected: selectedType === 'persona' }"
+      (click)="selectType('persona')"
+    >
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">person</mat-icon> Persona
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Selecciona esta opción si eres una persona física.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card
+      class="company-card"
+      [ngClass]="{ selected: selectedType === 'empresa' }"
+      (click)="selectType('empresa')"
+    >
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">business</mat-icon> Empresa
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Selecciona esta opción si representas una empresa.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Formulario (se muestra solo si se ha seleccionado un tipo) -->
+  <mat-card class="form-card" *ngIf="selectedType">
+    <mat-card-header>
+      <mat-card-title>Formulario de Registro</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="formulario-container">
+      <form
+        *ngIf="selectedType === 'persona'"
+        [formGroup]="personaForm"
+        (ngSubmit)="registrar()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>DNI</mat-label>
+          <input matInput formControlName="dni" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Paterno</mat-label>
+          <input matInput formControlName="apePaterno" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Materno</mat-label>
+          <input matInput formControlName="apeMaterno" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Celular</mat-label>
+          <input matInput formControlName="celular" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput formControlName="correo" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput formControlName="fechaNac" type="date" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Género</mat-label>
+          <input matInput formControlName="genero" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" required />
+        </mat-form-field>
+        <app-seleccionar-ubicacion
+          (distritoSeleccionado)="onDistritoSelected($event)"
+        ></app-seleccionar-ubicacion>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="personaForm.invalid"
+        >
+          Registrar
+        </button>
+      </form>
+
+      <form
+        *ngIf="selectedType === 'empresa'"
+        [formGroup]="empresaForm"
+        (ngSubmit)="registrar()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>RUC</mat-label>
+          <input matInput formControlName="ruc" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Razón Social</mat-label>
+          <input matInput formControlName="razonSocial" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" required />
+        </mat-form-field>
+        <app-seleccionar-ubicacion
+          (distritoSeleccionado)="onDistritoSelected($event)"
+        ></app-seleccionar-ubicacion>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="empresaForm.invalid"
+        >
+          Registrar
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
