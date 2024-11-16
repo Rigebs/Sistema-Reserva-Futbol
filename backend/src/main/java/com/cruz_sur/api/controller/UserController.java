@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,10 +41,11 @@ public class UserController {
     }
 
     @PutMapping("/compania/{idCompania}/updateRoleCompania")
-    public ResponseEntity<TokenResponse> updateRoleToCompania(@PathVariable Long idCompania) {
-        String updatedToken = authenticationService.updateRoleToCompania(idCompania);
-        return ResponseEntity.ok(new TokenResponse(updatedToken));
+    public ResponseEntity<Map<String, String>> updateRoleToCompania(@PathVariable Long idCompania) {
+        authenticationService.updateRoleToCompania(idCompania);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Role updated successfully");
+        return ResponseEntity.ok(response);
     }
-
 
 }

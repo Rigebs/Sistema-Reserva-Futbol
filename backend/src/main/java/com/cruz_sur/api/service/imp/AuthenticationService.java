@@ -14,8 +14,10 @@ import com.cruz_sur.api.repository.ClienteRepository;
 import com.cruz_sur.api.repository.CompaniaRepository;
 import com.cruz_sur.api.repository.RoleRepository;
 import com.cruz_sur.api.repository.UserRepository;
+import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,8 +41,9 @@ public class AuthenticationService {
     private final CompaniaRepository companiaRepository;
     private final ClienteRepository clienteRepository;
     private final JwtService jwtService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public User signup(RegisterUserDto registerUserDto) {
+    public void signup(RegisterUserDto registerUserDto) {
         if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
             throw new AuthException.UserAlreadyExistsException("Email already registered");
         }
@@ -71,7 +74,6 @@ public class AuthenticationService {
 
         sendVerificationEmail(newUser);
 
-        return newUser;
     }
 
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
@@ -138,11 +140,11 @@ public class AuthenticationService {
         user.setFechaModificacion(LocalDateTime.now());
 
         userRepository.save(user);
-
+        eventPublisher.publishEvent(new RoleUpdatedEvent(user));
         return jwtService.generateToken(user);
     }
 
-    public String updateRoleToCompania(Long companiaId) {
+    public void updateRoleToCompania(Long companiaId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User adminUser = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Authenticated admin user not found"));
@@ -186,8 +188,8 @@ public class AuthenticationService {
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
         userRepository.save(user);
-
-        return jwtService.generateToken(user);
+        eventPublisher.publishEvent(new RoleUpdatedEvent(user));
+        jwtService.generateToken(user);
     }
 
 
