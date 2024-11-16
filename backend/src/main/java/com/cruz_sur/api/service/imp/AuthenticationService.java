@@ -6,14 +6,8 @@ import com.cruz_sur.api.dto.LoginUserDto;
 import com.cruz_sur.api.dto.RegisterUserDto;
 import com.cruz_sur.api.dto.UpdateClientAndSedeDto;
 import com.cruz_sur.api.dto.VerifyUserDto;
-import com.cruz_sur.api.model.Cliente;
-import com.cruz_sur.api.model.Compania;
-import com.cruz_sur.api.model.Role;
-import com.cruz_sur.api.model.User;
-import com.cruz_sur.api.repository.ClienteRepository;
-import com.cruz_sur.api.repository.CompaniaRepository;
-import com.cruz_sur.api.repository.RoleRepository;
-import com.cruz_sur.api.repository.UserRepository;
+import com.cruz_sur.api.model.*;
+import com.cruz_sur.api.repository.*;
 import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
@@ -27,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +38,7 @@ public class AuthenticationService {
     private final ClienteRepository clienteRepository;
     private final JwtService jwtService;
     private final ApplicationEventPublisher eventPublisher;
+    private final EmpresaRepository empresaRepository;
 
     public void signup(RegisterUserDto registerUserDto) {
         if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
@@ -79,11 +76,13 @@ public class AuthenticationService {
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        user.setCliente(null);
+        user.setSede(null);
+        user.getRoles().clear();
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (dto.getClienteId() != null && dto.getCompaniaId() != null) {
-            throw new IllegalArgumentException("User cannot have both cliente and compania.");
+            throw new RuntimeException("User cannot have both cliente and compania.");
         }
 
         if (dto.getClienteId() != null) {
@@ -91,24 +90,14 @@ public class AuthenticationService {
                     .orElseThrow(() -> new RuntimeException("Cliente not found."));
             user.setCliente(cliente);
 
-            Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
-
-            if (!user.getRoles().contains(esperaRole)) {
-                user.getRoles().add(esperaRole);
-            }
-
-            Role userRole = roleRepository.findByName("ROLE_USER")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
-            user.getRoles().remove(userRole);
-
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
-            user.getRoles().remove(adminRole);
+            updateRolesForCliente(user);
 
             Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
                     .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
-            user.getRoles().remove(clienteRole);
+            if (!user.getRoles().contains(clienteRole)) {
+                user.getRoles().add(clienteRole);
+            }
+
         }
 
         if (dto.getCompaniaId() != null) {
@@ -118,30 +107,36 @@ public class AuthenticationService {
 
             Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
                     .orElseThrow(() -> new RuntimeException("Role ROLE_ESPERA not found"));
-
             if (!user.getRoles().contains(esperaRole)) {
                 user.getRoles().add(esperaRole);
             }
 
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
-            user.getRoles().remove(adminRole);
-
-            Role userRole = roleRepository.findByName("ROLE_USER")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
-            user.getRoles().remove(userRole);
-
-            Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
-                    .orElseThrow(() -> new RuntimeException("Role ROLE_CLIENTE not found"));
-            user.getRoles().remove(clienteRole);
+            updateRolesForCompania(user);
         }
 
         user.setUsuarioModificacion(authenticatedUsername);
         user.setFechaModificacion(LocalDateTime.now());
 
         userRepository.save(user);
-        eventPublisher.publishEvent(new RoleUpdatedEvent(user));
         return jwtService.generateToken(user);
+    }
+
+    private void updateRolesForCliente(User user) {
+        removeRole(user, "ROLE_USER");
+        removeRole(user, "ROLE_ADMIN");
+        removeRole(user, "ROLE_ESPERA");
+    }
+
+    private void updateRolesForCompania(User user) {
+        removeRole(user, "ROLE_USER");
+        removeRole(user, "ROLE_ADMIN");
+        removeRole(user, "ROLE_CLIENTE");
+    }
+
+    private void removeRole(User user, String roleName) {
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
+        user.getRoles().remove(role);
     }
 
     public void updateRoleToCompania(Long companiaId) {
@@ -154,44 +149,59 @@ public class AuthenticationService {
         if (!adminUser.getRoles().contains(adminRole)) {
             throw new RuntimeException("User is not authorized to change the compania role.");
         }
-
         Compania compania = companiaRepository.findById(companiaId)
                 .orElseThrow(() -> new RuntimeException("Compania not found"));
-            compania.setEstado('1');
-        List<User> usersInCompania = userRepository.findBySede(compania);
-        if (usersInCompania.isEmpty()) {
-            throw new RuntimeException("No user associated with the selected compania.");
-        }
+        compania.setEstado('1');
 
-        User user = usersInCompania.get(0);
-
+        User user = (User) userRepository.findFirstBySede(compania)
+                .orElseThrow(() -> new RuntimeException("No user associated with the selected compania."));
         user.setSede(compania);
 
-        Role companiaRole = roleRepository.findByName("ROLE_COMPANIA")
-                .orElseThrow(() -> new RuntimeException("Compania role not found"));
-        if (!user.getRoles().contains(companiaRole)) {
-            user.getRoles().add(companiaRole);
-        }
+        List<Role> rolesList = roleRepository.findByNameIn(List.of("ROLE_COMPANIA", "ROLE_ESPERA", "ROLE_CLIENTE", "ROLE_ADMIN"));
 
-        Role esperaRole = roleRepository.findByName("ROLE_ESPERA")
-                .orElseThrow(() -> new RuntimeException("Esperar role not found"));
-        user.getRoles().remove(esperaRole);
+        Map<String, Role> roles = rolesList.stream()
+                .collect(Collectors.toMap(Role::getName, role -> role));
 
-        Role clienteRole = roleRepository.findByName("ROLE_CLIENTE")
-                .orElseThrow(() -> new RuntimeException("Cliente role not found"));
-        user.getRoles().remove(clienteRole);
-
-        Role adminRoleToRemove = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntimeException("Admin role not found"));
-        user.getRoles().remove(adminRoleToRemove);
+        user.getRoles().add(roles.get("ROLE_COMPANIA"));
+        user.getRoles().remove(roles.get("ROLE_ESPERA"));
+        user.getRoles().remove(roles.get("ROLE_CLIENTE"));
+        user.getRoles().remove(roles.get("ROLE_ADMIN"));
 
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
         userRepository.save(user);
+        sendCompaniaApprovedEmail(user, compania);
         eventPublisher.publishEvent(new RoleUpdatedEvent(user));
-        jwtService.generateToken(user);
     }
 
+    public void rejectCompania(Long companiaId) {
+        Compania compania = companiaRepository.findById(companiaId)
+                .orElseThrow(() -> new RuntimeException("Compañía no encontrada"));
+        User user = (User) userRepository.findFirstBySede(compania)
+                .orElseThrow(() -> new RuntimeException("No se encontró un usuario asociado con esta compañía"));
+        user.setSede(null);
+        sendCompaniaRejectedEmail(user, compania);
+
+        Role roleUser = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("El rol ROLE_USER no fue encontrado"));
+        user.getRoles().clear();
+        user.getRoles().add(roleUser);
+        userRepository.save(user);
+        Empresa empresa = compania.getEmpresa();
+        if (empresa != null) {
+            Cliente cliente = clienteRepository.findByEmpresa(empresa)
+                    .orElseThrow(() -> new RuntimeException("Cliente asociado a la empresa no encontrado"));
+            cliente.setEmpresa(null);
+            cliente.setUsuarioModificacion("SYSTEM");
+            cliente.setFechaModificacion(LocalDateTime.now());
+            clienteRepository.save(cliente);
+        }
+        companiaRepository.delete(compania);
+
+        if (empresa != null) {
+            empresaRepository.deleteById(empresa.getId());
+        }
+    }
 
     public User authenticate(LoginUserDto loginUserDto) {
         User user;
@@ -304,6 +314,65 @@ public class AuthenticationService {
                 + "<p>If you did not create an account, please ignore this email.</p>"
                 + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
                 + "<p>&copy; 2024 Reserva. All rights reserved.</p>"
+                + "</footer>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendCompaniaApprovedEmail(User user, Compania compania) {
+        String subject = "Tu compañía ha sido admitida en Zemply";
+        String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
+        String zemplyUrl = "https://zemply.vercel.app";
+
+        String htmlMessage = "<html>"
+                + "<body style='font-family: Arial, sans-serif; color: #333;'>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='color: #4CAF50;'>Felicidades, " + compania.getNombre() + "!</h1>"
+                + "<img src='" + imageUrl + "' alt='Zemply Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
+                + "<h2 style='margin-top: 20px;'>Tu compañía ha sido admitida</h2>"
+                + "<p>Nos complace informarte que la compañía <strong>" + compania.getNombre() + "</strong> ha sido aprobada para participar en Zemply.</p>"
+                + "<p>A partir de ahora, puedes comenzar a subir tus campos deportivos y gestionar tus reservas facilmente.</p>"
+                + "<a href='" + zemplyUrl + "' style='display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>"
+                + "Comenzar en Zemply"
+                + "</a>"
+                + "<p style='margin-top: 20px;'>Si tienes preguntas o necesitas ayuda, no dudes en contactarnos.</p>"
+                + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
+                + "<p>&copy; 2024 Zemply. Todos los derechos reservados.</p>"
+                + "</footer>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+    private void sendCompaniaRejectedEmail(User user, Compania compania) {
+        String subject = "Lamentamos informarte que tu compañía no ha sido admitida en Zemply";
+        String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
+        String zemplyUrl = "https://zemply.vercel.app/faq";
+
+        String htmlMessage = "<html>"
+                + "<body style='font-family: Arial, sans-serif; color: #333;'>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='color: #FF5252;'>Lo sentimos, " + compania.getNombre() + "</h1>"
+                + "<img src='" + imageUrl + "' alt='Zemply Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
+                + "<h2 style='margin-top: 20px;'>Tu compañía no ha sido admitida</h2>"
+                + "<p>Tras una revisión exhaustiva, lamentamos informarte que la compañía <strong>" + compania.getNombre()
+                + "</strong> no cumple con los requisitos necesarios para formar parte de Zemply en este momento.</p>"
+                + "<p>Te animamos a revisar los requisitos en nuestra <a href='" + zemplyUrl + "' style='color: #FF5252; text-decoration: none;'>sección de preguntas frecuentes</a> y realizar las mejoras necesarias.</p>"
+                + "<p>Estamos disponibles para responder cualquier duda o consulta que tengas sobre este proceso.</p>"
+                + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
+                + "<p>&copy; 2024 Zemply. Todos los derechos reservados.</p>"
                 + "</footer>"
                 + "</div>"
                 + "</body>"
