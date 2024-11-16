@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -52,6 +53,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("id", ((User) userDetails).getId());
         claims.put("roles", userDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)

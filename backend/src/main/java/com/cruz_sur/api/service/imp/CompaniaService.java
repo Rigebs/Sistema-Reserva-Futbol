@@ -30,7 +30,7 @@ public class CompaniaService implements ICompaniaService {
         String authenticatedUsername = getAuthenticatedUsername();
         compania.setUsuarioCreacion(authenticatedUsername);
         compania.setFechaCreacion(LocalDateTime.now());
-        compania.setEstado('1');
+        compania.setEstado('0');
         if (file != null && !file.isEmpty()) {
             Imagen imagen = iImagenService.uploadImage(file);
             compania.setImagen(imagen);
