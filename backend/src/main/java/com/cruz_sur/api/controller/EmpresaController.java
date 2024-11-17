@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -21,11 +22,17 @@ public class EmpresaController {
 
     @PostMapping("/consultar-ruc")
     public ResponseEntity<Map<String, Object>> consultarRuc(@RequestParam String ruc) {
+        Optional<Empresa> existingEmpresa = empresaService.findByRuc(ruc);
+        if (existingEmpresa.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "La empresa con este RUC ya está registrada"));
+        }
         Map<String, Object> empresaData = reniecSunatResponse.getRuc(ruc);
         if (!empresaData.isEmpty()) {
             return ResponseEntity.ok(empresaData);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "No se encontraron datos para el RUC"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "No se encontraron datos para el RUC"));
         }
     }
     @GetMapping
