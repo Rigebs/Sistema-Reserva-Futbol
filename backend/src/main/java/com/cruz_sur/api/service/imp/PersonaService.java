@@ -25,6 +25,10 @@ public class PersonaService implements IPersonaService {
     public List<Persona> all() {
         return personaRepository.findAll();
     }
+    @Override
+    public Optional<Persona> byDni(String dni) {
+        return personaRepository.findByDni(dni);
+    }
 
     @Override
     public Optional<Persona> byId(Long id) {

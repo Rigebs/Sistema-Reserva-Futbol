@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.dto.PagoInfoDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.model.Imagen;
 import com.cruz_sur.api.repository.CompaniaRepository;
@@ -105,5 +106,20 @@ public class CompaniaService implements ICompaniaService {
         compania.setFechaModificacion(LocalDateTime.now());
 
         return companiaRepository.save(compania);
+    }
+
+    @Override
+    public PagoInfoDTO getPagoInfoByCompaniaId(Long companiaId) {
+        Optional<Compania> companiaOptional = companiaRepository.findById(companiaId);
+        if (!companiaOptional.isPresent()) {
+            throw new RuntimeException("Compañía no encontrada");
+        }
+        Compania compania = companiaOptional.get();
+        String celular = compania.getCelular();
+        String qrImagenUrl = null;
+        if (compania.getQrImagen() != null) {
+            qrImagenUrl = compania.getQrImagen().getImageUrl();
+        }
+        return new PagoInfoDTO(celular, qrImagenUrl);
     }
 }

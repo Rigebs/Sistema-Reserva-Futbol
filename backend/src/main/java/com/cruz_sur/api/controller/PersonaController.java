@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/personas")
@@ -20,14 +21,19 @@ public class PersonaController {
     private final IPersonaService personaService;
     private final ReniecSunatResponse reniecSunatResponse;
 
-
     @PostMapping("/consultar-dni")
     public ResponseEntity<Map<String, Object>> consultarDni(@RequestParam String dni) {
+        Optional<Persona> existingPersona = personaService.byDni(dni);
+        if (existingPersona.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "La persona con este DNI ya está registrada"));
+        }
         Map<String, Object> personaData = reniecSunatResponse.getPerson(dni);
         if (!personaData.isEmpty()) {
             return ResponseEntity.ok(personaData);
         } else {
-            return ResponseEntity.status(404).body(Map.of("error", "No se encontraron datos para el DNI"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "No se encontraron datos para el DNI"));
         }
     }
 

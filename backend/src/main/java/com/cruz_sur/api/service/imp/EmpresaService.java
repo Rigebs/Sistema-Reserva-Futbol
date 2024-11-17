@@ -49,7 +49,10 @@ public class EmpresaService implements IEmpresaService {
 
         return new EmpresaClienteResponse(newEmpresa, newCliente);
     }
-
+    @Override
+    public Optional<Empresa> findByRuc(String ruc) {
+        return empresaRepository.findByRuc(ruc);
+    }
 
     @Override
     public Empresa update(Long id, Empresa empresa) {

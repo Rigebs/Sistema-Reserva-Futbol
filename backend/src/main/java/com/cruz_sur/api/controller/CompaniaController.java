@@ -1,5 +1,6 @@
 package com.cruz_sur.api.controller;
 
+import com.cruz_sur.api.dto.PagoInfoDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.service.ICompaniaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,5 +80,11 @@ public class CompaniaController {
         }
         Compania updatedCompania = companiaService.updateCompaniaImages(file, qrFile, companiaOpt.get());
         return ResponseEntity.ok(updatedCompania);
+    }
+
+    @GetMapping("/{id}/pago-info")
+    public ResponseEntity<PagoInfoDTO> getPagoInfo(@PathVariable Long id) {
+        PagoInfoDTO pagoInfo = companiaService.getPagoInfoByCompaniaId(id);
+        return ResponseEntity.ok(pagoInfo);
     }
 }
