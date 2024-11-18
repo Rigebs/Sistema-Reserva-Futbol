@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { TableComponent } from "../../components/table/table.component";
 import { TableColumn } from "../../models/table-column";
 import { SidebarComponent } from "../../components/sidebar/sidebar.component";
-import { NgClass } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialog } from "@angular/material/dialog";
@@ -12,16 +11,17 @@ import { Campo } from "../../models/campo";
 import { TipoDeporteService } from "../../services/tipo-deporte.service";
 import { TipoDeporte } from "../../models/tipo-deporte";
 import { MatSelectModule } from "@angular/material/select";
+import { SidebarPruebaComponent } from "../../components/sidebar-prueba/sidebar-prueba.component";
 
 @Component({
   selector: "app-gestionar-campos",
   standalone: true,
   imports: [
     TableComponent,
-    SidebarComponent,
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
+    SidebarPruebaComponent,
   ],
   templateUrl: "./gestionar-campos.component.html",
   styleUrl: "./gestionar-campos.component.css",
@@ -127,12 +127,6 @@ export class GestionarCamposComponent implements OnInit {
               value: data.precio,
             },
             {
-              type: "checkbox",
-              label: "Estado",
-              name: "estado",
-              value: data.estado === "1", // Aquí se maneja el estado correctamente
-            },
-            {
               type: "select",
               label: "Tipo de Deporte",
               name: "tipoDeporteId",
@@ -149,12 +143,6 @@ export class GestionarCamposComponent implements OnInit {
               value: "",
             },
             { type: "text", label: "Precio", name: "precio", value: "" },
-            {
-              type: "checkbox",
-              label: "Estado",
-              name: "estado",
-              value: true,
-            },
             {
               type: "select",
               label: "Tipo de Deporte",

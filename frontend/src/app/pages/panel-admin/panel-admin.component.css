@@ -1,0 +1,17 @@
+.content {
+  padding-top: 10px;
+  padding-left: 230px;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+mat-icon {
+  font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding-top: 75px;
+    padding-left: 20px;
+  }
+}

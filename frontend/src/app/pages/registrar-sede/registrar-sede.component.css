@@ -8,9 +8,8 @@
 
 /* Configuración de cuadrícula con un máximo de 2 elementos por fila */
 .grid-container {
-  padding-top: 20px;
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: repeat(2, 1fr); /* Limitar a 2 columnas */
 }
 
@@ -21,7 +20,7 @@
   background-color: #eef2f7;
   padding: 20px;
   border-radius: 8px;
-  width: 25%;
+  width: 35%;
   max-height: 526px; /* Ajusta este valor según lo que necesites */
   overflow-y: auto; /* Permite el desplazamiento si el contenido es más largo que la altura máxima */
 }
@@ -35,6 +34,10 @@
 .intro-text p {
   color: #555;
   font-size: 16px;
+}
+
+.stepper {
+  width: 60%;
 }
 
 /* Ajuste para pantallas pequeñas: 1 input por fila */
@@ -128,4 +131,92 @@ button.submit-button:hover {
 
 .confirmation-message button:hover {
   background-color: #004d40;
+}
+
+.file {
+  display: none;
+}
+
+.file-name {
+  margin-left: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+.label-file {
+  display: inline-block;
+  background-color: #1976d2;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.label-file:hover {
+  background-color: #1565c0;
+}
+
+.info {
+  margin-top: -20px;
+  font-size: 18px;
+}
+
+.ubicacion {
+  padding-top: 13px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+  }
+
+  .stepper {
+    width: 100%;
+  }
+
+  mat-stepper {
+    padding: 0px;
+  }
+}
+
+/* Estilos para el botón en móvil */
+.intro-button {
+  background-color: #007bff; /* Color de fondo azul */
+  color: white; /* Texto blanco */
+  font-size: 16px; /* Tamaño de fuente */
+  padding: 12px 24px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes redondeados */
+  border: none; /* Sin borde */
+  cursor: pointer; /* Manito al pasar el cursor */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animaciones suaves */
+  display: inline-block; /* Para que se acomode correctamente */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Efecto de hover */
+.intro-button:hover {
+  background-color: #0056b3; /* Azul más oscuro al pasar el cursor */
+  transform: translateY(-2px); /* Levantar ligeramente el botón */
+}
+
+/* Efecto de foco (cuando se hace click) */
+.intro-button:focus {
+  outline: none; /* Eliminar el borde por defecto */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4); /* Sombra azul al enfocarse */
+}
+
+/* Efecto de click */
+.intro-button:active {
+  transform: translateY(2px); /* Efecto al hacer click */
+  background-color: #0056b3; /* El fondo permanece azul oscuro */
 }

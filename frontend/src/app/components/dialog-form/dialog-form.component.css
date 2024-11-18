@@ -1,3 +1,8 @@
 mat-form-field {
   width: 100%;
 }
+
+.force-panel-below .mat-select-panel {
+  margin-top: 0 !important; /* Elimina márgenes automáticos */
+  transform-origin: top !important; /* Fuerza la apertura hacia abajo */
+}

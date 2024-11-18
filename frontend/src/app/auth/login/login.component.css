@@ -7,6 +7,10 @@
   box-sizing: border-box; /* Incluye el padding dentro del cálculo del alto */
 }
 
+.ocultar {
+  margin-right: 4px;
+}
+
 /* Estilo para la imagen a la izquierda */
 .left-side {
   flex: 1;

@@ -20,8 +20,16 @@ export const routes: Routes = [
     component: PanelAdminComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
-  { path: "panel-admin/campos", component: GestionarCamposComponent },
-  { path: "panel-admin/reservaciones", component: ReservacionesComponent },
+  {
+    path: ":usuario/panel-admin/campos",
+    component: GestionarCamposComponent,
+    canActivate: [AdminGuard],
+  },
+  {
+    path: ":usuario/panel-admin/reservaciones",
+    component: ReservacionesComponent,
+    canActivate: [AdminGuard],
+  },
   {
     path: "registrar-sede",
     component: RegistrarSedeComponent,

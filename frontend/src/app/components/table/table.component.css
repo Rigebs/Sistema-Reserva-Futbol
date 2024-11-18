@@ -48,6 +48,7 @@
   font-weight: 500; /* Peso de fuente medio */
   font-size: 14px; /* Tamaño de fuente */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  width: 77px;
 }
 
 .descripcion {
