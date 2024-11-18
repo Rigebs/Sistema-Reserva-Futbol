@@ -57,7 +57,17 @@
       >
         <mat-form-field appearance="outline">
           <mat-label>DNI</mat-label>
-          <input matInput formControlName="dni" required />
+          <input
+            matInput
+            #input
+            maxlength="8"
+            placeholder="Ex. 78934456"
+            formControlName="dni"
+            (input)="onDniInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueDni().length }}/8</mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Nombre</mat-label>
@@ -71,9 +81,20 @@
           <mat-label>Apellido Materno</mat-label>
           <input matInput formControlName="apeMaterno" required readonly />
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Celular</mat-label>
-          <input matInput formControlName="celular" required />
+          <input
+            matInput
+            #input
+            maxlength="9"
+            placeholder="Ex. 978934456"
+            formControlName="celular"
+            (input)="onCelularInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueCelular().length }}/9</mat-hint>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Correo electrónico</mat-label>
@@ -85,8 +106,12 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Género</mat-label>
-          <input matInput formControlName="genero" required />
+          <mat-select formControlName="genero" required>
+            <mat-option value="M">Masculino</mat-option>
+            <mat-option value="F">Femenino</mat-option>
+          </mat-select>
         </mat-form-field>
+        
         <mat-form-field appearance="outline">
           <mat-label>Dirección</mat-label>
           <input matInput formControlName="direccion" required />
@@ -110,18 +135,42 @@
         [formGroup]="empresaForm"
         (ngSubmit)="registrar()"
       >
+
         <mat-form-field appearance="outline">
           <mat-label>RUC</mat-label>
-          <input matInput formControlName="ruc" required />
+          <input
+            matInput
+            #input
+            maxlength="11"
+            placeholder="Ex. 16778934456"
+            formControlName="ruc"
+            (input)="onRucInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueRuc().length }}/11</mat-hint>
         </mat-form-field>
+
+
         <mat-form-field appearance="outline">
           <mat-label>Razón Social</mat-label>
           <input matInput formControlName="razonSocial" required readonly />
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="telefono" required />
+          <input
+            matInput
+            #input
+            maxlength="9"
+            placeholder="Ex. 978934456"
+            formControlName="telefono"
+            (input)="onTelefonoInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueTelefono().length }}/9</mat-hint>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Dirección</mat-label>
           <input matInput formControlName="direccion" required />

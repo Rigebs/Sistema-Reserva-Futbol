@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -12,12 +13,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
-import { Persona } from "../../models/persona";
-import { Empresa } from "../../models/empresa";
 import { SeleccionarUbicacionComponent } from "../../components/seleccionar-ubicacion/seleccionar-ubicacion.component";
 import { PersonaService } from "../../services/persona.service";
 import { EmpresaService } from "../../services/empresa.service";
 import { UsuarioService } from "../../services/usuario.service";
+import { MatSelectModule } from "@angular/material/select";
 
 @Component({
   selector: "app-registrar-cliente",
@@ -32,6 +32,7 @@ import { UsuarioService } from "../../services/usuario.service";
     MatInputModule,
     MatButtonModule,
     SeleccionarUbicacionComponent,
+    MatSelectModule
   ],
   templateUrl: "./registrar-cliente.component.html",
   styleUrl: "./registrar-cliente.component.css",
@@ -41,6 +42,11 @@ export class RegistrarClienteComponent {
 
   personaForm: FormGroup;
   empresaForm: FormGroup;
+
+  dniControl = new FormControl("");
+  rucControl = new FormControl("");
+  telefonoControl = new FormControl("");
+  celularControl = new FormControl("");
 
   constructor(
     private fb: FormBuilder,
@@ -83,6 +89,46 @@ export class RegistrarClienteComponent {
 
     this.setupDniWatcher();
     this.setupRucWatcher();
+  }
+
+  protected onRucInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, "");
+    this.rucControl.setValue(input.value);
+  }
+
+  protected onDniInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, "");
+    this.dniControl.setValue(input.value);
+  }
+
+  protected onCelularInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, "");
+    this.celularControl.setValue(input.value);
+  }
+
+  protected onTelefonoInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, "");
+    this.telefonoControl.setValue(input.value);
+  }
+
+  valueDni(): string {
+    return this.dniControl.value || "";
+  }
+
+  valueRuc(): string {
+    return this.rucControl.value || "";
+  }
+
+  valueCelular(): string {
+    return this.celularControl.value || "";
+  }
+
+  valueTelefono(): string {
+    return this.telefonoControl.value || "";
   }
 
   selectType(type: "persona" | "empresa"): void {
