@@ -75,13 +75,27 @@ export class CampoService {
         })
       );
   }
-  // Actualizar un campo existente
   update(id: number, campo: Campo): Observable<string> {
     return this.http.put<string>(`${this.apiUrl}/${id}`, campo);
   }
 
-  // Cambiar el estado de un campo
-  changeStatus(id: number, status: number): Observable<string> {
-    return this.http.patch<string>(`${this.apiUrl}/${id}/status/${status}`, {});
+  changeStatus(id: number, status: string): Observable<any> {
+    return this.http
+      .patch(`${this.apiUrl}/${id}/status/${status}`, {}, { responseType: "text" })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (
+            error.status === 200 &&
+            !error.ok &&
+            typeof error.error === "string"
+          ) {
+            console.log("String de error recibido:", error.error);
+            return throwError(() => new Error(error.error));
+          } else {
+            return throwError(() => error);
+          }
+        })
+      );
   }
+  
 }

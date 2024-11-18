@@ -5,7 +5,7 @@
     </div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li *ngIf="!isCompania && !isEspera">
+        <li *ngIf="!isCompania && !isEspera && !isCliente">
           <button
             class="nav-button join-us-button"
             (click)="openFieldOfferDialog()"

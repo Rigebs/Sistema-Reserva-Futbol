@@ -12,6 +12,8 @@ import { TipoDeporteService } from "../../services/tipo-deporte.service";
 import { TipoDeporte } from "../../models/tipo-deporte";
 import { MatSelectModule } from "@angular/material/select";
 import { SidebarPruebaComponent } from "../../components/sidebar-prueba/sidebar-prueba.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { catchError, finalize, throwError } from "rxjs";
 
 @Component({
   selector: "app-gestionar-campos",
@@ -35,7 +37,7 @@ export class GestionarCamposComponent implements OnInit {
 
   // Configuración de las columnas de la tabla
   columns: TableColumn[] = [
-    { key: "id", label: "ID" },
+    {key: "id", label: "ID"},
     { key: "nombre", label: "Nombre" },
     { key: "descripcion", label: "Descripción" },
     { key: "precio", label: "Precio (s/)" },
@@ -56,7 +58,8 @@ export class GestionarCamposComponent implements OnInit {
   constructor(
     public dialog: MatDialog,
     private campoService: CampoService,
-    private tipoDeporteService: TipoDeporteService // Asegurarse de tener acceso a este servicio
+    private tipoDeporteService: TipoDeporteService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +80,8 @@ export class GestionarCamposComponent implements OnInit {
               : { label: "Inhabilitado", color: "red" },
         }));
         this.isLoading = false;
+        console.log("ho");
+        
       },
       error: (err) => {
         console.error("Error al obtener los campos:", err);
@@ -200,10 +205,21 @@ export class GestionarCamposComponent implements OnInit {
     if (event.action === "edit") {
       this.openDialog(event.row); // Abre el diálogo con datos del campo a editar
     } else if (event.action === "toggleState") {
-      event.row.estado = event.row.estado === "1" ? "0" : "1";
+      const estadoActual = event.row.estado;
+      
+      this.campoService.changeStatus(event.row.id, estadoActual).pipe(
+        catchError((error) => {
+          this.snackBar.open("Error al cambiar estado", "Cerrar", { duration: 3000 });
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          this.dataSource = [...this.dataSource];
+        })
+      ).subscribe(() => {
+        this.snackBar.open("Estado cambiado", "Cerrar", { duration: 3000 });
+        event.row.estado = estadoActual === "1" ? "0" : "1";
+      });
     }
-
-    // Actualiza la referencia de dataSource para refrescar la tabla
-    this.dataSource = [...this.dataSource];
   }
+  
 }

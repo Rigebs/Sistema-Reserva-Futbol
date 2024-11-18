@@ -24,6 +24,8 @@ export class NavbarComponent implements OnInit {
 
   isEspera = false;
 
+  isCliente = false;
+
   isAvalaible: boolean = false;
 
   constructor(
@@ -81,6 +83,7 @@ export class NavbarComponent implements OnInit {
     if (hasToken) {
       const payload = this.authTokenUtil.decodeToken();
       this.isEspera = this.authTokenUtil.isEspera();
+      this.isCliente = this.authTokenUtil.isCliente();
       this.adminUsername = payload.sub || null;
     }
   }
