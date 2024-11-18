@@ -16,6 +16,13 @@ FROM eclipse-temurin:17-jdk-alpine
 # Crear un directorio para la aplicación
 WORKDIR /app
 
+# Establecer la zona horaria en el contenedor
+ENV TZ=America/Lima
+RUN apk add --no-cache tzdata && \
+    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    apk del tzdata
+
 # Copiar el archivo JAR generado desde la imagen anterior
 COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
@@ -37,5 +44,6 @@ ENV CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
 ENV SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE}
 ENV SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE}
 ENV API_RENIEC_SUNAT_TOKEN=${API_RENIEC_SUNAT_TOKEN}
+
 # Ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]

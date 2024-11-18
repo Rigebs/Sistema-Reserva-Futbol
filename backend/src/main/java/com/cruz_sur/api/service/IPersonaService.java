@@ -12,4 +12,6 @@ public interface IPersonaService {
     Persona update(Long id, Persona persona);
     PersonaClienteResponse save(Persona persona);
     Persona changeStatus(Long id, Integer status);
+
+    Optional<Persona> byDni(String dni);
 }

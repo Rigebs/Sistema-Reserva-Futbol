@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service;
 
+import com.cruz_sur.api.dto.PagoInfoDTO;
 import com.cruz_sur.api.model.Compania;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,4 +15,6 @@ public interface ICompaniaService {
     Optional<Compania> byId(Long id);
     Compania changeStatus(Long id, Integer status);
     Compania updateCompaniaImages(MultipartFile file, MultipartFile qrFile, Compania compania) throws IOException;
+
+    PagoInfoDTO getPagoInfoByCompaniaId(Long companiaId);
 }

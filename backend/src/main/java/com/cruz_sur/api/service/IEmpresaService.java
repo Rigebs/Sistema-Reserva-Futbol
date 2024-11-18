@@ -12,4 +12,6 @@ public interface IEmpresaService {
     Empresa update(Long id, Empresa Empresa);
     EmpresaClienteResponse save(Empresa Empresa);
     Empresa changeStatus(Long id, Integer status);
+
+    Optional<Empresa> findByRuc(String ruc);
 }
