@@ -18,6 +18,10 @@ import { PersonaService } from "../../services/persona.service";
 import { EmpresaService } from "../../services/empresa.service";
 import { UsuarioService } from "../../services/usuario.service";
 import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBar } from "@angular/material/snack-bar";
+
+import { Router } from '@angular/router';
+import { delay } from 'rxjs';
 
 @Component({
   selector: "app-registrar-cliente",
@@ -52,14 +56,16 @@ export class RegistrarClienteComponent {
     private fb: FormBuilder,
     private personaService: PersonaService,
     private usuarioService: UsuarioService,
-    private empresaService: EmpresaService
+    private empresaService: EmpresaService,
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
     this.personaForm = this.fb.group({
       dni: [
         "",
         [
           Validators.required,
-          Validators.pattern(/^\d{8}$/), // Valida que sean exactamente 8 números
+          Validators.pattern(/^\d{8}$/),
         ],
       ],
       nombre: ["", Validators.required],
@@ -78,7 +84,7 @@ export class RegistrarClienteComponent {
         "",
         [
           Validators.required,
-          Validators.pattern(/^\d{11}$/), // Valida que sean exactamente 11 números
+          Validators.pattern(/^\d{11}$/),
         ],
       ],
       razonSocial: ["", Validators.required],
@@ -148,8 +154,15 @@ export class RegistrarClienteComponent {
       clienteId: id,
       companiaId: null,
     };
-    this.usuarioService.updateClientOrSede(updateRequest).subscribe(() => {
-      console.log("Cliente vinculado con éxito");
+  
+    this.usuarioService.updateClientOrSede(updateRequest).pipe(
+      // Esperamos 2 segundos antes de hacer la redirección
+      delay(2000)
+    ).subscribe(() => {
+      this.snackBar.open("Cliente vinculado con éxito", "cerrar");
+  
+      // Después de los 2 segundos, redirigimos a la ruta '/home'
+      this.router.navigate(['/home']);
     });
   }
 
