@@ -352,7 +352,7 @@ export class RegistrarSedeComponent implements OnInit {
   }
 
   openDialog(): void {
-    this.dialog.open(LoginComponent, {
+    this.dialog.open(IntroDialogComponent, {
       width: "400px",
       autoFocus: false,
       disableClose: false,

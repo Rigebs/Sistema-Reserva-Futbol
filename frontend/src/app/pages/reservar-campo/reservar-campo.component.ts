@@ -90,11 +90,14 @@ export class ReservarCampoComponent implements OnInit {
       });
     } else {
       const tokenValido = this.authTokenUtil.isTokenValid();
-      const esCliente =
-        tokenValido &&
-        this.authTokenUtil.decodeToken()?.roles?.includes("ROLE_CLIENTE");
+      const tokenDecoded = tokenValido
+        ? this.authTokenUtil.decodeToken()
+        : null;
+      const roles = tokenDecoded?.roles || [];
+      const esCliente = roles.includes("ROLE_CLIENTE");
+      const esEspera = roles.includes("ROLE_ESPERA");
+      const esCompania = roles.includes("ROLE_COMPANIA");
 
-      // Si no hay token o no es cliente
       if (!tokenValido) {
         const isMobile = window.innerWidth <= 768;
         const dialogConfig = {
@@ -108,18 +111,25 @@ export class ReservarCampoComponent implements OnInit {
           horizontalPosition: "center",
           verticalPosition: "top",
         });
+      } else if (esCompania || esEspera) {
+        this.snackBar.open(
+          "Los usuarios con rol de compañía o en espera no pueden reservar campos",
+          "Cerrar",
+          {
+            duration: 3000,
+            horizontalPosition: "center",
+            verticalPosition: "top",
+          }
+        );
       } else if (!esCliente) {
-        // Si el token es válido pero el usuario no es cliente, redirigir a registrar cliente
         this.snackBar.open("Primero debes registrarte como cliente", "Cerrar", {
           duration: 3000,
           horizontalPosition: "center",
           verticalPosition: "top",
         });
 
-        // Redirigir a la página de registro de cliente
         this.router.navigate(["/registrar-cliente"]);
       } else {
-        // Si el usuario tiene un token válido y es cliente, redirigir a la pasarela de pago
         this.router.navigate(["/pasarela-pago"], {
           state: { reservas: this.reservasFinalizadas },
         });
