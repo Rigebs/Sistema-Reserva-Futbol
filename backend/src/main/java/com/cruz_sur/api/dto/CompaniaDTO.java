@@ -14,4 +14,8 @@ public class CompaniaDTO {
     private String imageUrl;
 
 
+
+
+
+    
 }
