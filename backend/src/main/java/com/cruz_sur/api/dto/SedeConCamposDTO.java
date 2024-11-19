@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.List;
 
 @Data
@@ -15,5 +16,7 @@ public class SedeConCamposDTO {
     private String companiaNombre;
     private String companiaImagenUrl;
     private String direccion;
+    private Time horaInicio;
+    private Time horaFin;
     private List<CampoDTO> camposWithSede; // Lista de campos asociados a la sede
 }

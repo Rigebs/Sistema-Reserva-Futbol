@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.util.List;
 
 @Data
@@ -15,5 +16,7 @@ public class CamposHomeDTO {
     private String companiaNombre;
     private String companiaImagenUrl;
     private String direccion;
+    private Time horaInicio; // Asegúrate de que este campo esté presente
+    private Time horaFin;
     private List<String> tipoDeporteNombre; // Lista de tipos de deportes asociados a la sede
 }

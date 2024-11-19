@@ -106,6 +106,8 @@ public class CampoService implements ICampoService {
                             rs.getString("compania_nombre"),
                             rs.getString("compania_imagen_url"),
                             rs.getString("direccion"),
+                            rs.getTime("hora_inicio"),
+                            rs.getTime("hora_fin"),
                             tipoDeporteList
                     );
                 }
@@ -137,6 +139,8 @@ public class CampoService implements ICampoService {
                         sede.getCompaniaNombre(),
                         sede.getCompaniaImagenUrl(),
                         sede.getDireccion(),
+                        sede.getHoraInicio(),
+                        sede.getHoraFin(),
                         camposWithSede
                 ))
                 .collect(Collectors.toList());
@@ -165,6 +169,8 @@ public class CampoService implements ICampoService {
                         rs.getString("compania_nombre"),
                         rs.getString("compania_imagen_url"),
                         rs.getString("direccion"),
+                        rs.getTime("hora_inicio"),
+                        rs.getTime("hora_fin"),
                         new ArrayList<>()
                 )
         );
