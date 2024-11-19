@@ -16,7 +16,5 @@ public class CamposHomeDTO {
     private String companiaNombre;
     private String companiaImagenUrl;
     private String direccion;
-    private Time horaInicio; // Asegúrate de que este campo esté presente
-    private Time horaFin;
     private List<String> tipoDeporteNombre; // Lista de tipos de deportes asociados a la sede
 }
