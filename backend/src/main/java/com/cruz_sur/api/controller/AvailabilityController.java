@@ -16,7 +16,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/availability")
+@RequestMapping("/api/v1/availability")
 public class AvailabilityController {
     private final SimpMessagingTemplate messagingTemplate;
     private final CampoAvailabilityService campoAvailabilityService;
