@@ -3,8 +3,7 @@
   width: 100%;
   max-width: 1800px;
   margin: 0 auto;
-  padding: 20px;
-  padding-top: 84px;
+  padding: 10px 20px 0px 20px;
   box-sizing: border-box;
   overflow: hidden; /* Evitar overflow en el contenedor */
 }
@@ -18,6 +17,10 @@
 .divider {
   margin-top: 40px;
   margin-bottom: 80px;
+}
+
+.button {
+  background-color: #005cbb;
 }
 
 .direccion {
@@ -102,7 +105,7 @@ button {
 }
 
 button:hover {
-  background-color: #303f9f; /* Cambiar color al pasar el ratón */
+  background-color: #0255a8; /* Cambiar color al pasar el ratón */
 }
 
 /* Ajustes responsivos para pantallas pequeñas */

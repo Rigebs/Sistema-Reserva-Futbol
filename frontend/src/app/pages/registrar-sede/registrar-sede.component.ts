@@ -252,7 +252,6 @@ export class RegistrarSedeComponent implements OnInit {
   consultarReniec() {
     const ruc = this.empresaFormGroup.get("ruc")?.value;
 
-    // Validar que el RUC sea un número de 11 dígitos
     const rucValido = /^\d{11}$/.test(ruc);
     if (!rucValido) {
       this.snackBar.open("El RUC debe ser un número de 11 dígitos.", "Cerrar", {
@@ -262,10 +261,8 @@ export class RegistrarSedeComponent implements OnInit {
       return;
     }
 
-    // Llamar al servicio para consultar el RUC
     this.empresaService.consultarRuc(ruc).subscribe(
       (response) => {
-        // Validar si la respuesta tiene los datos esperados
         if (response && response.razonSocial) {
           this.empresaFormGroup
             .get("razonSocial")
@@ -277,7 +274,6 @@ export class RegistrarSedeComponent implements OnInit {
             verticalPosition: "top",
           });
         } else {
-          // Mostrar mensaje de error si no hay datos válidos
           const mensajeError =
             response.error || "No se encontraron datos para este RUC.";
           this.snackBar.open(mensajeError, "Cerrar", {

@@ -83,18 +83,36 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
+          <span matTextPrefix>+51 &nbsp;</span>
           <mat-label>Celular</mat-label>
           <input
             matInput
-            #input
             maxlength="9"
-            placeholder="Ex. 978934456"
+            placeholder="Ex. 904533437"
             formControlName="celular"
-            (input)="onCelularInput($event)"
+            (input)="onTelefonoInput($event)"
             required
             type="text"
           />
           <mat-hint align="end">{{ valueCelular().length }}/9</mat-hint>
+
+          <!-- Mensajes de error para el teléfono -->
+          <mat-error
+            *ngIf="
+              personaForm.get('celular')?.hasError('required') &&
+              personaForm.get('celular')?.touched
+            "
+          >
+            El ceular es obligatorio.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              personaForm.get('celular')?.hasError('pattern') &&
+              personaForm.get('celular')?.touched
+            "
+          >
+            El celular debe empezar con 9 y tener exactamente 9 dígitos.
+          </mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Correo electrónico</mat-label>
@@ -102,8 +120,26 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Fecha de Nacimiento</mat-label>
-          <input matInput formControlName="fechaNac" type="date" required />
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fechaNac"
+            [min]="minDate"
+            [max]="maxDate"
+            required
+            maxlength="10"
+            (keypress)="validateDateInput($event)"
+          />
+          <mat-error>Por favor, introduce una fecha correcta</mat-error>
+
+          <mat-hint>{{ dateFormatString() }}</mat-hint>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
           <mat-label>Género</mat-label>
           <mat-select formControlName="genero" required>
@@ -111,7 +147,7 @@
             <mat-option value="F">Femenino</mat-option>
           </mat-select>
         </mat-form-field>
-        
+
         <mat-form-field appearance="outline">
           <mat-label>Dirección</mat-label>
           <input matInput formControlName="direccion" required />
@@ -135,7 +171,6 @@
         [formGroup]="empresaForm"
         (ngSubmit)="registrar()"
       >
-
         <mat-form-field appearance="outline">
           <mat-label>RUC</mat-label>
           <input
@@ -151,24 +186,42 @@
           <mat-hint align="end">{{ valueRuc().length }}/11</mat-hint>
         </mat-form-field>
 
-
         <mat-form-field appearance="outline">
           <mat-label>Razón Social</mat-label>
           <input matInput formControlName="razonSocial" required readonly />
         </mat-form-field>
+
         <mat-form-field appearance="outline">
+          <span matTextPrefix>+51 &nbsp;</span>
           <mat-label>Teléfono</mat-label>
           <input
             matInput
-            #input
             maxlength="9"
-            placeholder="Ex. 978934456"
+            placeholder="Ex. 904533437"
             formControlName="telefono"
             (input)="onTelefonoInput($event)"
             required
             type="text"
           />
           <mat-hint align="end">{{ valueTelefono().length }}/9</mat-hint>
+
+          <!-- Mensajes de error para el teléfono -->
+          <mat-error
+            *ngIf="
+              empresaForm.get('telefono')?.hasError('required') &&
+              empresaForm.get('telefono')?.touched
+            "
+          >
+            El teléfono es obligatorio.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              empresaForm.get('telefono')?.hasError('pattern') &&
+              empresaForm.get('telefono')?.touched
+            "
+          >
+            El teléfono debe empezar con 9 y tener exactamente 9 dígitos.
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">

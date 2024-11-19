@@ -9,7 +9,7 @@ body {
 .navbar {
   background: linear-gradient(135deg, #4a90e2, #213759); /* Degradado suave */
   width: 100%;
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -32,6 +32,12 @@ body {
   font-size: 24px;
   font-weight: bold; /* Negrita para mayor impacto */
   margin: 0px;
+  max-width: 200px;
+}
+
+img {
+  max-width: 200px;
+  height: 63px;
 }
 
 .nav-section {

@@ -6,20 +6,19 @@
   max-width: 100%;
 }
 
-/* Estilo para el pseudo-elemento ::before */
 .carousel-container::before {
-  content: ""; /* Asegúrate de incluir esto */
-  position: absolute; /* Debe ser absoluto para cubrir el contenedor */
-  top: 0; /* Asegúrate de cubrir desde la parte superior */
-  left: 0; /* Asegúrate de cubrir desde la parte izquierda */
-  right: 0; /* Asegúrate de cubrir hasta la parte derecha */
-  bottom: 0; /* Asegúrate de cubrir hasta la parte inferior */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
     to left,
     rgba(255, 255, 255, 0) 0%,
     rgba(255, 255, 255, 1) 100%
   );
-  z-index: 1; /* Asegúrate de que esté detrás del contenido */
+  z-index: 1;
 }
 
 .carousel {
@@ -31,48 +30,48 @@
   width: 100%;
   height: 93vh;
   object-fit: cover;
-  transition: opacity 1s ease; /* Transición para el efecto de desvanecimiento */
-  opacity: 0; /* Inicialmente invisible */
+  transition: opacity 1s ease;
+  opacity: 0;
 }
 
 .carousel-image.fade-in {
-  opacity: 1; /* Visible cuando se aplica la clase fade-in */
+  opacity: 1;
 }
 
 .desvanecimiento {
-  opacity: 0; /* Estado inicial: invisible */
-  transition: opacity 3s ease-in-out; /* Duración y tipo de transición */
+  opacity: 0;
+  transition: opacity 3s ease-in-out;
 }
 
 .desvanecimiento-top {
-  opacity: 1; /* Al hacer hover, se vuelve visible */
+  opacity: 1;
 }
 
-/* Estilos para el texto de invitación dentro del carrusel */
 .invitation-text {
   position: absolute;
   max-width: 450px;
   z-index: 2;
-  padding: 20px;
+  padding: 60px;
+  margin-top: 20vh;
 }
 
 .invitation-text h2 {
-  margin: 0 0 10px;
+  margin: 0 0 20px;
   font-size: 4.5em;
   font-weight: bold;
-  margin: 0 0 15px;
   line-height: 1.2;
-  color: #000000;
-  text-shadow: 1px 3px 7px rgba(0, 0, 0, 0.5);
+  color: #0288d1;
+  text-shadow: 1px 3px 7px rgba(255, 255, 255, 0.5);
 }
 
 .invitation-text p {
-  font-size: 1.2em; /* Aumenta el tamaño de fuente para legibilidad */
+  font-size: 1.2em;
   line-height: 1.5;
+  color: #213759;
 }
 
 .invitation-text button {
-  margin-top: 10px; /* Espacio entre el texto y el botón */
+  margin-top: 10px;
 }
 
 .invitation-container {
@@ -80,15 +79,21 @@
   margin: auto;
 }
 
-/* Estilos específicos para el texto y el carrusel */
 .invitation-text {
   flex: 1;
   text-align: left;
 }
 
-/* Estilos para el carrusel en dispositivos móviles */
 @media (max-width: 768px) {
   .carousel-image {
-    height: 750px; /* Ajusta la altura para dispositivos móviles */
+    height: 750px;
+  }
+  .invitation-text h2 {
+    margin: 0 0 20px;
+    font-size: 3.5em;
+    font-weight: bold;
+    line-height: 1;
+    color: #0288d1;
+    text-shadow: 1px 3px 7px rgba(255, 255, 255, 0.5);
   }
 }

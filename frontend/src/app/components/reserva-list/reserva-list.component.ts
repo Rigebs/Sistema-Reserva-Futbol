@@ -54,6 +54,7 @@ export class ReservaListComponent implements OnInit {
     dialogRef.componentInstance.reservaFinalizada.subscribe(
       (reservaCompletada: any) => {
         this.reservaFinalizada.emit(reservaCompletada);
+        console.log("DF", this.reservaFinalizada);
       }
     );
   }
