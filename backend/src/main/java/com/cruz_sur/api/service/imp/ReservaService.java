@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class ReservaService implements IReservaService {
                 .cliente(cliente)
                 .usuario(usuario)
                 .metodoPago(metodoPago)
-                .estado('1')
+                .estado('0')
                 .usuarioCreacion(authenticatedUsername)
                 .fechaCreacion(now)
                 .usuarioModificacion(authenticatedUsername)
@@ -101,7 +102,25 @@ public class ReservaService implements IReservaService {
 
         return reservaResponseBuilder.build(reserva);
     }
+    @Transactional
+    @Override
+    public void validarPagoReserva(Long reservaId, BigDecimal montoPago) {
+        Reserva reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
+        // Verifica si el estado ya es confirmado
+        if (reserva.getEstado() == '1') {
+            throw new RuntimeException("La reserva ya está confirmada.");
+        }
+
+        // Compara el monto
+        if (reserva.getTotal().compareTo(montoPago) == 0) {
+            reserva.setEstado('1'); // Cambia el estado a confirmado
+            reservaRepository.save(reserva);
+        } else {
+            throw new RuntimeException("El monto del pago no coincide con el total de la reserva.");
+        }
+    }
 
     @Override
     public List<VentaDTO> getVentasByUsuario() {
