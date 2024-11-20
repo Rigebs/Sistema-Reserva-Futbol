@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -22,7 +23,11 @@ public class ReservaController {
         ReservaResponseDTO reservaResponse = reservaService.createReserva(request.getReservaDTO(), request.getDetallesVenta());
         return ResponseEntity.ok(reservaResponse);
     }
-
+    @PostMapping("/validar-pago")
+    public ResponseEntity<?> validarPago(@RequestParam Long reservaId, @RequestParam BigDecimal montoPago) {
+        reservaService.validarPagoReserva(reservaId, montoPago);
+        return ResponseEntity.ok("Reserva confirmada correctamente.");
+    }
     @GetMapping("/ventas")
     public List<VentaDTO> getVentas() {
         return reservaService.getVentasByUsuario();
