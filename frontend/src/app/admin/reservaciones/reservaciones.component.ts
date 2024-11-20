@@ -4,11 +4,12 @@ import { TableComponent } from "../../components/table/table.component";
 import { TableColumn } from "../../models/table-column";
 import { DialogFormComponent } from "../../components/dialog-form/dialog-form.component";
 import { MatDialog } from "@angular/material/dialog";
+import { SidebarPruebaComponent } from "../../components/sidebar-prueba/sidebar-prueba.component";
 
 @Component({
   selector: "app-reservaciones",
   standalone: true,
-  imports: [SidebarComponent, TableComponent],
+  imports: [TableComponent, SidebarPruebaComponent],
   templateUrl: "./reservaciones.component.html",
   styleUrl: "./reservaciones.component.css",
 })

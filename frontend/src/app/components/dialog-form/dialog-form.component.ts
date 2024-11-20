@@ -17,6 +17,8 @@ import {
 } from "@angular/material/dialog";
 import { MatInputModule } from "@angular/material/input";
 import { DialogField } from "../../models/dialog-field";
+import { MatOptionModule } from "@angular/material/core";
+import { MatSelectModule } from "@angular/material/select";
 
 @Component({
   selector: "app-dialog-form",
@@ -28,8 +30,10 @@ import { DialogField } from "../../models/dialog-field";
     MatCheckboxModule,
     CommonModule,
     MatButtonModule,
+    MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    MatOptionModule,
   ],
   templateUrl: "./dialog-form.component.html",
   styleUrl: "./dialog-form.component.css",
@@ -52,7 +56,9 @@ export class DialogFormComponent {
     fields.forEach((field) => {
       const control = this.fb.control(
         field.value,
-        field.type === "checkbox" ? [] : Validators.required
+        field.type === "checkbox" || field.type === "select"
+          ? []
+          : Validators.required
       );
       this.form.addControl(field.name, control);
     });

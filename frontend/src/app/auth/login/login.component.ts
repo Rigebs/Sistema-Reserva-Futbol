@@ -1,8 +1,8 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
-import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
+import { MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { AuthService } from "../../services/auth.service";
@@ -89,24 +89,34 @@ export class LoginComponent {
   }
 
   onRegister() {
-    this.isUsernameValid = this.usernamePattern.test(this.registerUser.username);
-    
+    this.isUsernameValid = this.usernamePattern.test(
+      this.registerUser.username
+    );
+
     if (!this.isUsernameValid) {
-      this.snackBar.open("El nombre de usuario solo debe contener letras y números, sin espacios.", "Cerrar", {
-        duration: 3000,
-        horizontalPosition: "right",
-        verticalPosition: "top",
-      });
+      this.snackBar.open(
+        "El nombre de usuario solo debe contener letras y números, sin espacios.",
+        "Cerrar",
+        {
+          duration: 3000,
+          horizontalPosition: "right",
+          verticalPosition: "top",
+        }
+      );
       return;
     }
 
     this.authService.register(this.registerUser).subscribe({
       next: () => {
-        this.snackBar.open("Registro exitoso, por favor verifica tu email", "Cerrar", {
-          duration: 3000,
-          horizontalPosition: "right",
-          verticalPosition: "top",
-        });
+        this.snackBar.open(
+          "Registro exitoso, por favor verifica tu email",
+          "Cerrar",
+          {
+            duration: 3000,
+            horizontalPosition: "right",
+            verticalPosition: "top",
+          }
+        );
         this.isVerification = true;
       },
       error: (error) => {
@@ -261,10 +271,29 @@ export class LoginComponent {
     }
   }
 
+  onIdentifierInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    // Permitir solo letras, números, puntos y arroba
+    input.value = input.value.replace(/[^a-zA-Z0-9@.]/g, "");
+    this.loginUser.identifier = input.value; // Actualizar el valor de loginUser.identifier
+  }
+
+  onUsuarioInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^a-zA-Z0-9]/g, "");
+    this.loginUser.identifier = input.value; // Actualizar el valor de loginUser.identifier
+  }
+
   toggleForm() {
     this.isLogin = !this.isLogin;
     this.isVerification = false;
     this.isPasswordReset = false;
     this.isPasswordChange = false; // Reinicia el estado de cambio de contraseña
+  }
+
+  hide = signal(true);
+  clickEvent(event: MouseEvent) {
+    this.hide.set(!this.hide());
+    event.stopPropagation();
   }
 }

@@ -1,14 +1,21 @@
 <nav class="navbar">
   <div class="navbar-container">
-    <div class="logo">Zemply</div>
+    <div class="logo">
+      <a href="/">
+        <img src="/logo-normal.svg" alt="Zemply Logo" />
+      </a>
+    </div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li *ngIf="!isAdmin">
-          <button class="nav-button join-us-button" (click)="openFieldOfferDialog()">
+        <li *ngIf="!isCompania && !isEspera && !isCliente">
+          <button
+            class="nav-button join-us-button"
+            (click)="openFieldOfferDialog()"
+          >
             Ofrece tus campos
           </button>
         </li>
-        <li *ngIf="isAdmin">
+        <li *ngIf="isCompania">
           <button class="admin-button" (click)="goToAdminPanel()">
             Ir al panel admin
           </button>

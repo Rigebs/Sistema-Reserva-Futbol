@@ -1,0 +1,178 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.navbar {
+  width: 100%;
+  position: relative;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+.logo {
+  font-size: 30px; /* Slightly larger font size */
+  font-weight: bolder; /* Make the text thicker */
+  padding: 10px; /* Increase padding if you want more space around the logo */
+  margin: 0;
+  color: rgba(74, 144, 226, 0.8); /* Text color */
+}
+
+.logo img {
+  max-width: 200px; /* Increase width */
+  height: 200px; /* Set a specific height to make the logo taller */
+  object-fit: contain; /* Maintain aspect ratio, adjust the logo within the defined box */
+}
+
+.nav-section {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin-left: 20px;
+}
+
+.admin-button {
+  background-color: #9c27b0;
+  color: #ffffff;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+  font-size: 16px;
+}
+
+.admin-button:hover {
+  background-color: #7b1fa2;
+  transform: scale(1.1);
+}
+
+.nav-button {
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background 0.3s, transform 0.2s;
+  font-size: 16px;
+}
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.highlight {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.join-us-button {
+  background-color: #ffc107;
+  color: #213759;
+  font-weight: bold;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.join-us-button:hover {
+  background-color: #ff9800;
+  transform: scale(1.1);
+}
+
+.welcome-message {
+  color: white;
+  font-size: 16px;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.menu-icon {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  height: 3px;
+  width: 25px;
+  background-color: white;
+  margin: 3px 0;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 65px;
+    right: 0;
+    background-color: #4a90e2;
+    flex-direction: column;
+    width: 100%;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+    border-radius: 5px;
+  }
+
+  .nav-links.active {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    opacity: 1;
+  }
+
+  .nav-links li {
+    margin: 15px 0;
+  }
+
+  .menu-icon {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .navbar-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .welcome-message {
+    display: inline;
+    margin-left: -10px;
+    color: #ff9f0a;
+    background-color: white;
+    padding: 6px;
+    border-radius: 11px;
+  }
+
+  .logo img {
+    max-width: 187px;
+    height: 200px;
+    object-fit: contain;
+    position: relative;
+    left: -41px;
+  }
+}

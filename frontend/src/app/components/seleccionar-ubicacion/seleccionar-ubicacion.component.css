@@ -1,0 +1,50 @@
+/* Contenedor principal */
+.container {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+}
+
+/* Título */
+h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Filas del formulario */
+.row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+/* Campos de formulario */
+mat-form-field {
+  display: block;
+}
+
+/* Ancho para los campos alineados horizontalmente */
+.half-width {
+  width: 48%; /* Cada campo ocupa la mitad del espacio disponible */
+}
+
+/* Campo de distrito centrado en la siguiente línea */
+.full-width {
+  width: 100%; /* Campo ocupa todo el ancho */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column; /* Cambia a una alineación vertical */
+    gap: 15px;
+  }
+
+  .half-width,
+  .full-width {
+    width: 100%; /* Ocupan todo el ancho disponible */
+  }
+}

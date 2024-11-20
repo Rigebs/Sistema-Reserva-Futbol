@@ -6,13 +6,15 @@
       <form [formGroup]="firstFormGroup">
         <ng-template matStepLabel>Selecciona la fecha</ng-template>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>Fecha de reserva</mat-label>
           <input
             matInput
             [matDatepicker]="picker"
             formControlName="fechaReserva"
             [min]="minDate"
+            [max]="maxDate"
+            (dateChange)="onDateChange($event)"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -38,7 +40,6 @@
 
         <!-- Contenedor flex para las horas de inicio y fin -->
         <div class="hours-container">
-          <!-- Selector de hora de inicio -->
           <mat-form-field appearance="fill">
             <mat-label>Hora de inicio</mat-label>
             <mat-select
@@ -51,12 +52,10 @@
                 [disabled]="unavailableHours.includes(hour)"
               >
                 {{ formatHour(hour) }}
-                <!-- Cambiado aquí -->
               </mat-option>
             </mat-select>
           </mat-form-field>
 
-          <!-- Selector de hora de fin -->
           <mat-form-field appearance="fill">
             <mat-label>Hora de fin</mat-label>
             <mat-select
@@ -69,7 +68,6 @@
                 [disabled]="unavailableHours.includes(hour)"
               >
                 {{ formatHour(hour) }}
-                <!-- Cambiado aquí -->
               </mat-option>
             </mat-select>
           </mat-form-field>

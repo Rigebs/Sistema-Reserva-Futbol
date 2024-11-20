@@ -1,57 +1,108 @@
-<div class="container">
-  <div class="intro-text">
-    <h2>¡Bienvenido a nuestro sistema de registro de sedes!</h2>
-    <p>
-      Completa los pasos a continuación para registrar tu sede y comenzar a
-      publicar tus campos de fútbol. Este proceso permitirá que tu sede sea
-      visible en nuestro sistema, facilitando que más personas puedan descubrir
-      y reservar tus instalaciones.
-    </p>
-  </div>
+<div *ngIf="companyRegistered" class="confirmation-message">
+  <h2>¡Compañía registrada correctamente!</h2>
+  <p>
+    Te enviaremos un link de confirmación para que actives tu cuenta de compañía
+    y puedas ofrecer tus campos.
+  </p>
+  <button mat-button (click)="goToHome()">Ir a Home</button>
+</div>
+<div *ngIf="!companyRegistered" class="container">
+  <button class="intro-button" *ngIf="isMobile" (click)="openDialog()">
+    Ver Introducción
+  </button>
   <div class="stepper">
     <mat-stepper [orientation]="orientation" [linear]="true">
       <!-- Paso 1: Registrar Empresa -->
-      <mat-step [stepControl]="empresaFormGroup" [completed]="empresaFormGroup.valid">
+      <mat-step
+        [stepControl]="empresaFormGroup"
+        [completed]="empresaFormGroup.valid"
+      >
         <form [formGroup]="empresaFormGroup" novalidate>
           <ng-template matStepLabel>Registrar Empresa</ng-template>
-
+          <h6>Escibe primero tu RUC para validarlo</h6>
           <div class="grid-container">
-            <mat-form-field class="grid-item" appearance="outline">
+            <mat-form-field appearance="outline">
               <mat-label>RUC</mat-label>
-              <input matInput formControlName="ruc" required />
-              <button mat-icon-button matSuffix (click)="consultarReniec()">
-                <mat-icon>search</mat-icon>
-              </button>
+              <input
+                matInput
+                #input
+                maxlength="11"
+                placeholder="Ex. 8293100562"
+                formControlName="ruc"
+                (input)="onRucInput($event)"
+                required
+                type="text"
+              />
+              <mat-hint align="end">{{ value().length }}/11</mat-hint>
             </mat-form-field>
-
             <mat-form-field class="grid-item" appearance="outline">
               <mat-label>Razón Social</mat-label>
-              <input matInput formControlName="razonSocial" readonly />
+              <input matInput formControlName="razonSocial" readonly required />
             </mat-form-field>
 
-            <mat-form-field class="grid-item" appearance="outline">
+            <mat-form-field appearance="outline">
+              <span matTextPrefix>+51 &nbsp;</span>
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="telefono" required />
+              <input
+                matInput
+                maxlength="9"
+                placeholder="Ex. 904533437"
+                formControlName="telefono"
+                (input)="onTelefonoInput($event)"
+                required
+                type="text"
+              />
+              <mat-hint align="end">{{ valueTelefono().length }}/9</mat-hint>
+
+              <!-- Mensajes de error para el teléfono -->
+              <mat-error
+                *ngIf="
+                  empresaFormGroup.get('telefono')?.hasError('required') &&
+                  empresaFormGroup.get('telefono')?.touched
+                "
+              >
+                El teléfono es obligatorio.
+              </mat-error>
+              <mat-error
+                *ngIf="
+                  empresaFormGroup.get('telefono')?.hasError('pattern') &&
+                  empresaFormGroup.get('telefono')?.touched
+                "
+              >
+                El teléfono debe empezar con 9 y tener exactamente 9 dígitos.
+              </mat-error>
             </mat-form-field>
 
             <mat-form-field class="grid-item" appearance="outline">
               <mat-label>Dirección</mat-label>
-              <input matInput formControlName="direccion" />
+              <input matInput formControlName="direccion" required />
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="ubicacion">
               <mat-label>Departamento</mat-label>
-              <mat-select formControlName="departamento" (selectionChange)="onDepartamentoChange()">
-                <mat-option *ngFor="let dept of departamentos" [value]="dept.id">
+              <mat-select
+                formControlName="departamento"
+                (selectionChange)="onDepartamentoChange()"
+              >
+                <mat-option
+                  *ngFor="let dept of departamentos"
+                  [value]="dept.id"
+                >
                   {{ dept.nombre }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="ubicacion">
               <mat-label>Provincia</mat-label>
-              <mat-select formControlName="provincia" (selectionChange)="onProvinciaChange()">
-                <mat-option *ngFor="let prov of filteredProvincias" [value]="prov.id">
+              <mat-select
+                formControlName="provincia"
+                (selectionChange)="onProvinciaChange()"
+              >
+                <mat-option
+                  *ngFor="let prov of filteredProvincias"
+                  [value]="prov.id"
+                >
                   {{ prov.nombre }}
                 </mat-option>
               </mat-select>
@@ -60,7 +111,10 @@
             <mat-form-field appearance="outline">
               <mat-label>Distrito</mat-label>
               <mat-select formControlName="distrito">
-                <mat-option *ngFor="let dist of filteredDistritos" [value]="dist.id">
+                <mat-option
+                  *ngFor="let dist of filteredDistritos"
+                  [value]="dist.id"
+                >
                   {{ dist.nombre }}
                 </mat-option>
               </mat-select>
@@ -68,7 +122,11 @@
           </div>
 
           <div class="button-container">
-            <button mat-button matStepperNext [disabled]="!empresaFormGroup.valid">
+            <button
+              mat-button
+              matStepperNext
+              [disabled]="!empresaFormGroup.valid"
+            >
               Siguiente
             </button>
           </div>
@@ -76,11 +134,13 @@
       </mat-step>
 
       <!-- Paso 2: Registrar Compañía -->
-      <mat-step [stepControl]="companiaFormGroup" [completed]="companiaFormGroup.valid">
-
+      <mat-step
+        [stepControl]="companiaFormGroup"
+        [completed]="companiaFormGroup.valid"
+      >
         <form [formGroup]="companiaFormGroup" novalidate>
           <ng-template matStepLabel>Registrar Compañía</ng-template>
-
+          <h6>Completa todos los datos de la compañía</h6>
           <div class="grid-container">
             <mat-form-field class="grid-item" appearance="outline">
               <mat-label>Nombre de la Compañía</mat-label>
@@ -98,42 +158,135 @@
             </mat-form-field>
 
             <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Teléfono</mat-label>
+              <mat-label>Número de Yape</mat-label>
               <input matInput formControlName="telefono" required type="tel" />
             </mat-form-field>
 
-            <!-- Apartado para Foto de la Sede -->
             <div class="grid-item">
-              <label>Foto de la Sede</label>
-              <input type="file" (change)="onFileSelected($event, 'imagenSede')" />
+              <h6 class="info">Imagen de la sede</h6>
+              <!-- Apartado para Foto de la Sede -->
+              <label class="label-file" for="fileInput">Foto de la Sede</label>
+              <input
+                class="file"
+                type="file"
+                id="fileInput"
+                (change)="onFileSelected($event, 'imagenSede')"
+                required
+                [ngClass]="{
+                  'invalid-input':
+                    companiaFormGroup.get('imagenSede')?.invalid &&
+                    companiaFormGroup.get('imagenSede')?.touched
+                }"
+              />
+              <!-- Mostrar el nombre del archivo si se ha seleccionado -->
+              <span *ngIf="fileName" class="file-name">{{ fileName }}</span>
+              <div
+                *ngIf="
+                  companiaFormGroup.get('imagenSede')?.invalid &&
+                  companiaFormGroup.get('imagenSede')?.touched
+                "
+                class="error-message"
+              >
+                Este campo es obligatorio.
+              </div>
             </div>
 
-            <!-- Apartado para QR de Yape -->
             <div class="grid-item">
-              <label>QR de Yape</label>
-              <input type="file" (change)="onFileSelected($event, 'imagenQrYape')" />
+              <h6 class="info">Codigo QR de Yape</h6>
+              <!-- Apartado para QR de Yape -->
+              <label class="label-file" for="qrInput">QR de Yape</label>
+              <input
+                class="file"
+                type="file"
+                id="qrInput"
+                (change)="onFileSelected($event, 'imagenQrYape')"
+                required
+                [ngClass]="{
+                  'invalid-input':
+                    companiaFormGroup.get('imagenQrYape')?.invalid &&
+                    companiaFormGroup.get('imagenQrYape')?.touched
+                }"
+              />
+              <!-- Mostrar el nombre del archivo si se ha seleccionado -->
+              <span *ngIf="qrFileName" class="file-name">{{ qrFileName }}</span>
+              <div
+                *ngIf="
+                  companiaFormGroup.get('imagenQrYape')?.invalid &&
+                  companiaFormGroup.get('imagenQrYape')?.touched
+                "
+                class="error-message"
+              >
+                Este campo es obligatorio.
+              </div>
             </div>
-
             <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Hora de Inicio</mat-label>
-              <input matInput formControlName="horaInicio" required type="time" />
+              <mat-label>Hora inicio de atención</mat-label>
+              <input
+                matInput
+                formControlName="horaInicio"
+                required
+                type="time"
+              />
             </mat-form-field>
 
             <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Hora de Fin</mat-label>
+              <mat-label>Hora fin de atención</mat-label>
               <input matInput formControlName="horaFin" required type="time" />
             </mat-form-field>
           </div>
 
           <div class="button-container">
             <button mat-button matStepperPrevious>Anterior</button>
-            <button mat-button matStepperNext [disabled]="!companiaFormGroup.valid" (click)="submitForm()">
+            <button
+              mat-button
+              matStepperNext
+              [disabled]="!companiaFormGroup.valid"
+              (click)="submitForm()"
+            >
               Siguiente
             </button>
-            
           </div>
         </form>
       </mat-step>
     </mat-stepper>
+  </div>
+  <div class="intro-text" *ngIf="!isMobile">
+    <div>
+      <h2>¡Bienvenido a nuestro sistema de registro de sedes!</h2>
+    </div>
+    <div>
+      <p>
+        Te presentamos Zemply, la plataforma líder para reservas de canchas
+        deportivas. Con Zemply, tus clientes podrán reservar de manera rápida y
+        sencilla desde sus dispositivos móviles, conectándolos con locales como
+        el tuyo.
+      </p>
+      <p>Beneficios de afiliarte a Zemply:</p>
+      <p>
+        Mayor visibilidad: Tu local será visto por una amplia audiencia de
+        jugadores locales y visitantes.
+      </p>
+      <p>
+        Aumento de reservas: Facilita las reservas en cualquier momento y lugar,
+        impulsando tus ingresos.
+      </p>
+      <p>
+        Gestión simplificada: Administra horarios y disponibilidad con
+        herramientas intuitivas.
+      </p>
+      <p>
+        Mejor experiencia del cliente: Ofrece la conveniencia de reservar en
+        línea, fortaleciendo la lealtad de tus clientes.
+      </p>
+      <p>
+        Promoción personalizada: Destaca tus instalaciones y eventos especiales
+        para atraer más jugadores.
+      </p>
+      <p>
+        Únete a Zemply hoy y lleva tu negocio al siguiente nivel. Contáctanos
+        para comenzar, y juntos haremos de tu local el destino preferido para
+        los amantes del deporte.
+      </p>
+    </div>
   </div>
 </div>

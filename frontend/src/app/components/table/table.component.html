@@ -14,11 +14,15 @@
                 *ngIf="action.action === 'toggleState'"
                 (click)="onActionClick(action.action, element)"
               >
+                <!-- Usamos el campo iconoEstado para cambiar dinámicamente el icono -->
                 <mat-icon
-                  [color]="element.estado ? 'warn' : 'primary'"
-                  [ngClass]="{ check: !element.estado }"
+                  [color]="element.estado === '1' ? 'warn' : 'primary'"
+                  [ngClass]="{ check: element.estado !== '1' }"
                 >
-                  {{ element.estado ? "block" : "check_circle" }}
+                  {{
+                    element.iconoEstado ||
+                      (element.estado === "1" ? "block" : "check_circle")
+                  }}
                 </mat-icon>
               </button>
 
@@ -39,11 +43,11 @@
           <ng-container *ngIf="column.isTag; else showData">
             <div
               [ngClass]="{
-                'tag-enabled': element[column.key] === true,
-                'tag-disabled': element[column.key] === false
+                'tag-enabled': element[column.key] === '1',
+                'tag-disabled': element[column.key] === '0'
               }"
             >
-              {{ element[column.key] ? "Habilitado" : "Inhabilitado" }}
+              {{ element[column.key] == "1" ? "Habilitado" : "Inhabilitado" }}
             </div>
           </ng-container>
         </ng-template>

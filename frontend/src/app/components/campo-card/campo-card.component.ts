@@ -19,7 +19,7 @@ export class CampoCardComponent {
   constructor(private router: Router) {}
 
   // Método para redirigir al usuario al formulario de reserva
-  reservarCampo(userId: number) {
-    this.router.navigate([`/${userId}/reservar-campo`]);
+  reservarCampo(userId: number, companiaId?: number) {
+    this.router.navigate([`/${userId}/reservar-campo/compania/${companiaId}`]);
   }
 }

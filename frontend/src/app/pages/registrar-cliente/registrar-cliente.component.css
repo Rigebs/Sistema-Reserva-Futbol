@@ -1,0 +1,93 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.instruction-card {
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 600px;
+  cursor: default; /* Desactiva el cursor pointer */
+}
+
+.selection-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 600px;
+}
+
+mat-card {
+  text-align: center;
+}
+
+.formulario-container {
+  padding-top: 16px;
+}
+
+/* Solo las tarjetas de selección tienen animación */
+.person-card,
+.company-card {
+  width: 45%;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.person-card:hover,
+.company-card:hover {
+  transform: scale(
+    1.05
+  ); /* Animación de hover solo en las tarjetas de selección */
+}
+
+mat-card.selected {
+  border: 2px solid #3f51b5;
+  transform: scale(1.05);
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+}
+
+mat-card-title mat-icon {
+  margin-right: 8px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  cursor: default; /* Evita que el formulario sea clickeable */
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+button {
+  margin-top: 20px;
+}
+
+.instruction-card h3 {
+  font-size: 1.5rem; /* Ajusta el tamaño del título */
+  font-weight: bold; /* Dale un poco más de peso al título */
+  text-align: center; /* Centra el texto */
+}
+
+.instruction-card p {
+  font-size: 1rem; /* Ajusta el tamaño del párrafo */
+  text-align: center; /* Centra el párrafo */
+  margin-top: 10px; /* Añade un pequeño espacio arriba del párrafo */
+}

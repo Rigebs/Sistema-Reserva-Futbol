@@ -1,0 +1,137 @@
+/* Contenedor base */
+.sidebar {
+  width: 224px;
+  height: 100vh;
+  background-color: #031c30; /* Azul */
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  overflow-y: auto; /* Habilitar scroll si hay muchos ítems */
+  scrollbar-width: thin; /* Personalización del scroll */
+  scrollbar-color: rgba(4, 66, 24, 0.5) transparent; /* Color del scroll */
+}
+
+/* Mostrar sidebar cuando está abierto */
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* Navbar superior en móvil */
+.navbar {
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(
+    135deg,
+    #1565c0,
+    #4fc3f7
+  ); /* Gradiente para dar un toque moderno */
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+  font-family: "Roboto", sans-serif;
+}
+
+.hamburger {
+  color: white;
+  margin-right: 15px;
+}
+
+.navbar-title {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Menu interno */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 15px; /* Espaciado entre elementos del menú */
+}
+
+.menu-item {
+  display: flex; /* Para alinear ícono y texto */
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px 15px;
+  border-radius: 6px; /* Bordes ligeramente redondeados */
+  transition: background-color 0.3s ease; /* Transición de fondo */
+  font-family: "Roboto", sans-serif;
+  gap: 8px; /* Espaciado entre ícono y texto */
+}
+
+/* Efecto hover */
+.menu-item:hover {
+  background-color: #667a8a; /* Fondo suave en hover */
+  text-decoration: none;
+}
+
+/* Menú activo */
+.menu-item.active {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Fondo más marcado para el ítem activo */
+  font-weight: bold;
+}
+
+/* Sin animaciones llamativas en hover */
+.menu-item:hover .menu-item-icon {
+  color: rgba(255, 255, 255, 0.9); /* Ícono más brillante en hover */
+}
+
+/* Ajustes para pantallas móviles */
+.sidebar.mobile {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+}
+
+/* Fondo oscuro detrás del sidebar en móvil */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Ajustes de tipografía */
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+/* Estilos adicionales para el scroll del sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(4, 66, 24, 0.5);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}

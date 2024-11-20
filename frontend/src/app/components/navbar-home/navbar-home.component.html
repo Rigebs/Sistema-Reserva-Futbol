@@ -1,0 +1,45 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">
+      <a href="/">
+        <img src="/z.svg" alt="Zemply Logo" />
+      </a>
+    </div>
+    <div class="nav-section">
+      <ul class="nav-links" [class.active]="menuOpen">
+        <li *ngIf="!isCompania && !isEspera && !isCliente">
+          <button
+            class="nav-button join-us-button"
+            (click)="openFieldOfferDialog()"
+          >
+            Ofrece tus campos
+          </button>
+        </li>
+        <li *ngIf="isCompania">
+          <button class="admin-button" (click)="goToAdminPanel()">
+            Ir al panel admin
+          </button>
+        </li>
+        <li>
+          <button class="nav-button">Sobre Nosotros</button>
+        </li>
+        <li *ngIf="!currentUser">
+          <button class="nav-button highlight" (click)="openLoginDialog()">
+            Iniciar sesión
+          </button>
+        </li>
+        <li *ngIf="currentUser">
+          <button class="nav-button highlight" (click)="logout()">
+            Cerrar sesión
+          </button>
+        </li>
+      </ul>
+      <span *ngIf="currentUser" class="welcome-message">{{ currentUser }}</span>
+    </div>
+    <div class="menu-icon" (click)="toggleMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+  </div>
+</nav>
