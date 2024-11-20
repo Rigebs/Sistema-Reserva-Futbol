@@ -104,22 +104,42 @@ public class ReservaService implements IReservaService {
     }
     @Transactional
     @Override
-    public void validarPagoReserva(Long reservaId, BigDecimal montoPago) {
+    public ReservaResponseDTO validarPagoReserva(Long reservaId, BigDecimal montoPago) {
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-        // Verifica si el estado ya es confirmado
+        // Verifica si la reserva ya está confirmada
         if (reserva.getEstado() == '1') {
             throw new RuntimeException("La reserva ya está confirmada.");
         }
 
-        // Compara el monto
+        // Compara el monto pagado con el total de la reserva
         if (reserva.getTotal().compareTo(montoPago) == 0) {
             reserva.setEstado('1'); // Cambia el estado a confirmado
             reservaRepository.save(reserva);
+
+            return buildReservaResponse(reserva, BigDecimal.ZERO); // Sin cambio
+        } else if (reserva.getTotal().compareTo(montoPago) < 0) {
+            // Si el monto es mayor, calculamos el cambio
+            BigDecimal cambio = montoPago.subtract(reserva.getTotal());
+
+            // Devolver la reserva con el cambio
+            return buildReservaResponse(reserva, cambio);
         } else {
+            // Si el monto es menor, lanza un error
             throw new RuntimeException("El monto del pago no coincide con el total de la reserva.");
         }
+    }
+
+    private ReservaResponseDTO buildReservaResponse(Reserva reserva, BigDecimal cambio) {
+        // Aquí construimos la respuesta con la reserva y el cambio (si hay)
+        ReservaResponseDTO response = new ReservaResponseDTO();
+        response.setReservaId(reserva.getId());
+        response.setTotal(reserva.getTotal());
+        response.setEstado(reserva.getEstado());
+        response.setCambio(cambio);  // Si el cambio es 0, no es necesario mostrarlo en la respuesta
+
+        return response;
     }
 
     @Override

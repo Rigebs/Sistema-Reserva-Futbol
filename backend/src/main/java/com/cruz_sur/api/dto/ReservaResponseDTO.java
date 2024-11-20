@@ -30,6 +30,8 @@ public class ReservaResponseDTO {
     private BigDecimal subtotal;
     private BigDecimal total;
     private String numero;
+    private char estado;  // Estado de la reserva
+    private BigDecimal cambio;
     private String serie;
     private String razonSocial;
     private String ruc;

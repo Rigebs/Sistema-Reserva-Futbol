@@ -11,7 +11,7 @@ public interface IReservaService {
     ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta);
 
     @Transactional
-    void validarPagoReserva(Long reservaId, BigDecimal montoPago);
+    ReservaResponseDTO validarPagoReserva(Long reservaId, BigDecimal montoPago);
 
     List<VentaDTO> getVentasByUsuario();
     TotalReservasResponse getTotalReservas();
