@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,6 +16,7 @@ public class OpinionDTO {
     private String contenido;
     private Integer calificacion;
     private String usuarioCreacion;
+    private LocalDateTime fechaCreacion;
     private Long userId;     // ID del usuario que realiza la opinión
     private Long companiaId; // ID de la compañía
 }
