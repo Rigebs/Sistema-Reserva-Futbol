@@ -1,6 +1,5 @@
+<app-sidebar-prueba></app-sidebar-prueba>
 <div class="container">
-  <app-sidebar class="sidebar"></app-sidebar>
-
   <div class="content">
     <h1>Gestiona tus campos</h1>
     <button mat-fab extended (click)="openDialog()">
@@ -8,11 +7,14 @@
       Agregar
     </button>
     <div class="table">
-      <app-table
-        [columns]="columns"
-        [dataSource]="dataSource"
-        (actionClick)="onAction($event)"
-      ></app-table>
+      <div class="mat-mdc-table">
+        <app-table
+          class="mat-elevation-z8"
+          [columns]="columns"
+          [dataSource]="dataSource"
+          (actionClick)="onAction($event)"
+        ></app-table>
+      </div>
     </div>
   </div>
 </div>

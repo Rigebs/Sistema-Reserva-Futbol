@@ -1,17 +1,84 @@
-.home-container {
-  display: flex;
-  justify-content: center;
-  padding-top: 72px; /* Ajusta este valor según la altura de tu navbar */
-  overflow-x: hidden; /* Evita desbordamiento horizontal */
+/* General */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* Centrar el home-container correctamente */
-.content-container {
-  display: flex;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(74, 144, 226, 0.8);
+  position: relative;
+  top: 0;
+  left: 0;
   width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  overflow-x: hidden; /* Evita desbordamiento horizontal */
+  height: 70px;
+}
+
+.logo {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+}
+
+.nav-links li {
+  margin-left: 20px;
+}
+
+.nav-button {
+  color: rgba(74, 144, 226, 0.8);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Carousel */
+#carusel {
+  margin-top: -70px; /* El carrusel sube detrás de la navbar */
+}
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 93vh;
+  object-fit: cover;
+  position: relative;
 }
 
 /* Estilos específicos para el texto y el carrusel */
@@ -22,10 +89,6 @@
 
 app-carousel {
   flex: 1;
-}
-
-#carusel {
-  padding-top: 50px;
 }
 
 /* Estilos para el selector de distrito */

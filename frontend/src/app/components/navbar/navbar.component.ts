@@ -19,8 +19,14 @@ import { AuthTokenUtil } from "../../utils/auth-token-util";
 export class NavbarComponent implements OnInit {
   menuOpen = false;
   currentUser: string | null = null;
-  isAdmin = false;
+  isCompania = false;
   adminUsername: string | null = null;
+
+  isEspera = false;
+
+  isCliente = false;
+
+  isAvalaible: boolean = false;
 
   constructor(
     private dialog: MatDialog,
@@ -32,15 +38,14 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to authentication state
+    this.verifyToken();
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       if (user) {
-        // Check if the user has admin privileges after login
         this.checkAdminRole();
+        this.checkEsperaRole();
       } else {
-        // Reset state when logged out
-        this.isAdmin = false;
+        this.isCompania = false;
         this.adminUsername = null;
       }
     });
@@ -61,7 +66,24 @@ export class NavbarComponent implements OnInit {
     const hasToken = this.authTokenUtil.hasToken();
     if (hasToken) {
       const payload = this.authTokenUtil.decodeToken();
-      this.isAdmin = this.authTokenUtil.isAdmin();
+      this.isCompania = this.authTokenUtil.isCompania();
+      this.adminUsername = payload.sub || null;
+    }
+  }
+
+  verifyToken() {
+    this.isAvalaible = this.authTokenUtil.isTokenValid();
+    if (!this.isAvalaible) {
+      this.logout();
+    }
+  }
+
+  checkEsperaRole() {
+    const hasToken = this.authTokenUtil.hasToken();
+    if (hasToken) {
+      const payload = this.authTokenUtil.decodeToken();
+      this.isEspera = this.authTokenUtil.isEspera();
+      this.isCliente = this.authTokenUtil.isCliente();
       this.adminUsername = payload.sub || null;
     }
   }
@@ -82,7 +104,8 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.isAdmin = false;
+    this.isCompania = false;
+    this.isEspera = false;
     this.adminUsername = null;
   }
 

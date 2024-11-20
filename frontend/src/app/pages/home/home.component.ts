@@ -11,14 +11,13 @@ import { CampoCardComponent } from "../../components/campo-card/campo-card.compo
 import { MatGridListModule } from "@angular/material/grid-list";
 import { CampoService } from "../../services/campo.service";
 import { CampoSede } from "../../models/campo-sede";
-import { AuthTokenUtil } from "../../utils/auth-token-util";
+import { NavbarHomeComponent } from "../../components/navbar-home/navbar-home.component";
 
 @Component({
   selector: "app-home",
   standalone: true,
   providers: [provideNativeDateAdapter()],
   imports: [
-    NavbarComponent,
     MatButtonModule,
     MatCardModule,
     MatDatepickerModule,
@@ -27,12 +26,18 @@ import { AuthTokenUtil } from "../../utils/auth-token-util";
     MatGridListModule,
     CampoCardComponent,
     CommonModule,
+    NavbarHomeComponent,
   ],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",
 })
 export class HomeComponent implements OnInit {
-  images = ["campo3.jpg", "campo2.jpeg", "campo4.jpg"];
+  images = [
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/okgofljbrvcofompyxfk.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/fntcuhbxcippz4b24rcr.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/ffniiukbqmibqke3sb7f.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/seu8mefj09f8scnkaom2.jpg",
+  ];
   campos: CampoSede[] = [];
 
   selectedSlots: { [key: string]: string[] } = {};

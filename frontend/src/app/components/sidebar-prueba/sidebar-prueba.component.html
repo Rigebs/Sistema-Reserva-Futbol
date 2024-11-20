@@ -1,0 +1,42 @@
+<div class="navbar" *ngIf="isMobile">
+  <!-- Navbar superior en móviles -->
+  <button mat-icon-button class="hamburger" (click)="toggleSidebar()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <div class="navbar-title">Mi Aplicación</div>
+</div>
+
+<!-- Sidebar fijo para pantallas grandes o modal para móviles -->
+<div
+  class="sidebar"
+  [class.open]="isSidebarOpen || !isMobile"
+  [class.mobile]="isMobile"
+>
+  <nav>
+    <a routerLink="/home" class="menu-item">
+      <mat-icon>home</mat-icon> Inicio
+    </a>
+    <a [routerLink]="['/', usuario, 'panel-admin', 'campos']" class="menu-item">
+      <mat-icon>sports_soccer</mat-icon> Campos
+    </a>
+    <a
+      [routerLink]="['/', usuario, 'panel-admin', 'reservaciones']"
+      class="menu-item"
+    >
+      <mat-icon>event</mat-icon> Reservaciones
+    </a>
+    <a
+      [routerLink]="['/', usuario, 'panel-admin', 'reportes']"
+      class="menu-item"
+    >
+      <mat-icon>analytics</mat-icon> Reportes
+    </a>
+  </nav>
+</div>
+
+<!-- Fondo oscuro cuando el sidebar está abierto en móvil -->
+<div
+  class="backdrop"
+  *ngIf="isSidebarOpen && isMobile"
+  (click)="toggleSidebar()"
+></div>

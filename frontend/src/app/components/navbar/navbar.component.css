@@ -9,7 +9,7 @@ body {
 .navbar {
   background: linear-gradient(135deg, #4a90e2, #213759); /* Degradado suave */
   width: 100%;
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -24,12 +24,20 @@ body {
   display: flex;
   justify-content: space-between; /* Separar logo de los otros elementos */
   align-items: center;
+  height: 70px;
 }
 
 .logo {
   color: white;
   font-size: 24px;
   font-weight: bold; /* Negrita para mayor impacto */
+  margin: 0px;
+  max-width: 200px;
+}
+
+img {
+  max-width: 200px;
+  height: 63px;
 }
 
 .nav-section {
@@ -64,7 +72,6 @@ body {
   background-color: #7b1fa2; /* Púrpura más oscuro para hover */
   transform: scale(1.1); /* Zoom más marcado en hover */
 }
-
 
 .nav-button {
   color: white;
@@ -132,7 +139,7 @@ body {
 @media (max-width: 768px) {
   .nav-links {
     position: absolute;
-    top: 53px;
+    top: 65px;
     right: 0;
     background-color: #4a90e2; /* Color de fondo más atractivo */
     flex-direction: column;

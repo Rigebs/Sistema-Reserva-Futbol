@@ -20,12 +20,30 @@
     <div *ngIf="isLogin">
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Usuario o correo electrónico</mat-label>
-        <input matInput [(ngModel)]="loginUser.identifier" />
+        <input
+          matInput
+          [(ngModel)]="loginUser.identifier"
+          (input)="onIdentifierInput($event)"
+        />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Contraseña</mat-label>
-        <input matInput type="password" [(ngModel)]="loginUser.password" />
+        <input
+          matInput
+          [type]="hide() ? 'password' : 'text'"
+          [(ngModel)]="loginUser.password"
+        />
+        <button
+          class="ocultar"
+          mat-icon-button
+          matSuffix
+          (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
       </mat-form-field>
 
       <div class="resend-container">
@@ -56,21 +74,47 @@
     >
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Correo</mat-label>
-        <input matInput [(ngModel)]="registerUser.email" />
+        <input
+          matInput
+          [(ngModel)]="registerUser.email"
+          name="email"
+          #emailInput="ngModel"
+          required
+          email
+        />
+        <mat-error *ngIf="emailInput.errors?.['required']"
+          >El correo es obligatorio</mat-error
+        >
+        <mat-error *ngIf="emailInput.errors?.['email']"
+          >El formato del correo es inválido</mat-error
+        >
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Nombre de usuario</mat-label>
-        <input matInput [(ngModel)]="registerUser.username" />
-        <mat-error *ngIf="!isUsernameValid">
-          El nombre de usuario solo debe contener letras y números, sin
-          espacios.
-        </mat-error>
+        <input
+          matInput
+          [(ngModel)]="registerUser.username"
+          (input)="onUsuarioInput($event)"
+        />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Contraseña</mat-label>
-        <input matInput type="password" [(ngModel)]="registerUser.password" />
+        <input
+          matInput
+          [type]="hide() ? 'password' : 'text'"
+          [(ngModel)]="registerUser.password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
       </mat-form-field>
 
       <button class="button register" color="primary" (click)="onRegister()">

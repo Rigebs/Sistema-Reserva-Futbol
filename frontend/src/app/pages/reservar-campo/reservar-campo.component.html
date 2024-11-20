@@ -1,3 +1,4 @@
+<app-loading *ngIf="isLoading"></app-loading>
 <app-navbar></app-navbar>
 
 <!-- Contenedor principal para centrar el contenido -->
@@ -8,6 +9,13 @@
     [src]="sedeConCampos?.companiaImagenUrl"
     [alt]="sedeConCampos?.companiaNombre"
   />
+  <h1>{{ sedeConCampos?.companiaNombre }}</h1>
+
+  <div class="direccion">
+    <mat-icon>location_on</mat-icon>
+    <h6>{{ sedeConCampos?.direccion }}</h6>
+  </div>
+  <mat-divider class="divider"></mat-divider>
   <header class="page-header">
     <h1>Reservar Campo Deportivo</h1>
     <p>
@@ -22,8 +30,8 @@
       <!-- Tabla de reserva de campos -->
       <app-reserva-list
         #reservaList
-        *ngIf="sedeConCampos"
-        [sede]="sedeConCampos"
+        *ngIf="campos"
+        [campos]="campos"
         (reservaFinalizada)="agregarReservaFinalizada($event)"
       >
       </app-reserva-list>
@@ -38,10 +46,18 @@
         ></app-campos-resumen>
 
         <!-- Botón para ir a la pasarela de pago -->
-        <button mat-raised-button color="primary" (click)="irPasarelaDePago()">
+        <button
+          class="button"
+          mat-raised-button
+          color="primary"
+          (click)="irPasarelaDePago()"
+        >
           Reservar Ahora
         </button>
       </div>
     </div>
   </section>
+  <div class="opiniones">
+    <app-opiniones [companiaId]="companiaId"></app-opiniones>
+  </div>
 </div>

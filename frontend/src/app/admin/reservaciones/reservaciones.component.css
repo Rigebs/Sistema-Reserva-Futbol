@@ -1,5 +1,9 @@
 .container {
-  display: flex; /* Alinea los elementos en fila */
+  padding-top: 10px;
+  padding-left: 240px;
+  max-width: 1800px;
+  padding-right: 20px;
+  margin: 0 auto;
 }
 
 .sidebar {
@@ -28,15 +32,17 @@ table {
 
 /* Media Queries para pantallas móviles */
 @media (max-width: 768px) {
+  .container {
+    padding: 0px;
+  }
   .sidebar {
     width: 62px; /* Ancho reducido para dispositivos móviles */
   }
 
   .content {
-    margin-left: 68px; /* Ajusta el margen según el ancho del sidebar */
-    max-width: calc(
-      100% - 77px
-    ); /* Asegura que el contenido use el espacio disponible */
+    padding-top: 65px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   /* Si el sidebar está colapsado en móviles */

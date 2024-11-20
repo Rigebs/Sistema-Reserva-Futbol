@@ -8,18 +8,38 @@ import { ReservacionesComponent } from "./admin/reservaciones/reservaciones.comp
 import { RegistrarSedeComponent } from "./pages/registrar-sede/registrar-sede.component";
 import { AuthGuard } from "./auth.guard";
 import { AdminGuard } from "./guards/admin.guard";
+import { RegistrarClienteComponent } from "./pages/registrar-cliente/registrar-cliente.component";
+import { ConfirmarComponent } from "./pages/confirmar/confirmar.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
   { path: "home", component: HomeComponent },
   { path: "pasarela-pago", component: PasarelaPagoComponent },
-  { path: ':userId/reservar-campo', component: ReservarCampoComponent },
   {
-    path: ':usuario/panel-admin',
-    component: PanelAdminComponent,
-    canActivate: [AuthGuard, AdminGuard]
+    path: ":userId/reservar-campo/compania/:companiaId",
+    component: ReservarCampoComponent,
   },
-  { path: "panel-admin/campos", component: GestionarCamposComponent },
-  { path: "panel-admin/reservaciones", component: ReservacionesComponent },
-  { path: "registrar-sede", component: RegistrarSedeComponent, canActivate: [AuthGuard] },
+  {
+    path: ":usuario/panel-admin",
+    component: PanelAdminComponent,
+    canActivate: [AuthGuard, AdminGuard],
+  },
+  {
+    path: ":usuario/panel-admin/campos",
+    component: GestionarCamposComponent,
+    canActivate: [AdminGuard],
+  },
+  {
+    path: ":usuario/panel-admin/reservaciones",
+    component: ReservacionesComponent,
+    canActivate: [AdminGuard],
+  },
+  {
+    path: "registrar-sede",
+    component: RegistrarSedeComponent,
+    canActivate: [AuthGuard],
+  },
+
+  { path: "registrar-cliente", component: RegistrarClienteComponent },
+  { path: "confirm", component: ConfirmarComponent },
 ];

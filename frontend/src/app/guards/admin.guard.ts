@@ -5,7 +5,6 @@ import {
   Router,
   RouterStateSnapshot,
 } from "@angular/router";
-import { AuthService } from "../services/auth.service";
 import { Observable } from "rxjs";
 import { AuthTokenUtil } from "../utils/auth-token-util";
 
@@ -25,7 +24,7 @@ export class AdminGuard implements CanActivate {
     if (token) {
       if (
         this.authTokenUtil.getUserFromToken() === usuarioEnRuta &&
-        this.authTokenUtil.isAdmin()
+        this.authTokenUtil.isCompania()
       ) {
         return true;
       } else {

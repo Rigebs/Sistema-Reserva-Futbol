@@ -36,3 +36,9 @@ mat-icon {
   color: red; /* Cambiar el color del icono */
   z-index: 1; /* Asegurarse de que el botón esté por encima del contenido */
 }
+
+@media (max-width: 768px) {
+  .campo-card {
+    width: 84%;
+  }
+}

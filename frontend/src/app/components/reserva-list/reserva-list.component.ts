@@ -1,4 +1,3 @@
-import { SelectionModel } from "@angular/cdk/collections";
 import { CommonModule, NgClass, NgFor, NgIf } from "@angular/common";
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -12,6 +11,7 @@ import { MatChipsModule } from "@angular/material/chips";
 import { ProcesoReservaComponent } from "../proceso-reserva/proceso-reserva.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { SedeWithCampo } from "../../models/sede-with-campo";
+import { Campo } from "../../models/campo";
 
 @Component({
   selector: "app-reserva-list",
@@ -32,7 +32,7 @@ import { SedeWithCampo } from "../../models/sede-with-campo";
   styleUrl: "./reserva-list.component.css",
 })
 export class ReservaListComponent implements OnInit {
-  @Input() sede: SedeWithCampo | undefined;
+  @Input() campos: Campo[] = [];
   @Output() reservaFinalizada = new EventEmitter<any>();
 
   displayedColumns: string[] = [
@@ -41,26 +41,21 @@ export class ReservaListComponent implements OnInit {
     "precio",
     "seleccionar",
   ];
-  selection = new SelectionModel<SedeWithCampo>(true, []);
-  selectedReserva: SedeWithCampo | null = null;
 
   constructor(public dialog: MatDialog) {}
+
   ngOnInit(): void {}
 
-  abrirDialogo(reserva: SedeWithCampo): void {
+  abrirDialogo(reserva: Campo): void {
     const dialogRef = this.dialog.open(ProcesoReservaComponent, {
       data: reserva,
     });
 
     dialogRef.componentInstance.reservaFinalizada.subscribe(
-      (reservaCompletada: SedeWithCampo) => {
+      (reservaCompletada: any) => {
         this.reservaFinalizada.emit(reservaCompletada);
+        console.log("DF", this.reservaFinalizada);
       }
     );
-  }
-
-  // Este getter nos da acceso directo a los campos de la sede para mostrarlos en la tabla
-  get reservas() {
-    return this.sede?.camposWithSede || [];
   }
 }

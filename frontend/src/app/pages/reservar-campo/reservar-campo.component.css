@@ -3,8 +3,7 @@
   width: 100%;
   max-width: 1800px;
   margin: 0 auto;
-  padding: 20px;
-  padding-top: 72px;
+  padding: 10px 20px 0px 20px;
   box-sizing: border-box;
   overflow: hidden; /* Evitar overflow en el contenedor */
 }
@@ -13,6 +12,21 @@
 .page-header {
   text-align: center;
   margin-bottom: 30px;
+}
+
+.divider {
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
+
+.button {
+  background-color: #005cbb;
+}
+
+.direccion {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
 .page-header h1 {
@@ -42,6 +56,10 @@
   display: flex;
   flex-direction: row; /* Colocar los elementos en una fila (tabla a la izquierda, resumen a la derecha) */
   gap: 20px; /* Espacio entre la tabla y el resumen */
+}
+
+.opiniones {
+  margin-top: 40px;
 }
 
 /* Ajustar el ancho de la lista de reservas y del resumen */
@@ -87,7 +105,7 @@ button {
 }
 
 button:hover {
-  background-color: #303f9f; /* Cambiar color al pasar el ratón */
+  background-color: #0255a8; /* Cambiar color al pasar el ratón */
 }
 
 /* Ajustes responsivos para pantallas pequeñas */

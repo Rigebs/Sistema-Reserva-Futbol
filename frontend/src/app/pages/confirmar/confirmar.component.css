@@ -1,0 +1,68 @@
+/* Fondo y centrado de la página */
+:host {
+  display: block;
+  height: 100vh;
+  background: #f4f4f9; /* Fondo suave */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Arial", sans-serif;
+}
+
+/* Estilo del contenedor */
+.container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  margin: 20px;
+}
+
+/* Título principal */
+h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Mensajes de texto */
+p {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Estilo de los botones o link de redirección */
+a {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 30px;
+  background-color: #3498db;
+  color: white;
+  font-size: 1.2rem;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+a:hover {
+  background-color: #2980b9;
+}
+
+/* Animación de redirección */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 2s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}

@@ -1,3 +1,5 @@
+import { TipoDeporte } from "./tipo-deporte";
+
 export interface Campo {
   id: number;
   nombre: string;
@@ -5,5 +7,5 @@ export interface Campo {
   descripcion: string;
   estado: string;
   usuarioId: number;
-  tipoDeporteId: number;
+  tipoDeporte: TipoDeporte;
 }

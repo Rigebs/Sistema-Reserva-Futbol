@@ -1,0 +1,246 @@
+<div class="container">
+  <!-- Instrucciones -->
+  <mat-card class="instruction-card">
+    <mat-card-content>
+      <h3>¿Eres Persona Natural o Empresa?</h3>
+      <p>
+        Por favor, selecciona si eres una persona natural o representas una
+        empresa. Esto es necesario para poder emitir correctamente la boleta o
+        factura, dependiendo del tipo de cliente.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Cards de selección (solo las de persona y empresa son clickeables) -->
+  <div class="selection-cards">
+    <mat-card
+      class="person-card"
+      [ngClass]="{ selected: selectedType === 'persona' }"
+      (click)="selectType('persona')"
+    >
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">person</mat-icon> Persona
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Selecciona esta opción si eres una persona física.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card
+      class="company-card"
+      [ngClass]="{ selected: selectedType === 'empresa' }"
+      (click)="selectType('empresa')"
+    >
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">business</mat-icon> Empresa
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Selecciona esta opción si representas una empresa.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Formulario (se muestra solo si se ha seleccionado un tipo) -->
+  <mat-card class="form-card" *ngIf="selectedType">
+    <mat-card-header>
+      <mat-card-title>Formulario de Registro</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="formulario-container">
+      <form
+        *ngIf="selectedType === 'persona'"
+        [formGroup]="personaForm"
+        (ngSubmit)="registrar()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>DNI</mat-label>
+          <input
+            matInput
+            #input
+            maxlength="8"
+            placeholder="Ex. 78934456"
+            formControlName="dni"
+            (input)="onDniInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueDni().length }}/8</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Paterno</mat-label>
+          <input matInput formControlName="apePaterno" required readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Materno</mat-label>
+          <input matInput formControlName="apeMaterno" required readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <span matTextPrefix>+51 &nbsp;</span>
+          <mat-label>Celular</mat-label>
+          <input
+            matInput
+            maxlength="9"
+            placeholder="Ex. 904533437"
+            formControlName="celular"
+            (input)="onTelefonoInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueCelular().length }}/9</mat-hint>
+
+          <!-- Mensajes de error para el teléfono -->
+          <mat-error
+            *ngIf="
+              personaForm.get('celular')?.hasError('required') &&
+              personaForm.get('celular')?.touched
+            "
+          >
+            El ceular es obligatorio.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              personaForm.get('celular')?.hasError('pattern') &&
+              personaForm.get('celular')?.touched
+            "
+          >
+            El celular debe empezar con 9 y tener exactamente 9 dígitos.
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput formControlName="correo" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fechaNac"
+            [min]="minDate"
+            [max]="maxDate"
+            required
+            maxlength="10"
+            (keypress)="validateDateInput($event)"
+          />
+          <mat-error>Por favor, introduce una fecha correcta</mat-error>
+
+          <mat-hint>{{ dateFormatString() }}</mat-hint>
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="genero" required>
+            <mat-option value="M">Masculino</mat-option>
+            <mat-option value="F">Femenino</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" required />
+        </mat-form-field>
+        <app-seleccionar-ubicacion
+          (distritoSeleccionado)="onDistritoSelected($event)"
+        ></app-seleccionar-ubicacion>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="personaForm.invalid"
+        >
+          Registrar
+        </button>
+      </form>
+
+      <form
+        *ngIf="selectedType === 'empresa'"
+        [formGroup]="empresaForm"
+        (ngSubmit)="registrar()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>RUC</mat-label>
+          <input
+            matInput
+            #input
+            maxlength="11"
+            placeholder="Ex. 16778934456"
+            formControlName="ruc"
+            (input)="onRucInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueRuc().length }}/11</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Razón Social</mat-label>
+          <input matInput formControlName="razonSocial" required readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <span matTextPrefix>+51 &nbsp;</span>
+          <mat-label>Teléfono</mat-label>
+          <input
+            matInput
+            maxlength="9"
+            placeholder="Ex. 904533437"
+            formControlName="telefono"
+            (input)="onTelefonoInput($event)"
+            required
+            type="text"
+          />
+          <mat-hint align="end">{{ valueTelefono().length }}/9</mat-hint>
+
+          <!-- Mensajes de error para el teléfono -->
+          <mat-error
+            *ngIf="
+              empresaForm.get('telefono')?.hasError('required') &&
+              empresaForm.get('telefono')?.touched
+            "
+          >
+            El teléfono es obligatorio.
+          </mat-error>
+          <mat-error
+            *ngIf="
+              empresaForm.get('telefono')?.hasError('pattern') &&
+              empresaForm.get('telefono')?.touched
+            "
+          >
+            El teléfono debe empezar con 9 y tener exactamente 9 dígitos.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" required />
+        </mat-form-field>
+        <app-seleccionar-ubicacion
+          (distritoSeleccionado)="onDistritoSelected($event)"
+        ></app-seleccionar-ubicacion>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="empresaForm.invalid"
+        >
+          Registrar
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
