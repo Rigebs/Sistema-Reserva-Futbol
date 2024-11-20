@@ -25,9 +25,18 @@ public class ReservaController {
     }
     @PostMapping("/validar-pago")
     public ResponseEntity<?> validarPago(@RequestParam Long reservaId, @RequestParam BigDecimal montoPago) {
-        reservaService.validarPagoReserva(reservaId, montoPago);
-        return ResponseEntity.ok("Reserva confirmada correctamente.");
+        try {
+            // Llamamos al servicio para validar el pago
+            ReservaResponseDTO reservaResponse = reservaService.validarPagoReserva(reservaId, montoPago);
+
+            // Si el pago es correcto, devolvemos la respuesta con detalles
+            return ResponseEntity.ok(reservaResponse);
+        } catch (RuntimeException e) {
+            // En caso de error, devolvemos un error con el mensaje
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        }
     }
+
     @GetMapping("/ventas")
     public List<VentaDTO> getVentas() {
         return reservaService.getVentasByUsuario();
