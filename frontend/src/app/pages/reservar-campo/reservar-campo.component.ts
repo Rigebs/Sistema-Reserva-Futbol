@@ -41,6 +41,7 @@ export class ReservarCampoComponent implements OnInit {
 
   reservasFinalizadas: any[] = [];
   userId!: number;
+  companiaId!: number;
   sedeConCampos: SedeWithCampo | undefined;
   campos: Campo[] = [];
   isLoading = true;
@@ -57,6 +58,7 @@ export class ReservarCampoComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.userId = +params.get("userId")!;
+      this.companiaId = +params.get("companiaId")!;
       this.obtenerCampos(this.userId);
     });
   }

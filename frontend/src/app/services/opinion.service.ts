@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { Opinion } from "../models/opinion";
 import { Observable } from "rxjs";
+import { OpinionSummary } from "../models/opinion-summary";
 
 @Injectable({
   providedIn: "root",
@@ -29,6 +30,12 @@ export class OpinionService {
     console.log("LLEGO: ", opinion);
 
     return this.http.post<Opinion>(this.baseUrl, opinion);
+  }
+
+  getOpinionSummary(companiaId: number): Observable<OpinionSummary> {
+    return this.http.get<OpinionSummary>(
+      `${this.baseUrl}/resumen/${companiaId}`
+    );
   }
 
   // Actualizar una opinión existente (el autor debe ser el propietario)

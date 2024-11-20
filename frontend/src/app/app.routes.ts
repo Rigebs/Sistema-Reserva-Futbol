@@ -9,12 +9,16 @@ import { RegistrarSedeComponent } from "./pages/registrar-sede/registrar-sede.co
 import { AuthGuard } from "./auth.guard";
 import { AdminGuard } from "./guards/admin.guard";
 import { RegistrarClienteComponent } from "./pages/registrar-cliente/registrar-cliente.component";
+import { ConfirmarComponent } from "./pages/confirmar/confirmar.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
   { path: "home", component: HomeComponent },
   { path: "pasarela-pago", component: PasarelaPagoComponent },
-  { path: ":userId/reservar-campo", component: ReservarCampoComponent },
+  {
+    path: ":userId/reservar-campo/compania/:companiaId",
+    component: ReservarCampoComponent,
+  },
   {
     path: ":usuario/panel-admin",
     component: PanelAdminComponent,
@@ -35,5 +39,7 @@ export const routes: Routes = [
     component: RegistrarSedeComponent,
     canActivate: [AuthGuard],
   },
+
   { path: "registrar-cliente", component: RegistrarClienteComponent },
+  { path: "confirm", component: ConfirmarComponent },
 ];

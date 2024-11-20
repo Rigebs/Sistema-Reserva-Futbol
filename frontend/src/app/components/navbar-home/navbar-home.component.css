@@ -161,10 +161,18 @@ body {
 
   .welcome-message {
     display: inline;
-    margin-left: 10px;
+    margin-left: -10px;
     color: #ff9f0a;
     background-color: white;
     padding: 6px;
     border-radius: 11px;
+  }
+
+  .logo img {
+    max-width: 187px;
+    height: 200px;
+    object-fit: contain;
+    position: relative;
+    left: -41px;
   }
 }

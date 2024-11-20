@@ -18,7 +18,6 @@ import { NavbarHomeComponent } from "../../components/navbar-home/navbar-home.co
   standalone: true,
   providers: [provideNativeDateAdapter()],
   imports: [
-    NavbarComponent,
     MatButtonModule,
     MatCardModule,
     MatDatepickerModule,
@@ -33,7 +32,12 @@ import { NavbarHomeComponent } from "../../components/navbar-home/navbar-home.co
   styleUrl: "./home.component.css",
 })
 export class HomeComponent implements OnInit {
-  images = ["voley.jpg", "hola.jpg", "sera.jpg", "tenis.jpg"];
+  images = [
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/okgofljbrvcofompyxfk.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/fntcuhbxcippz4b24rcr.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/ffniiukbqmibqke3sb7f.jpg",
+    "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/seu8mefj09f8scnkaom2.jpg",
+  ];
   campos: CampoSede[] = [];
 
   selectedSlots: { [key: string]: string[] } = {};

@@ -3,6 +3,7 @@ export interface Opinion {
   contenido: string;
   calificacion: number;
   usuarioCreacion?: string;
+  fechaCreacion?: string;
   userId?: number;
   companiaId: number;
 }

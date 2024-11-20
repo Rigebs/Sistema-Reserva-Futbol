@@ -96,4 +96,8 @@
     color: #0288d1;
     text-shadow: 1px 3px 7px rgba(255, 255, 255, 0.5);
   }
+
+  .invitation-text {
+    padding: 20px;
+  }
 }

@@ -5,11 +5,10 @@ import { CommonModule } from "@angular/common";
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
+import { OpinionSummary } from "../../models/opinion-summary";
 
 @Component({
   selector: "app-opiniones",
@@ -20,6 +19,8 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class OpinionesComponent implements OnInit {
   @Input() companiaId!: number; // Recibe el ID de la compañía desde el componente padre
+
+  opinionSummary!: OpinionSummary | null;
 
   opiniones: Opinion[] = [];
   opinionForm!: FormGroup;
@@ -38,10 +39,51 @@ export class OpinionesComponent implements OnInit {
         [Validators.required, Validators.min(1), Validators.max(5)],
       ],
     });
+    this.loadOpinionSummary();
 
     // Obtener las opiniones si el companiaId está disponible
     if (this.companiaId) {
       this.obtenerOpiniones();
+    }
+  }
+
+  loadOpinionSummary(): void {
+    this.opinionService.getOpinionSummary(this.companiaId).subscribe({
+      next: (data) => {
+        this.opinionSummary = data;
+      },
+      error: (err) => {
+        console.error("Error al cargar los datos de opiniones:", err);
+        this.opinionSummary = null;
+      },
+    });
+  }
+
+  calculatePercentage(count: number): number {
+    if (!this.opinionSummary || this.opinionSummary.totalReviews === 0) {
+      return 0;
+    }
+    return (count / this.opinionSummary.totalReviews) * 100;
+  }
+
+  getStarCount(star: number): number {
+    if (!this.opinionSummary) {
+      return 0;
+    }
+
+    switch (star) {
+      case 1:
+        return this.opinionSummary.star1Count;
+      case 2:
+        return this.opinionSummary.star2Count;
+      case 3:
+        return this.opinionSummary.star3Count;
+      case 4:
+        return this.opinionSummary.star4Count;
+      case 5:
+        return this.opinionSummary.star5Count;
+      default:
+        return 0;
     }
   }
 
@@ -53,6 +95,27 @@ export class OpinionesComponent implements OnInit {
 
         this.opiniones = opiniones;
       });
+  }
+
+  getEstrellasPromedio(): string[] {
+    if (!this.opinionSummary || this.opinionSummary.totalReviews === 0) {
+      return []; // No hay opiniones, no mostrar estrellas
+    }
+
+    const estrellas: string[] = [];
+    const promedio = this.opinionSummary.averageRating;
+
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(promedio)) {
+        estrellas.push("completa"); // Estrella llena
+      } else if (i - promedio < 1) {
+        estrellas.push("mitad"); // Estrella a la mitad
+      } else {
+        estrellas.push("vacía"); // Estrella vacía
+      }
+    }
+
+    return estrellas;
   }
 
   enviarOpinion(): void {
@@ -68,6 +131,7 @@ export class OpinionesComponent implements OnInit {
       this.opinionService.agregarOpinion(newOpinion).subscribe((opinion) => {
         this.opiniones.push(opinion); // Agregar la nueva opinión
         this.opinionForm.reset(); // Limpiar el formulario
+        this.loadOpinionSummary();
       });
     }
   }

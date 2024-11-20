@@ -2,41 +2,88 @@
   <h2>Opiniones</h2>
 
   <!-- Formulario para agregar una nueva opinión -->
-  <div class="opinion-form">
-    <form [formGroup]="opinionForm" (ngSubmit)="enviarOpinion()">
-      <div class="form-group">
-        <label for="contenido">Comentario:</label>
-        <textarea
-          id="contenido"
-          formControlName="contenido"
-          class="form-control"
-          rows="3"
-          placeholder="Escribe tu comentario aquí..."
-          required
-        ></textarea>
-      </div>
-      <div class="form-group">
-        <label for="calificacion">Calificación:</label>
-        <div class="estrellas-calificacion">
-          <span
-            *ngFor="let estrella of [1, 2, 3, 4, 5]; let i = index"
-            class="star"
-            [class.selected]="i < opinionForm.value.calificacion"
-            (click)="seleccionarCalificacion(i + 1)"
-          >
-            ★
+  <div class="container-header">
+    <div class="opinion-form">
+      <form [formGroup]="opinionForm" (ngSubmit)="enviarOpinion()">
+        <div class="form-group">
+          <label for="contenido">Comentario:</label>
+          <textarea
+            id="contenido"
+            formControlName="contenido"
+            class="form-control"
+            rows="3"
+            placeholder="Escribe tu comentario aquí..."
+            required
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="calificacion">Calificación:</label>
+          <div class="estrellas-calificacion">
+            <span
+              *ngFor="let estrella of [1, 2, 3, 4, 5]; let i = index"
+              class="star"
+              [class.selected]="i < opinionForm.value.calificacion"
+              (click)="seleccionarCalificacion(i + 1)"
+            >
+              ★
+            </span>
+          </div>
+        </div>
+        <button
+          type="submit"
+          [disabled]="opinionForm.invalid"
+          class="btn btn-primary"
+        >
+          Enviar Opinión
+        </button>
+      </form>
+    </div>
+
+    <!-- Resumen de opiniones -->
+    <div
+      class="resultado"
+      *ngIf="
+        opinionSummary && opinionSummary.totalReviews > 0;
+        else noOpiniones
+      "
+    >
+      <div class="resumen-titulo">Resumen de reseñas</div>
+      <div class="average-rating">
+        <div class="number">
+          {{ opinionSummary.averageRating | number : "1.1-1" }}
+        </div>
+        <div class="stars">
+          <span *ngFor="let estrella of getEstrellasPromedio()">
+            <ng-container [ngSwitch]="estrella">
+              <span *ngSwitchCase="'completa'" class="star completa">★</span>
+              <span *ngSwitchCase="'mitad'" class="star mitad">★</span>
+              <span *ngSwitchCase="'vacía'" class="star vacia">☆</span>
+            </ng-container>
           </span>
+          <div class="total-reviews">
+            ({{ opinionSummary.totalReviews }} reseñas)
+          </div>
         </div>
       </div>
-      <button
-        type="submit"
-        [disabled]="opinionForm.invalid"
-        class="btn btn-primary"
-      >
-        Enviar Opinión
-      </button>
-    </form>
+      <div class="star-bars">
+        <div class="star-row" *ngFor="let star of [5, 4, 3, 2, 1]">
+          <div class="label">{{ star }}</div>
+          <div class="bar-container">
+            <div
+              class="bar"
+              [style.width.%]="calculatePercentage(getStarCount(star))"
+            ></div>
+          </div>
+          <div class="count">{{ getStarCount(star) }}</div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Plantilla para mostrar mensaje si no hay opiniones -->
+  <ng-template #noOpiniones>
+    <p class="no-opiniones">Aún no hay opiniones disponibles.</p>
+  </ng-template>
 
   <!-- Mostrar las opiniones existentes -->
   <div class="opiniones-list">
