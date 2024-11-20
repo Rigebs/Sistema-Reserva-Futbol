@@ -1,5 +1,6 @@
 package com.cruz_sur.api.config;
 
+import com.cruz_sur.api.dto.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // Manejo de excepciones generales
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleAllExceptions(Exception ex) {
@@ -31,7 +31,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Manejo específico de ExpiredJwtException
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ExpiredJwtException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
@@ -39,7 +44,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("El token ha expirado. Por favor, inicie sesión nuevamente.", HttpStatus.UNAUTHORIZED);
     }
 
-    // Manejo específico de HttpRequestMethodNotSupportedException
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ResponseEntity<String> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
@@ -48,15 +52,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    // Manejo específico de NoResourceFoundException
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException ex) {
-        // No registramos el stack trace aquí
         return new ResponseEntity<>("El recurso solicitado no fue encontrado.", HttpStatus.NOT_FOUND);
     }
 
-    // Manejo específico de NullPointerException
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleNullPointerException(NullPointerException ex) {
@@ -64,7 +65,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Se produjo un error de referencia nula.", HttpStatus.BAD_REQUEST);
     }
 
-    // Manejo específico de IllegalArgumentException
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -72,14 +72,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Se proporcionó un argumento no válido.", HttpStatus.BAD_REQUEST);
     }
 
-    // Manejo específico de RuntimeException
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        logger.warn("Runtime Exception: {}", ex.getMessage());
-        return new ResponseEntity<>("Ocurrió un error al procesar la solicitud: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    // Manejo específico de DataIntegrityViolationException
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
@@ -94,7 +86,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
-    // Manejo específico de EntityNotFoundException
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
@@ -102,7 +93,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("La entidad solicitada no fue encontrada en el sistema.", HttpStatus.NOT_FOUND);
     }
 
-    // Manejo específico de MethodArgumentNotValidException
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
