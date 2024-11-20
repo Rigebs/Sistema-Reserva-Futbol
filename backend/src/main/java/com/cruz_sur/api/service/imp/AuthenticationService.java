@@ -139,39 +139,56 @@ public class AuthenticationService {
         user.getRoles().remove(role);
     }
 
-    public void updateRoleToCompania(Long companiaId) {
+    public String updateRoleToCompania(Long companiaId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User adminUser = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Authenticated admin user not found"));
 
+        // Ensure the authenticated user has ROLE_ADMIN
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                 .orElseThrow(() -> new RuntimeException("Admin role not found"));
         if (!adminUser.getRoles().contains(adminRole)) {
             throw new RuntimeException("User is not authorized to change the compania role.");
         }
+
+        // Find and update the Compania entity
         Compania compania = companiaRepository.findById(companiaId)
                 .orElseThrow(() -> new RuntimeException("Compania not found"));
         compania.setEstado('1');
 
+        // Find the user associated with the company
         User user = (User) userRepository.findFirstBySede(compania)
                 .orElseThrow(() -> new RuntimeException("No user associated with the selected compania."));
         user.setSede(compania);
 
+        // Get all relevant roles
         List<Role> rolesList = roleRepository.findByNameIn(List.of("ROLE_COMPANIA", "ROLE_ESPERA", "ROLE_CLIENTE", "ROLE_ADMIN"));
-
         Map<String, Role> roles = rolesList.stream()
                 .collect(Collectors.toMap(Role::getName, role -> role));
 
+        // Update user roles
         user.getRoles().add(roles.get("ROLE_COMPANIA"));
         user.getRoles().remove(roles.get("ROLE_ESPERA"));
         user.getRoles().remove(roles.get("ROLE_CLIENTE"));
         user.getRoles().remove(roles.get("ROLE_ADMIN"));
 
+        // Update user metadata
         user.setUsuarioModificacion(authentication.getName());
         user.setFechaModificacion(LocalDateTime.now());
+
+        // Save user changes
         userRepository.save(user);
-        sendCompaniaApprovedEmail(user, compania);
+
+        // Generate a new token for the user
+        String newToken = jwtService.generateToken(user);
+
+        // Send confirmation email
+        sendCompaniaApprovedEmail(user, compania, newToken);
+
+        // Emit event for role update
         eventPublisher.publishEvent(new RoleUpdatedEvent(user));
+
+        return newToken;
     }
 
     public void rejectCompania(Long companiaId) {
@@ -326,10 +343,10 @@ public class AuthenticationService {
         }
     }
 
-    private void sendCompaniaApprovedEmail(User user, Compania compania) {
+    private void sendCompaniaApprovedEmail(User user, Compania compania, String token) {
         String subject = "Tu compañía ha sido admitida en Zemply";
         String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
-        String zemplyUrl = "https://zemply.vercel.app";
+        String zemplyUrl = "https://zemply.vercel.app/confirm?token=" + token;
 
         String htmlMessage = "<html>"
                 + "<body style='font-family: Arial, sans-serif; color: #333;'>"
@@ -338,9 +355,9 @@ public class AuthenticationService {
                 + "<img src='" + imageUrl + "' alt='Zemply Logo' style='width: 80%; max-width: 400px; height: auto; border-radius: 8px;'>"
                 + "<h2 style='margin-top: 20px;'>Tu compañía ha sido admitida</h2>"
                 + "<p>Nos complace informarte que la compañía <strong>" + compania.getNombre() + "</strong> ha sido aprobada para participar en Zemply.</p>"
-                + "<p>A partir de ahora, puedes comenzar a subir tus campos deportivos y gestionar tus reservas facilmente.</p>"
+                + "<p>A partir de ahora, puedes comenzar a subir tus campos deportivos y gestionar tus reservas fácilmente.</p>"
                 + "<a href='" + zemplyUrl + "' style='display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;'>"
-                + "Comenzar en Zemply"
+                + "Confirmar y Comenzar en Zemply"
                 + "</a>"
                 + "<p style='margin-top: 20px;'>Si tienes preguntas o necesitas ayuda, no dudes en contactarnos.</p>"
                 + "<footer style='margin-top: 40px; font-size: 12px; color: #777;'>"
@@ -356,6 +373,7 @@ public class AuthenticationService {
             e.printStackTrace();
         }
     }
+
     private void sendCompaniaRejectedEmail(User user, Compania compania) {
         String subject = "Lamentamos informarte que tu compañía no ha sido admitida en Zemply";
         String imageUrl = "http://res.cloudinary.com/dpfcpo5me/image/upload/v1729427606/jv8mvgjlwnmzfwiuzyay.jpg";
