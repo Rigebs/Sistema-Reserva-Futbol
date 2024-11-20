@@ -112,6 +112,7 @@ public class OpinionService implements IOpinionService {
                 .usuarioCreacion(opinion.getUsuarioCreacion())
                 .userId(opinion.getUser().getId())
                 .companiaId(opinion.getCompania().getId())
+                .fechaCreacion(opinion.getFechaCreacion())
                 .build();
     }
 
