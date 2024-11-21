@@ -159,9 +159,20 @@ export class ProcesoReservaComponent implements OnInit {
 
     if (isStartHour) {
       this.secondFormGroup.patchValue({ horaInicio: selectedHour });
+
+      // Filtramos las horas que son consecutivas a la hora seleccionada
+      const nextHour = selectedHour + 1;
       this.filteredEndHours = this.availableHours.filter(
-        (hour) => hour > selectedHour
+        (hour) =>
+          hour === nextHour ||
+          hour === nextHour + 1 ||
+          hour === nextHour + 2 ||
+          hour === nextHour + 3
       );
+
+      console.log("FILTERED: ", this.filteredEndHours);
+
+      // Resetear la hora de fin
       this.secondFormGroup.patchValue({ horaFin: "" });
     } else {
       this.secondFormGroup.patchValue({ horaFin: selectedHour });

@@ -5,6 +5,8 @@ export interface SedeWithCampo {
   companiaId: number;
   companiaNombre: string;
   companiaImagenUrl: number;
+  horaInicio?: string;
+  horaFin?: string;
   direccion: string;
   camposWithSede: Campo[];
 }

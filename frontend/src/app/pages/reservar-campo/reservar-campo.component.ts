@@ -69,6 +69,8 @@ export class ReservarCampoComponent implements OnInit {
     this.campoService.getCamposByUsuarioId(userId).subscribe(
       (response) => {
         this.sedeConCampos = Array.isArray(response) ? response[0] : response;
+        console.log("f;:", this.sedeConCampos);
+
         this.campos = this.sedeConCampos?.camposWithSede || [];
         this.isLoading = false;
       },
