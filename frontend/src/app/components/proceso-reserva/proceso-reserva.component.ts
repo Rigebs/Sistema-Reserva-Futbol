@@ -54,11 +54,11 @@ export class ProcesoReservaComponent implements OnInit {
   minDate: Date | undefined;
   maxDate: Date | undefined;
 
-  atenciónStartHour = 8; // 8 AM
-  atenciónEndHour = 22; // 10 PM
+  atenciónStartHour: number;
+  atenciónEndHour: number;
   unavailableRanges: { start: number; end: number }[] = [
-    { start: 12, end: 14 }, // Ejemplo: Bloqueando de 12 a 14
-    { start: 18, end: 19 }, // Ejemplo: Bloqueando de 18 a 19
+    { start: 12, end: 14 },
+    { start: 18, end: 19 },
   ];
 
   id: number | undefined;
@@ -79,8 +79,13 @@ export class ProcesoReservaComponent implements OnInit {
     private availabilityCamposService: AvailabilityCamposService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    this.atenciónStartHour = parseInt(this.data.horaInicio.split(":")[0]);
+    this.atenciónEndHour = parseInt(this.data.horaFinal.split(":")[0]);
+
+    console.log("DESDE PROCESO: ", this.atenciónStartHour);
+
     const today = new Date();
-    today.setDate(today.getDate() + 7); // Sumar 7 días
+    today.setDate(today.getDate() + 7);
     this.maxDate = today;
     this.firstFormGroup = this._formBuilder.group({
       fechaReserva: ["", Validators.required],
@@ -97,16 +102,12 @@ export class ProcesoReservaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this.data.id;
+    this.id = this.data.reserva.id;
     this.minDate = new Date();
     const today = new Date();
-    today.setDate(today.getDate() + 7); // Sumar 7 días
+    today.setDate(today.getDate() + 7);
     this.maxDate = today;
-    this.availableHours = Array.from(
-      { length: this.atenciónEndHour - this.atenciónStartHour + 1 },
-      (_, i) => this.atenciónStartHour + i
-    );
-    this.unavailableHours = this.getUnavailableHours();
+
     this.availableHours = this.availableHours.filter(
       (hour) => !this.unavailableHours.includes(hour)
     );
@@ -121,18 +122,20 @@ export class ProcesoReservaComponent implements OnInit {
       this.availabilityCamposService
         .getAvailableHours(this.id, formattedDate)
         .subscribe((dataTime: string[]) => {
-          console.log("Horas disponibles:", dataTime);
+          console.log("Horas disponibles del backend:", dataTime);
 
-          this.availableHours = dataTime.map((hour) =>
-            parseInt(hour.split(":")[0])
+          this.availableHours = dataTime
+            .map((hour) => parseInt(hour.split(":")[0]))
+            .filter(
+              (hour) =>
+                hour >= this.atenciónStartHour && hour <= this.atenciónEndHour
+            );
+
+          console.log(
+            "Horas disponibles después de filtrar:",
+            this.availableHours
           );
 
-          this.unavailableHours = this.getUnavailableHours();
-          this.availableHours = this.availableHours.filter(
-            (hour) => !this.unavailableHours.includes(hour)
-          );
-
-          // También actualizamos la hora de fin disponible según la hora de inicio seleccionada
           if (this.secondFormGroup.value.horaInicio) {
             this.filteredEndHours = this.availableHours.filter(
               (hour) => hour > this.secondFormGroup.value.horaInicio
@@ -144,23 +147,12 @@ export class ProcesoReservaComponent implements OnInit {
     }
   }
 
-  getUnavailableHours(): number[] {
-    const hours: number[] = [];
-    this.unavailableRanges.forEach((range) => {
-      for (let i = range.start; i < range.end; i++) {
-        hours.push(i);
-      }
-    });
-    return hours;
-  }
-
   onHourSelected(event: MatSelectChange, isStartHour: boolean) {
     const selectedHour = event.value;
 
     if (isStartHour) {
       this.secondFormGroup.patchValue({ horaInicio: selectedHour });
 
-      // Filtramos las horas que son consecutivas a la hora seleccionada
       const nextHour = selectedHour + 1;
       this.filteredEndHours = this.availableHours.filter(
         (hour) =>
@@ -184,12 +176,12 @@ export class ProcesoReservaComponent implements OnInit {
     const horaFinString = `${this.secondFormGroup.value.horaFin}:00`;
 
     const reservaData = {
-      id: this.data.id, // Asegúrate de pasar el ID del campo
-      nombre: this.data.nombre,
+      id: this.data.reserva.id, // Asegúrate de pasar el ID del campo
+      nombre: this.data.reserva.nombre,
       fecha: this.firstFormGroup.value.fechaReserva,
       horaInicio: horaInicioString,
       horaFin: horaFinString,
-      precio: this.data.precio,
+      precio: this.data.reserva.precio,
     };
 
     this.reservaFinalizada.emit(reservaData);

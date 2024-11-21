@@ -33,6 +33,8 @@ import { Campo } from "../../models/campo";
 })
 export class ReservaListComponent implements OnInit {
   @Input() campos: Campo[] = [];
+  @Input() horaInicio: string | undefined;
+  @Input() horaFinal: string | undefined;
   @Output() reservaFinalizada = new EventEmitter<any>();
 
   displayedColumns: string[] = [
@@ -48,7 +50,7 @@ export class ReservaListComponent implements OnInit {
 
   abrirDialogo(reserva: Campo): void {
     const dialogRef = this.dialog.open(ProcesoReservaComponent, {
-      data: reserva,
+      data: { reserva, horaInicio: this.horaInicio, horaFinal: this.horaFinal },
     });
 
     dialogRef.componentInstance.reservaFinalizada.subscribe(

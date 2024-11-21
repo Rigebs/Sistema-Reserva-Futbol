@@ -10,6 +10,7 @@ import { AuthGuard } from "./auth.guard";
 import { AdminGuard } from "./guards/admin.guard";
 import { RegistrarClienteComponent } from "./pages/registrar-cliente/registrar-cliente.component";
 import { ConfirmarComponent } from "./pages/confirmar/confirmar.component";
+import { GoogleConfirmationComponent } from "./pages/google-confirmation/google-confirmation.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -18,6 +19,10 @@ export const routes: Routes = [
   {
     path: ":userId/reservar-campo/compania/:companiaId",
     component: ReservarCampoComponent,
+  },
+  {
+    path: "login/oauth2/code/google",
+    component: GoogleConfirmationComponent,
   },
   {
     path: ":usuario/panel-admin",

@@ -78,6 +78,10 @@ export class AuthService {
       );
   }
 
+  getGoogleLoginResponse(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/oauth2/success`);
+  }
+
   resendVerificationCode(email: string): Observable<any> {
     return this.http
       .post(

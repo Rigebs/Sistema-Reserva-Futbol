@@ -55,6 +55,12 @@
         <button class="button login" (click)="onLogin()">Iniciar sesión</button>
       </div>
 
+      <div class="login-container">
+        <button class="button login" (click)="googleLogin()">
+          Iniciar sesión con Google
+        </button>
+      </div>
+
       <div *ngIf="loginError" class="error-message">
         <p>Usuario o contraseña incorrectos</p>
       </div>

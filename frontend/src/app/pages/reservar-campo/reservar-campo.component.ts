@@ -46,6 +46,9 @@ export class ReservarCampoComponent implements OnInit {
   campos: Campo[] = [];
   isLoading = true;
 
+  horaInicio: string | undefined;
+  horaFin: string | undefined;
+
   constructor(
     private router: Router,
     private campoService: CampoService,
@@ -73,6 +76,8 @@ export class ReservarCampoComponent implements OnInit {
 
         this.campos = this.sedeConCampos?.camposWithSede || [];
         this.isLoading = false;
+        this.horaInicio = this.sedeConCampos?.horaInicio;
+        this.horaFin = this.sedeConCampos?.horaFin;
       },
       (error) => {
         console.error("Error al obtener los campos:", error);

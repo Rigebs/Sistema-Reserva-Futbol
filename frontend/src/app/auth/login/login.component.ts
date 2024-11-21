@@ -14,6 +14,7 @@ import { Verify } from "../../models/verify-code";
 import { PasswordResetRequest } from "../../models/password-reset-request";
 import { PasswordReset } from "../../models/password-reset";
 import { MatIconModule } from "@angular/material/icon";
+import { GoogleApiService } from "../../services/google-api.service";
 
 @Component({
   selector: "app-login",
@@ -88,6 +89,18 @@ export class LoginComponent {
     }
   }
 
+  googleLogin() {
+    const url: string = "http://localhost:4200/login/oauth2/code/google";
+    const ventana: Window | null = window.open(
+      url,
+      "_blank",
+      "width=600, height=400"
+    );
+
+    if (ventana) {
+      ventana.focus();
+    }
+  }
   onRegister() {
     this.isUsernameValid = this.usernamePattern.test(
       this.registerUser.username

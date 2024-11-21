@@ -32,6 +32,8 @@
         #reservaList
         *ngIf="campos"
         [campos]="campos"
+        [horaInicio]="horaInicio"
+        [horaFinal]="horaFin"
         (reservaFinalizada)="agregarReservaFinalizada($event)"
       >
       </app-reserva-list>
