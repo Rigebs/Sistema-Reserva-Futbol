@@ -8,15 +8,19 @@ import com.cruz_sur.api.dto.UpdateClientAndSedeDto;
 import com.cruz_sur.api.dto.VerifyUserDto;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.repository.*;
+import com.cruz_sur.api.responses.LoginResponse;
 import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -71,6 +75,40 @@ public class AuthenticationService {
 
         sendVerificationEmail(newUser);
 
+    }
+
+    public ResponseEntity<LoginResponse> handleGoogleLogin(OAuth2AuthenticationToken authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            return ResponseEntity.badRequest().body(new LoginResponse("Authentication token or principal is null", 0));
+        }
+        OAuth2User oAuth2User = authentication.getPrincipal();
+        System.out.println("Authenticated Google User: " + oAuth2User.getAttributes());
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        User user = userOptional.orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setUsername(name);
+            newUser.setPassword(passwordEncoder.encode("oauth2"));
+            newUser.setEnabled(true);
+            newUser.setUsuarioCreacion(authenticatedUsername);
+            newUser.setFechaCreacion(LocalDateTime.now());
+
+            Role role = roleRepository.findByName("ROLE_USER")
+                    .orElseGet(() -> {
+                        Role newRole = new Role();
+                        newRole.setName("ROLE_USER");
+                        return roleRepository.save(newRole);
+                    });
+            newUser.setRoles(List.of(role));
+            return userRepository.save(newUser);
+        });
+        String token = jwtService.generateToken(user);
+        long expiresIn = jwtService.getExpirationTime();
+        LoginResponse loginResponse = new LoginResponse(token, expiresIn);
+        return ResponseEntity.ok(loginResponse);
     }
 
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {

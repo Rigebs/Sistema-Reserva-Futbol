@@ -34,7 +34,6 @@ public class User implements UserDetails {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
     private boolean enabled;
-    @Column(name = "usuario_creacion", length = 20)
     private String usuarioCreacion;
 
     private LocalDateTime fechaCreacion;
