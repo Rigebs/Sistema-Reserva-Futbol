@@ -2,6 +2,7 @@ package com.cruz_sur.api.service.imp;
 
 import com.cruz_sur.api.dto.CampoDTO;
 import com.cruz_sur.api.dto.CamposHomeDTO;
+import com.cruz_sur.api.dto.CamposReservaDTO;
 import com.cruz_sur.api.dto.SedeConCamposDTO;
 import com.cruz_sur.api.model.Campo;
 import com.cruz_sur.api.model.TipoDeporte;
@@ -124,19 +125,21 @@ public class CampoService implements ICampoService {
     }
     @Override
     public List<SedeConCamposDTO> findByUsuarioIdWithSede(Long usuarioId) {
-        List<CamposHomeDTO> camposHomeList = getCamposDetailsByUsuarioId(usuarioId);
+        List<CamposReservaDTO> camposReservaDTOS = getCampos(usuarioId);
         List<CampoDTO> camposWithSede = campoRepository.findByUsuario_IdAndUsuario_SedeIsNotNullAndEstado(usuarioId, '1')
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
 
-        return camposHomeList.stream()
+        return camposReservaDTOS.stream()
                 .map(sede -> new SedeConCamposDTO(
                         sede.getUserId(),
                         sede.getCompaniaId(),
                         sede.getCompaniaNombre(),
                         sede.getCompaniaImagenUrl(),
                         sede.getDireccion(),
+                        sede.getHoraInicio(),
+                        sede.getHoraFin(),
                         camposWithSede
                 ))
                 .collect(Collectors.toList());
@@ -165,6 +168,24 @@ public class CampoService implements ICampoService {
                         rs.getString("compania_nombre"),
                         rs.getString("compania_imagen_url"),
                         rs.getString("direccion"),
+                        new ArrayList<>()
+                )
+        );
+    }
+
+    public List<CamposReservaDTO> getCampos(Long usuarioId) {
+        String sql = "{CALL campos(?)}";
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{usuarioId},
+                (rs, rowNum) -> new CamposReservaDTO(
+                        rs.getLong("user_id"),
+                        rs.getLong("compania_id"),
+                        rs.getString("compania_nombre"),
+                        rs.getString("compania_imagen_url"),
+                        rs.getString("direccion"),
+                        rs.getTime("hora_inicio"),
+                        rs.getTime("hora_fin"),
                         new ArrayList<>()
                 )
         );

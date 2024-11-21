@@ -22,7 +22,11 @@ public class CampoAvailabilityService {
             return false;
         }
 
-        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha);
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha)
+                .stream()
+                .filter(detalle -> detalle.getVenta().getEstado() == '1')
+                .toList();
+
         for (DetalleVenta reserva : reservas) {
             if (reserva.getHoraInicio().before(horaFin) && reserva.getHoraFinal().after(horaInicio)) {
                 return false;

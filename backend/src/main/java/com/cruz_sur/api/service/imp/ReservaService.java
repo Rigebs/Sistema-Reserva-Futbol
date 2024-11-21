@@ -7,12 +7,14 @@ import com.cruz_sur.api.repository.*;
 import com.cruz_sur.api.responses.TotalReservasResponse;
 import com.cruz_sur.api.service.IReservaService;
 
+import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,8 @@ public class ReservaService implements IReservaService {
     private final AvailabilityController availabilityController;
     private final ReservaResponseBuilder reservaResponseBuilder;
     private final JdbcTemplate jdbcTemplate;
+    private final EmailService emailService;
+
 
     @Transactional
     @Override
@@ -59,7 +63,7 @@ public class ReservaService implements IReservaService {
                 .cliente(cliente)
                 .usuario(usuario)
                 .metodoPago(metodoPago)
-                .estado('1')
+                .estado('0')
                 .usuarioCreacion(authenticatedUsername)
                 .fechaCreacion(now)
                 .usuarioModificacion(authenticatedUsername)
@@ -83,8 +87,9 @@ public class ReservaService implements IReservaService {
         }
 
         // Si todos los campos están disponibles, guarda la reserva y detalles
-        reservaRepository.save(reserva);
+        reservaRepository.save(reserva);  // Save reserva first so that it has an ID
 
+        // After saving the reservation, you can now access the reserva's id and send the email
         for (DetalleVentaDTO detalleDTO : detallesVenta) {
             Long campoId = detalleDTO.getCampoId();
             Campo campo = campoRepository.findById(campoId)
@@ -92,6 +97,12 @@ public class ReservaService implements IReservaService {
 
             detalleVentaService.createDetalleVenta(detalleDTO, reserva);
             availabilityController.notifyCampoStatusChange(campo);
+
+            // Get the user associated with the Campo (if applicable)
+            User campoUsuario = campo.getUsuario();  // Assuming Campo has a getUsuario() method to retrieve the associated user
+            if (campoUsuario != null) {
+                sendVerificationEmail(reserva, campoUsuario);  // Send email to the user associated with the Campo
+            }
 
             if (!comprobanteCreated) {
                 comprobanteService.createComprobante(reserva, usuario, now, campo);
@@ -102,6 +113,89 @@ public class ReservaService implements IReservaService {
         return reservaResponseBuilder.build(reserva);
     }
 
+    private void sendVerificationEmail(Reserva reserva, User user) {
+        // Include key reservation details in the subject
+        String subject = "ID: " + reserva.getId() +
+                ", Date: " + reserva.getFecha() +
+                ", Total: " + reserva.getTotal();
+
+        // Create the body with a more detailed message
+        String htmlMessage = "<html>"
+                + "<head><style>"
+                + "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }"
+                + "h2 { color: #4CAF50; }"
+                + "table { width: 100%; border-collapse: collapse; margin-top: 20px; }"
+                + "td, th { padding: 8px 12px; border: 1px solid #ddd; text-align: left; }"
+                + "th { background-color: #f2f2f2; }"
+                + "</style></head>"
+                + "<body>"
+                + "<h2>Reservation Confirmation</h2>"
+                + "<p>Dear " + user.getUsername() + ",</p>"
+                + "<p>Thank you for your reservation! Below are the details of your new booking:</p>"
+                + "<table>"
+                + "<tr><th>Reservation ID</th><td>" + reserva.getId() + "</td></tr>"
+                + "<tr><th>Date</th><td>" + reserva.getFecha() + "</td></tr>"
+                + "<tr><th>Subtotal</th><td>" + reserva.getSubtotal() + "</td></tr>"
+                + "<tr><th>Total</th><td>" + reserva.getTotal() + "</td></tr>"
+                + "<tr><th>Payment Method</th><td>" + reserva.getMetodoPago().getNombre() + "</td></tr>"
+                + "<tr><th>Client ID</th><td>" + reserva.getCliente().getId() + "</td></tr>"
+                + "</table>"
+                + "<p>If you have any questions or need further assistance, please don't hesitate to contact our support team.</p>"
+                + "<p>Best regards,</p>"
+                + "<p>Your Company Name</p>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+    @Transactional
+    @Override
+    public ReservaResponseDTO validarPagoReserva(Long reservaId, BigDecimal montoPago) {
+        Reserva reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        // Verifica si la reserva ya está confirmada
+        if (reserva.getEstado() == '1') {
+            throw new RuntimeException("La reserva ya está confirmada.");
+        }
+
+        // Compara el monto pagado con el total de la reserva
+        if (reserva.getTotal().compareTo(montoPago) == 0) {
+            reserva.setEstado('1'); // Cambia el estado a confirmado
+            reservaRepository.save(reserva);
+
+            return buildReservaResponse(reserva, BigDecimal.ZERO); // Sin cambio
+        } else if (reserva.getTotal().compareTo(montoPago) < 0) {
+            // Si el monto es mayor, calculamos el cambio
+            BigDecimal cambio = montoPago.subtract(reserva.getTotal());
+
+            // Devolver la reserva con el cambio
+            return buildReservaResponse(reserva, cambio);
+        } else {
+            // Si el monto es menor, lanza un error
+            throw new RuntimeException("El monto del pago no coincide con el total de la reserva.");
+        }
+    }
+
+    private ReservaResponseDTO buildReservaResponse(Reserva reserva, BigDecimal cambio) {
+        // Aquí construimos la respuesta con la reserva y el cambio (si hay)
+        ReservaResponseDTO response = new ReservaResponseDTO();
+        response.setReservaId(reserva.getId());
+        response.setTotal(reserva.getTotal());
+        response.setEstado(reserva.getEstado());
+        response.setCambio(cambio);  // Si el cambio es 0, no es necesario mostrarlo en la respuesta
+
+        return response;
+    }
 
     @Override
     public List<VentaDTO> getVentasByUsuario() {
