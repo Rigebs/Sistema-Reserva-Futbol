@@ -81,13 +81,11 @@ public class AuthenticationService {
         if (authentication == null || authentication.getPrincipal() == null) {
             return ResponseEntity.badRequest().body(new LoginResponse("Authentication token or principal is null", 0));
         }
-
         OAuth2User oAuth2User = authentication.getPrincipal();
         System.out.println("Authenticated Google User: " + oAuth2User.getAttributes());
-
+        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
-        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.orElseGet(() -> {
             User newUser = new User();
@@ -107,7 +105,6 @@ public class AuthenticationService {
             newUser.setRoles(List.of(role));
             return userRepository.save(newUser);
         });
-
         String token = jwtService.generateToken(user);
         long expiresIn = jwtService.getExpirationTime();
         LoginResponse loginResponse = new LoginResponse(token, expiresIn);
