@@ -30,6 +30,22 @@ security:
   jwt:
     secret-key: ${JWT_SECRET}
     expiration-time: 604800000
+  oauth2:
+    client:
+      registration:
+        google:
+          client-id: ${GOOGLE_CLIENT_ID}
+          client-secret: ${GOOGLE_CLIENT_SECRET}
+          scope: profile, email, openid
+          client-name: Google
+      provider:
+        google:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+          authorization-uri: https://accounts.google.com/o/oauth2/auth
+          token-uri: https://oauth2.googleapis.com/token
+          user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+          user-name-attribute: sub
 
 cloudinary:
   cloud_name: ${CLOUDINARY_CLOUD_NAME}
@@ -42,3 +58,7 @@ apis:
 logging:
   level:
     org.springframework.web.servlet.resource: ERROR
+
+APP_BASE_URL_LOCAL: "http://localhost:4200"
+APP_BASE_URL_PROD: "https://zemply.vercel.app"
+
