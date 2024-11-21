@@ -86,12 +86,16 @@ public class AuthenticationService {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+
+        // Quitar los espacios del nombre
+        String cleanedName = (name != null) ? name.replaceAll("\\s+", "") : null;
+
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(email);
-            newUser.setUsername(name);
-            newUser.setPassword(passwordEncoder.encode("oauth2"));
+            newUser.setUsername(cleanedName); // Usar el nombre sin espacios
+            newUser.setPassword(passwordEncoder.encode(authenticatedUsername));
             newUser.setEnabled(true);
             newUser.setUsuarioCreacion(authenticatedUsername);
             newUser.setFechaCreacion(LocalDateTime.now());
@@ -105,11 +109,13 @@ public class AuthenticationService {
             newUser.setRoles(List.of(role));
             return userRepository.save(newUser);
         });
+
         String token = jwtService.generateToken(user);
         long expiresIn = jwtService.getExpirationTime();
         LoginResponse loginResponse = new LoginResponse(token, expiresIn);
         return ResponseEntity.ok(loginResponse);
     }
+
 
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
         User user = userRepository.findById(userId)
