@@ -59,6 +59,3 @@ logging:
   level:
     org.springframework.web.servlet.resource: ERROR
 
-APP_BASE_URL_LOCAL: "http://localhost:4200"
-APP_BASE_URL_PROD: "https://zemply.vercel.app"
-
