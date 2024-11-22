@@ -87,7 +87,8 @@ public class AuthenticationService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
-        String cleanedName = (name != null) ? name.replaceAll("\s+", "") : null;
+        // Cambiar "\s+" a "\\s+" para que la expresión regular funcione correctamente
+        String cleanedName = (name != null) ? name.replaceAll("\\s+", "") : null;
 
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.orElseGet(() -> {
