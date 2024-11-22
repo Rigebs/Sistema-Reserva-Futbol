@@ -60,10 +60,10 @@ public class AuthenticationController {
             String token = authenticationService.handleGoogleLogin(authentication);
 
             // Redirigir al frontend con el token como parámetro
-            response.sendRedirect("http://localhost:4200/confir?token=" + token);
+            response.sendRedirect("https://zemply.vercel.app/confir?token=" + token);
         } catch (IllegalArgumentException e) {
             // Manejar errores y redirigir con un mensaje de error
-            response.sendRedirect("http://localhost:4200/login?error=" + e.getMessage());
+            response.sendRedirect("https://zemply.vercel.app/login?error=" + e.getMessage());
         }
     }
 
