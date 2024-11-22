@@ -1,6 +1,5 @@
 package com.cruz_sur.api.config;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +17,9 @@ public class OAuth2ClientConfig {
     @Value("${GOOGLE_CLIENT_SECRET}")
     private String googleClientSecret;
 
+    @Value("${REDIRECT_URI_BASE}")
+    private String redirectUriBase;
+
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         return new InMemoryClientRegistrationRepository(googleClientRegistration());
@@ -31,7 +33,7 @@ public class OAuth2ClientConfig {
                 .authorizationUri("https://accounts.google.com/o/oauth2/auth")
                 .tokenUri("https://oauth2.googleapis.com/token")
                 .clientName("Google")
-                .redirectUri("http://localhost:4200/login/oauth2/code/google")
+                .redirectUri(redirectUriBase + "/login/oauth2/code/google")
                 .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .build();
