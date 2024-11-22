@@ -21,7 +21,7 @@ export const routes: Routes = [
     component: ReservarCampoComponent,
   },
   {
-    path: "login/oauth2/code/google",
+    path: "confir",
     component: GoogleConfirmationComponent,
   },
   {

@@ -5,7 +5,8 @@ const checkSign = '\u{2705}';
 
 const envFile = `export const environment = {
     NG_APP_URL_API_AUTH: '${process.env.NG_APP_URL_API_AUTH}',
-    NG_APP_URL_API_GENERAL: '${process.env.NG_APP_URL_API_GENERAL}',
+    NG_APP_URL_ROOT: '${process.env.NG_APP_URL_ROOT}',
+    NG_APP_URL_API_GENERAL: '${process.env.NG_APP_URL_API_GENERAL}'
 };
 `;
 const targetPath = path.join(__dirname, './src/environments/environment.ts');
