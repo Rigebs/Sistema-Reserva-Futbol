@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
@@ -42,12 +43,14 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/provincia").permitAll()
                         .requestMatchers("/api/v1/campos/usuario/{usuarioId}/with-sede").permitAll()
                         .requestMatchers("/auth/oauth2/success").hasAnyAuthority("SCOPE_openid")
-                        .requestMatchers("/**").authenticated()
+                        .requestMatchers("/**").hasAnyRole("USER", "ADMIN","CLIENTE", "ESPERA","COMPANIA")
+                        .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/auth/oauth2/success", true) // Redirige aquí después de autenticación exitosa
                 )
+
                 .addFilterBefore(jwtAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
         return http.build();
     }
