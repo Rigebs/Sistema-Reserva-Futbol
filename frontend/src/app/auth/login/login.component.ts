@@ -46,7 +46,7 @@ export class LoginComponent {
     newPassword: "",
   };
 
-  private apiUrl = environment.NG_APP_URL_API_AUTH;
+  private apiUrl = environment.NG_APP_URL_ROOT;
 
   usernamePattern: RegExp = /^[a-zA-Z0-9]+$/;
 
