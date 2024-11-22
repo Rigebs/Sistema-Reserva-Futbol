@@ -11,6 +11,7 @@ import com.cruz_sur.api.responses.event.RoleUpdatedEvent;
 import com.cruz_sur.api.service.imp.AuthenticationService;
 import com.cruz_sur.api.service.imp.JwtService;
 import com.cruz_sur.api.service.imp.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RequestMapping("/auth")
@@ -52,8 +54,17 @@ public class AuthenticationController {
     }
 
     @GetMapping("/oauth2/success")
-    public ResponseEntity<LoginResponse> handleGoogleLogin(OAuth2AuthenticationToken authentication) {
-        return authenticationService.handleGoogleLogin(authentication);
+    public void handleGoogleLogin(OAuth2AuthenticationToken authentication, HttpServletResponse response) throws IOException {
+        try {
+            // Generar el token usando el servicio
+            String token = authenticationService.handleGoogleLogin(authentication);
+
+            // Redirigir al frontend con el token como parámetro
+            response.sendRedirect("http://localhost:4200//confir?token=" + token);
+        } catch (IllegalArgumentException e) {
+            // Manejar errores y redirigir con un mensaje de error
+            response.sendRedirect("http://localhost:4200/login?error=" + e.getMessage());
+        }
     }
 
 
