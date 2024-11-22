@@ -77,21 +77,25 @@ public class AuthenticationService {
 
     }
 
-    public ResponseEntity<LoginResponse> handleGoogleLogin(OAuth2AuthenticationToken authentication) {
+    public String handleGoogleLogin(OAuth2AuthenticationToken authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
-            return ResponseEntity.badRequest().body(new LoginResponse("Authentication token or principal is null", 0));
+            throw new IllegalArgumentException("Authentication token or principal is null");
         }
         OAuth2User oAuth2User = authentication.getPrincipal();
         System.out.println("Authenticated Google User: " + oAuth2User.getAttributes());
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+
+        // Cambiar "\s+" a "\\s+" para que la expresión regular funcione correctamente
+        String cleanedName = (name != null) ? name.replaceAll("[\\s\\u0301\\u0300\\u0302\\u0303\\u0304\\u0307]", "") : null;
+
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(email);
-            newUser.setUsername(name);
-            newUser.setPassword(passwordEncoder.encode("oauth2"));
+            newUser.setUsername(cleanedName); // Usar el nombre sin espacios
+            newUser.setPassword(passwordEncoder.encode(authenticatedUsername));
             newUser.setEnabled(true);
             newUser.setUsuarioCreacion(authenticatedUsername);
             newUser.setFechaCreacion(LocalDateTime.now());
@@ -105,11 +109,10 @@ public class AuthenticationService {
             newUser.setRoles(List.of(role));
             return userRepository.save(newUser);
         });
-        String token = jwtService.generateToken(user);
-        long expiresIn = jwtService.getExpirationTime();
-        LoginResponse loginResponse = new LoginResponse(token, expiresIn);
-        return ResponseEntity.ok(loginResponse);
+
+        return jwtService.generateToken(user);
     }
+
 
     public String updateClientAndCompania(Long userId, UpdateClientAndSedeDto dto) {
         User user = userRepository.findById(userId)

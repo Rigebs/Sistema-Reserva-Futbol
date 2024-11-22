@@ -47,7 +47,10 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
-                .oauth2Login(oauth2 -> Customizer.withDefaults())
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/auth/oauth2/success", true) // Redirige aquí después de autenticación exitosa
+                )
+
                 .addFilterBefore(jwtAuthenticationFilter, OAuth2LoginAuthenticationFilter.class);
         return http.build();
     }
