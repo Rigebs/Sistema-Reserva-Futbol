@@ -11,7 +11,7 @@ import { PasswordResetRequest } from "../models/password-reset-request";
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = environment.NG_APP_URL_ROOT;
+  private apiUrl = environment.NG_APP_URL_API_AUTH;
   private authTokenKey = "authToken";
 
   private currentUserSubject = new BehaviorSubject<string | null>(null);
