@@ -80,8 +80,14 @@ export class CampoService {
   }
 
   changeStatus(id: number, status: string): Observable<any> {
+    console.log("st: ", status);
+
     return this.http
-      .patch(`${this.apiUrl}/${id}/status/${status}`, {}, { responseType: "text" })
+      .patch(
+        `${this.apiUrl}/${id}/status/${status}`,
+        {},
+        { responseType: "text" }
+      )
       .pipe(
         catchError((error: HttpErrorResponse) => {
           if (
@@ -97,5 +103,4 @@ export class CampoService {
         })
       );
   }
-  
 }

@@ -37,7 +37,7 @@ export class GestionarCamposComponent implements OnInit {
 
   // Configuración de las columnas de la tabla
   columns: TableColumn[] = [
-    {key: "id", label: "ID"},
+    { key: "id", label: "ID" },
     { key: "nombre", label: "Nombre" },
     { key: "descripcion", label: "Descripción" },
     { key: "precio", label: "Precio (s/)" },
@@ -81,7 +81,6 @@ export class GestionarCamposComponent implements OnInit {
         }));
         this.isLoading = false;
         console.log("ho");
-        
       },
       error: (err) => {
         console.error("Error al obtener los campos:", err);
@@ -206,20 +205,25 @@ export class GestionarCamposComponent implements OnInit {
       this.openDialog(event.row); // Abre el diálogo con datos del campo a editar
     } else if (event.action === "toggleState") {
       const estadoActual = event.row.estado;
-      
-      this.campoService.changeStatus(event.row.id, estadoActual).pipe(
-        catchError((error) => {
-          this.snackBar.open("Error al cambiar estado", "Cerrar", { duration: 3000 });
-          return throwError(() => error);
-        }),
-        finalize(() => {
-          this.dataSource = [...this.dataSource];
-        })
-      ).subscribe(() => {
-        this.snackBar.open("Estado cambiado", "Cerrar", { duration: 3000 });
-        event.row.estado = estadoActual === "1" ? "0" : "1";
-      });
+      const nuevoEstado = estadoActual === "1" ? "0" : "1"; // Calcula el nuevo estado
+
+      this.campoService
+        .changeStatus(event.row.id, nuevoEstado)
+        .pipe(
+          catchError((error) => {
+            this.snackBar.open("Error al cambiar estado", "Cerrar", {
+              duration: 3000,
+            });
+            return throwError(() => error);
+          }),
+          finalize(() => {
+            this.dataSource = [...this.dataSource];
+          })
+        )
+        .subscribe(() => {
+          this.snackBar.open("Estado cambiado", "Cerrar", { duration: 3000 });
+          event.row.estado = nuevoEstado; // Actualiza el estado en el objeto `row`
+        });
     }
   }
-  
 }
