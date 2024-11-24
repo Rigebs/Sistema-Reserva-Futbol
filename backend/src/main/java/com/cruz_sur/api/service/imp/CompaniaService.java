@@ -1,5 +1,6 @@
 package com.cruz_sur.api.service.imp;
 
+import com.cruz_sur.api.dto.EmpresaCompaniaDTO;
 import com.cruz_sur.api.dto.PagoInfoDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.model.Imagen;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -121,5 +123,24 @@ public class CompaniaService implements ICompaniaService {
             qrImagenUrl = compania.getQrImagen().getImageUrl();
         }
         return new PagoInfoDTO(celular, qrImagenUrl);
+    }
+
+    @Override
+    public List<EmpresaCompaniaDTO> getCompaniasEnEspera() {
+        List<Compania> companiasEnEspera = companiaRepository.findByEstado('0');
+
+        return companiasEnEspera.stream().map(compania -> {
+            EmpresaCompaniaDTO dto = new EmpresaCompaniaDTO();
+            dto.setIdCompania(compania.getId());
+            dto.setEmpresaNombre(compania.getEmpresa().getRazonSocial());
+            dto.setEmpresaRuc(compania.getEmpresa().getRuc());
+            dto.setEmpresaDireccion(compania.getEmpresa().getDireccion());
+            dto.setCompaniaNombre(compania.getNombre());
+            dto.setCompaniaCorreo(compania.getCorreo());
+            dto.setCompaniaCelular(compania.getCelular());
+            dto.setCompaniaImagenUrl(compania.getImagen() != null ? compania.getImagen().getImageUrl() : null);
+            dto.setCompaniaQrImagenUrl(compania.getQrImagen() != null ? compania.getQrImagen().getImageUrl() : null);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
