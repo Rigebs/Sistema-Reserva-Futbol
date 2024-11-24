@@ -2,6 +2,7 @@ package com.cruz_sur.api.controller;
 
 
 import com.cruz_sur.api.dto.UpdateClientAndSedeDto;
+import com.cruz_sur.api.dto.UserDetailsDTO;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.responses.TokenResponse;
 import com.cruz_sur.api.service.imp.AuthenticationService;
@@ -53,6 +54,18 @@ public class UserController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "Compañía rechazada y asociaciones eliminadas exitosamente");
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDetailsDTO> getUserById(@PathVariable Long id) {
+        UserDetailsDTO userDetails = userService.byId(id);
+        return ResponseEntity.ok(userDetails);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDetailsDTO userDetailsDTO) {
+        User updatedUser = userService.updateAllFields(id, userDetailsDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }
