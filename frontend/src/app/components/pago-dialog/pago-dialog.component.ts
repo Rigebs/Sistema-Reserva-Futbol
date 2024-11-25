@@ -48,6 +48,7 @@ export class PagoDialogComponent {
           });
 
           // Redirigir después de 2 segundos
+          this.dialogRef.close();
           setTimeout(() => {
             this.router.navigate(["/home"]); // Navegar a /home
           }, 2000);
