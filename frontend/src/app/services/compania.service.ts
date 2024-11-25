@@ -4,6 +4,7 @@ import { environment } from "../../environments/environment";
 import { Compania } from "../models/compania";
 import { Observable } from "rxjs";
 import { EmpresaCompania } from "../models/empresa-compania";
+import { PagoInfo } from "../models/pago-info";
 
 @Injectable({
   providedIn: "root",
@@ -39,6 +40,10 @@ export class CompaniaService {
   // Obtener compañía por ID
   getCompaniaById(id: number): Observable<Compania> {
     return this.http.get<Compania>(`${this.apiUrl}/${id}`);
+  }
+
+  getPagoInfo(id: number): Observable<PagoInfo> {
+    return this.http.get<PagoInfo>(`${this.apiUrl}/${id}/pago-info`);
   }
 
   getCompaniasEnEspera(): Observable<EmpresaCompania[]> {

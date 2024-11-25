@@ -143,7 +143,10 @@ export class ReservarCampoComponent implements OnInit {
         console.log("RESR: ", this.reservasFinalizadas);
 
         this.router.navigate(["/pasarela-pago"], {
-          state: { reservas: this.reservasFinalizadas },
+          state: {
+            reservas: this.reservasFinalizadas,
+            companiaId: this.sedeConCampos?.companiaId,
+          },
         });
       }
     }

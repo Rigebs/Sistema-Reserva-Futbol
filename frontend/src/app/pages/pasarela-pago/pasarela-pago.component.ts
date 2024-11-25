@@ -11,6 +11,9 @@ import { DetalleVenta } from "../../models/detalle-venta";
 import { ReservaRequest } from "../../models/reserva-request";
 import { ReservaResponse } from "../../models/reserva-response";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { CompaniaService } from "../../services/compania.service";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { PagoDialogComponent } from "../../components/pago-dialog/pago-dialog.component";
 
 @Component({
   selector: "app-pasarela-pago",
@@ -24,7 +27,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   ],
   templateUrl: "./pasarela-pago.component.html",
   styleUrl: "./pasarela-pago.component.css",
-  providers: [DatePipe],
+  providers: [DatePipe, MatDialogModule],
 })
 export class PasarelaPagoComponent {
   reservas: any[] = [];
@@ -32,16 +35,38 @@ export class PasarelaPagoComponent {
 
   reservaRequest: ReservaRequest | undefined;
 
+  qrImageUrl: string | undefined;
+
   constructor(
     private router: Router,
     private datePipe: DatePipe,
     private reservaService: ReservaService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private companiaService: CompaniaService,
+    private dialog: MatDialog
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state as { reservas?: any[] };
+    const stateQR = navigation?.extras?.state as { companiaId?: any };
 
     console.log("RESERVAS: ", state?.reservas);
+    console.log("QR: ", stateQR?.companiaId);
+
+    if (stateQR?.companiaId) {
+      // Realizamos la solicitud al servicio para obtener la información de pago
+      this.companiaService.getPagoInfo(stateQR?.companiaId).subscribe({
+        next: (data) => {
+          this.qrImageUrl = data.qrImagenUrl; // Usar qrImagenUrl (con "i" mayúscula, como en la respuesta)
+        },
+        error: (err) => {
+          console.error("Error al obtener el QR: ", err);
+        },
+      });
+    } else {
+      console.error("CompaniaId no disponible en el estado.");
+    }
+
+    console.log("qr: ", this.qrImageUrl);
 
     if (state?.reservas) {
       // Convertir horas y asignar reservas
@@ -109,6 +134,22 @@ export class PasarelaPagoComponent {
 
     console.log("Hora convertida:", horaConvertida);
     return horaConvertida;
+  }
+
+  openDialog(): void {
+    // Aquí pasamos la URL de la imagen QR
+    const qrImageUrl = this.qrImageUrl; // Usamos la variable que contiene el URL recibido
+
+    if (qrImageUrl) {
+      this.dialog.open(PagoDialogComponent, {
+        width: "300px",
+        data: {
+          qrUrl: qrImageUrl, // Pasamos la URL al diálogo
+        },
+      });
+    } else {
+      console.error("No se ha recibido el QR Image URL.");
+    }
   }
 
   fechaConverter(fecha: Date): string {

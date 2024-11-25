@@ -1,10 +1,12 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { SidebarComponent } from "../../components/sidebar/sidebar.component";
 import { TableComponent } from "../../components/table/table.component";
 import { TableColumn } from "../../models/table-column";
 import { DialogFormComponent } from "../../components/dialog-form/dialog-form.component";
 import { MatDialog } from "@angular/material/dialog";
 import { SidebarPruebaComponent } from "../../components/sidebar-prueba/sidebar-prueba.component";
+import { VentaService } from "../../services/venta.service";
+import { ReservaDisplay } from "../../models/reserva-display";
 
 @Component({
   selector: "app-reservaciones",
@@ -13,42 +15,27 @@ import { SidebarPruebaComponent } from "../../components/sidebar-prueba/sidebar-
   templateUrl: "./reservaciones.component.html",
   styleUrl: "./reservaciones.component.css",
 })
-export class ReservacionesComponent {
-  constructor(public dialog: MatDialog) {}
+export class ReservacionesComponent implements OnInit {
+  constructor(public dialog: MatDialog, private ventaService: VentaService) {}
 
   columns: TableColumn[] = [
-    { key: "id", label: "ID" },
+    { key: "reservaId", label: "ID" },
     { key: "cliente", label: "Cliente" },
-    { key: "descripcion", label: "Descripción" },
+    { key: "fechaReserva", label: "Fecha" },
+    { key: "subtotal", label: "subtotal" },
     { key: "total", label: "Total" },
-    {
-      key: "actions",
-      label: "Revisar",
-      isAction: true,
-      actions: [{ icon: "visibility", action: "view", color: "primary" }],
-    },
   ];
 
-  dataSource = [
-    {
-      id: 101,
-      cliente: "Carlos Pérez",
-      descripcion: "Reserva del Campo Central para torneo local.",
-      total: 300,
-    },
-    {
-      id: 102,
-      cliente: "Lucía Gómez",
-      descripcion: "Reserva del Campo Norte para práctica semanal.",
-      total: 150,
-    },
-    {
-      id: 103,
-      cliente: "Andrés Torres",
-      descripcion: "Reserva del Campo Sur para evento de playa.",
-      total: 250,
-    },
-  ];
+  dataSource: ReservaDisplay[] = [];
+
+  ngOnInit(): void {
+    this.ventaService.getReservasForLoggedUser().subscribe({
+      next: (data) => {
+        this.dataSource = data;
+        console.log("D: ", data);
+      },
+    });
+  }
 
   openDialog(data: any = null): void {
     const dialogRef = this.dialog.open(DialogFormComponent, {

@@ -9,12 +9,12 @@ export interface ReservaResponse {
   comprobante: string;
   igv: number;
   descuento: number;
-  fecha: string; // Usamos string para manejar fechas en formato ISO
-  fechaCreacion: string; // LocalDateTime en Java -> string en formato ISO
+  fecha: string;
+  fechaCreacion: string;
   subtotal: number;
   total: number;
   numero: string;
-  estado: string; // char en Java -> string (un solo carácter) en TypeScript
+  estado: string;
   cambio: number;
   serie: string;
   razonSocial: string;

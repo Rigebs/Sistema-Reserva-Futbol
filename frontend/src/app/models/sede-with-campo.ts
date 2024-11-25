@@ -4,7 +4,7 @@ export interface SedeWithCampo {
   userId: number;
   companiaId: number;
   companiaNombre: string;
-  companiaImagenUrl: number;
+  companiaImagenUrl: string;
   horaInicio?: string;
   horaFin?: string;
   direccion: string;
