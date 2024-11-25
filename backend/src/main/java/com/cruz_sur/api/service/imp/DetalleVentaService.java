@@ -37,7 +37,7 @@ public class DetalleVentaService {
                 .usuario(usuario)
                 .usuarioCreacion(authenticatedUsername)
                 .fechaCreacion(now)
-                .estado('1')
+                .estado('0')
                 .build();
 
         detalleVentaRepository.save(detalleVenta);

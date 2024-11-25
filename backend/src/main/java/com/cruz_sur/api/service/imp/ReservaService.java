@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,10 +28,11 @@ public class ReservaService implements IReservaService {
     private final UserRepository userRepository;
     private final MetodoPagoRepository metodoPagoRepository;
     private final DetalleVentaService detalleVentaService;
+    private final DetalleVentaRepository detalleVentaRepository;
     private final ComprobanteService comprobanteService;
-    private final ReservaValidationService reservaValidationService;
     private final CampoRepository campoRepository;
-    private final AvailabilityController availabilityController;
+    private final ReservaValidationService reservaValidationService;
+    private final CampoAvailabilityService campoAvailabilityService;
     private final ReservaResponseBuilder reservaResponseBuilder;
     private final JdbcTemplate jdbcTemplate;
     private final EmailService emailService;
@@ -39,20 +41,62 @@ public class ReservaService implements IReservaService {
     @Transactional
     @Override
     public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
+        // Obtener el usuario autenticado
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Obtener cliente
         Cliente cliente = usuario.getCliente();
         if (cliente == null) {
             throw new RuntimeException("No associated client for the authenticated user");
         }
 
+        // Validación del tipo de comprobante
         reservaValidationService.validateTipoComprobante(cliente, reservaDTO.getTipoComprobante());
+
+        // Obtener el método de pago
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
 
         LocalDateTime now = LocalDateTime.now();
-        Reserva reserva = Reserva.builder()
+
+        // **1. Validar disponibilidad de los campos antes de crear la reserva**
+        validarDisponibilidadCampos(detallesVenta);
+
+        // **2. Crear la reserva**
+        Reserva reserva = crearReserva(reservaDTO, cliente, usuario, metodoPago, now);
+        reservaRepository.save(reserva);
+
+        // **3. Crear los detalles de la venta**
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            detalleVentaService.createDetalleVenta(detalleDTO, reserva);
+        }
+
+        // **4. Enviar el correo al dueño del campo después de crear la reserva**
+        enviarCorreosALosDuenosDeCampo(detallesVenta, reserva);
+
+        return reservaResponseBuilder.build(reserva);
+    }
+
+    private void validarDisponibilidadCampos(List<DetalleVentaDTO> detallesVenta) {
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Campo campo = campoRepository.findById(campoId)
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+
+            LocalDate detalleFecha = detalleDTO.getFecha();
+            boolean available = campoAvailabilityService.isCampoAvailable(
+                    campoId, detalleFecha, detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
+
+            if (!available) {
+                throw new RuntimeException("Campo not available for the specified time range");
+            }
+        }
+    }
+
+    private Reserva crearReserva(ReservaDTO reservaDTO, Cliente cliente, User usuario, MetodoPago metodoPago, LocalDateTime now) {
+        return Reserva.builder()
                 .fecha(reservaDTO.getFecha())
                 .descuento(reservaDTO.getDescuento())
                 .igv(reservaDTO.getIgv())
@@ -63,55 +107,28 @@ public class ReservaService implements IReservaService {
                 .cliente(cliente)
                 .usuario(usuario)
                 .metodoPago(metodoPago)
-                .estado('0')
-                .usuarioCreacion(authenticatedUsername)
+                .estado('0')  // Estado inicial
+                .usuarioCreacion(usuario.getUsername())
                 .fechaCreacion(now)
-                .usuarioModificacion(authenticatedUsername)
+                .usuarioModificacion(usuario.getUsername())
                 .fechaModificacion(now)
                 .build();
-
-        boolean comprobanteCreated = false;
-
-        // Primero, verifica la disponibilidad de todos los campos en detallesVenta
-        for (DetalleVentaDTO detalleDTO : detallesVenta) {
-            Long campoId = detalleDTO.getCampoId();
-            Campo campo = campoRepository.findById(campoId)
-                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
-
-            boolean available = availabilityController.checkCampoAvailability(
-                    campoId, reservaDTO.getFecha(), detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
-
-            if (!available) {
-                throw new RuntimeException("Campo not available for the specified time range");
-            }
-        }
-
-        // Si todos los campos están disponibles, guarda la reserva y detalles
-        reservaRepository.save(reserva);  // Save reserva first so that it has an ID
-
-        // After saving the reservation, you can now access the reserva's id and send the email
-        for (DetalleVentaDTO detalleDTO : detallesVenta) {
-            Long campoId = detalleDTO.getCampoId();
-            Campo campo = campoRepository.findById(campoId)
-                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
-
-            detalleVentaService.createDetalleVenta(detalleDTO, reserva);
-            availabilityController.notifyCampoStatusChange(campo);
-
-            // Get the user associated with the Campo (if applicable)
-            User campoUsuario = campo.getUsuario();  // Assuming Campo has a getUsuario() method to retrieve the associated user
-            if (campoUsuario != null) {
-                sendVerificationEmail(reserva, campoUsuario);  // Send email to the user associated with the Campo
-            }
-
-            if (!comprobanteCreated) {
-                comprobanteService.createComprobante(reserva, usuario, now, campo);
-                comprobanteCreated = true;
-            }
-        }
-
-        return reservaResponseBuilder.build(reserva);
     }
+
+    private void enviarCorreosALosDuenosDeCampo(List<DetalleVentaDTO> detallesVenta, Reserva reserva) {
+        for (DetalleVentaDTO detalleDTO : detallesVenta) {
+            Long campoId = detalleDTO.getCampoId();
+            Campo campo = campoRepository.findById(campoId)
+                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
+
+            // Obtener usuario del dueño del campo
+            User campoUsuario = campo.getUsuario();
+            if (campoUsuario != null) {
+                sendVerificationEmail(reserva, campoUsuario); // Enviar el correo al dueño del campo
+            }
+        }
+    }
+
 
     private void sendVerificationEmail(Reserva reserva, User user) {
         // Include key reservation details in the subject
@@ -155,11 +172,10 @@ public class ReservaService implements IReservaService {
 
 
 
-
-
     @Transactional
     @Override
     public ReservaResponseDTO validarPagoReserva(Long reservaId, BigDecimal montoPago) {
+        // Busca la reserva por su ID
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
@@ -170,13 +186,24 @@ public class ReservaService implements IReservaService {
 
         // Compara el monto pagado con el total de la reserva
         if (reserva.getTotal().compareTo(montoPago) == 0) {
-            reserva.setEstado('1'); // Cambia el estado a confirmado
+            // Cambia el estado de la reserva a confirmado
+            reserva.setEstado('1');
             reservaRepository.save(reserva);
+
+            // Actualiza el estado de los detalles de venta asociados
+            actualizarEstadoDetallesVenta(reservaId);
 
             return buildReservaResponse(reserva, BigDecimal.ZERO); // Sin cambio
         } else if (reserva.getTotal().compareTo(montoPago) < 0) {
             // Si el monto es mayor, calculamos el cambio
             BigDecimal cambio = montoPago.subtract(reserva.getTotal());
+
+            // Cambia el estado de la reserva a confirmado
+            reserva.setEstado('1');
+            reservaRepository.save(reserva);
+
+            // Actualiza el estado de los detalles de venta asociados
+            actualizarEstadoDetallesVenta(reservaId);
 
             // Devolver la reserva con el cambio
             return buildReservaResponse(reserva, cambio);
@@ -185,6 +212,16 @@ public class ReservaService implements IReservaService {
             throw new RuntimeException("El monto del pago no coincide con el total de la reserva.");
         }
     }
+
+    // Método para actualizar el estado de los detalles de venta
+    private void actualizarEstadoDetallesVenta(Long reservaId) {
+        List<DetalleVenta> detalles = detalleVentaRepository.findByVenta_Id(reservaId);
+        for (DetalleVenta detalle : detalles) {
+            detalle.setEstado('1'); // Cambia el estado a confirmado
+        }
+        detalleVentaRepository.saveAll(detalles); // Guarda los cambios en los detalles
+    }
+
 
     private ReservaResponseDTO buildReservaResponse(Reserva reserva, BigDecimal cambio) {
         // Aquí construimos la respuesta con la reserva y el cambio (si hay)
