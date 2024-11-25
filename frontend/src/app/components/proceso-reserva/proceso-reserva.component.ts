@@ -66,11 +66,12 @@ export class ProcesoReservaComponent implements OnInit {
   unavailableHours: number[] = [];
 
   @Output() reservaFinalizada = new EventEmitter<{
-    id: number;
-    nombre: string;
+    campoId: number;
+    campoNombre: string;
     fecha: Date;
+    precio: number;
     horaInicio: string;
-    horaFin: string;
+    horaFinal: string;
   }>();
 
   constructor(
@@ -176,15 +177,17 @@ export class ProcesoReservaComponent implements OnInit {
     const horaFinString = `${this.secondFormGroup.value.horaFin}:00`;
 
     const reservaData = {
-      id: this.data.reserva.id, // Asegúrate de pasar el ID del campo
-      nombre: this.data.reserva.nombre,
+      campoId: this.data.reserva.id,
+      campoNombre: this.data.reserva.nombre,
       fecha: this.firstFormGroup.value.fechaReserva,
       horaInicio: horaInicioString,
-      horaFin: horaFinString,
+      horaFinal: horaFinString,
       precio: this.data.reserva.precio,
     };
 
     this.reservaFinalizada.emit(reservaData);
+    console.log("EMIT: ", reservaData);
+
     this.dialogRef.close();
   }
 

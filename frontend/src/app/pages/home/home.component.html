@@ -6,11 +6,46 @@
 
 <div class="campos-container">
   <div class="demo-inline-calendar-card">
-    <h5>Selecciona tu distrito</h5>
+    <div class="filtro">
+      <button mat-icon-button color="warn" matTooltip="Limpiar filtros">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button
+        mat-flat-button
+        style="width: 100%; margin-bottom: 20px"
+        (click)="filtrar()"
+      >
+        <mat-icon>filter_alt</mat-icon> Filtrar compañías
+      </button>
+    </div>
+    <h6>Ubicación</h6>
     <mat-form-field appearance="outline" class="district-select">
-      <mat-select [(value)]="selectedDistrict">
-        <mat-option *ngFor="let district of districts" [value]="district">
-          {{ district }}
+      <mat-label>Departamento</mat-label>
+      <mat-select (selectionChange)="onDepartamentoChange($event)">
+        <mat-option
+          *ngFor="let departamento of departamentos"
+          [value]="departamento.id"
+        >
+          {{ departamento.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="district-select">
+      <mat-label>Provincia</mat-label>
+      <mat-select
+        [disabled]="provinciaHabilitado"
+        (selectionChange)="onProvinciaChange($event)"
+      >
+        <mat-option *ngFor="let provincia of provincias" [value]="provincia.id">
+          {{ provincia.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="district-select">
+      <mat-label>Distrito</mat-label>
+      <mat-select [disabled]="distritoHabilitado">
+        <mat-option *ngFor="let distrito of distritos" [value]="distrito.id">
+          {{ distrito.nombre }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -24,10 +59,15 @@
     ></mat-calendar>
   </div>
 
+  <mat-divider></mat-divider>
+
   <div class="campos-lista">
     <app-campo-card
       *ngFor="let campo of campos"
       [campo]="campo"
     ></app-campo-card>
+    <div *ngIf="!campos || campos.length === 0" class="no-resultados">
+      No se encontraron sedes para tu búsqueda.
+    </div>
   </div>
 </div>

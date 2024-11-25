@@ -17,7 +17,6 @@ h3 {
 /* Filas del formulario */
 .row {
   display: flex;
-  gap: 20px;
   justify-content: space-between;
 }
 
@@ -40,7 +39,6 @@ mat-form-field {
 @media (max-width: 768px) {
   .row {
     flex-direction: column; /* Cambia a una alineación vertical */
-    gap: 15px;
   }
 
   .half-width,

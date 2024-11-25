@@ -29,7 +29,6 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { IntroDialogComponent } from "../../components/intro-dialog/intro-dialog.component";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { LoginComponent } from "../../auth/login/login.component";
 
 @Component({
   selector: "app-registrar-sede",
@@ -71,6 +70,12 @@ export class RegistrarSedeComponent implements OnInit {
 
   rucControl = new FormControl("");
   telefonoControl = new FormControl("");
+  yapeControl = new FormControl("");
+
+  availableStartHours: number[] = [
+    5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+  ];
+  filteredEndHours: number[] = [];
 
   fileName: string | null = null;
 
@@ -103,6 +108,16 @@ export class RegistrarSedeComponent implements OnInit {
     this.telefonoControl.setValue(input.value);
   }
 
+  protected onYapeInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, "");
+    this.yapeControl.setValue(input.value);
+  }
+
+  valueYape(): string {
+    return this.yapeControl.value || "";
+  }
+
   value(): string {
     return this.rucControl.value || "";
   }
@@ -119,7 +134,7 @@ export class RegistrarSedeComponent implements OnInit {
       telefono: [
         "",
         [
-          Validators.required, // Aseguramos que el campo es obligatorio
+          Validators.required,
           Validators.pattern("^9\\d{8}$"),
           Validators.minLength(9),
         ],
@@ -134,7 +149,7 @@ export class RegistrarSedeComponent implements OnInit {
       nombre: ["", Validators.required],
       concepto: ["", Validators.required],
       correo: ["", [Validators.required, Validators.email]],
-      telefono: [
+      yape: [
         "",
         [
           Validators.required, // Aseguramos que el campo es obligatorio
@@ -145,8 +160,8 @@ export class RegistrarSedeComponent implements OnInit {
       pagWeb: [""],
       imagenSede: [null, Validators.required], // Imagen de sede requerida
       imagenQrYape: [null, Validators.required], // QR de Yape requerido
-      horaInicio: ["", Validators.required],
-      horaFin: ["", Validators.required],
+      horaInicio: ["", [Validators.required]],
+      horaFin: ["", [Validators.required]],
     });
 
     this.cargarDepartamentos();
@@ -163,6 +178,30 @@ export class RegistrarSedeComponent implements OnInit {
       .subscribe((result) => {
         this.isMobile = result.matches;
       });
+  }
+
+  convertTo12HourFormat(hour: number): string {
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const hourIn12 = hour % 12 || 12; // Convertir hora a formato 12h
+    return `${hourIn12}:00 ${suffix}`;
+  }
+
+  // Método para filtrar las horas de fin basadas en la hora de inicio
+  onStartHourChange(event: any): void {
+    const startHour = event.value; // Obtener la hora de inicio seleccionada
+
+    // Filtrar las horas de fin para que solo estén disponibles aquellas horas mayores que la hora de inicio más 8 horas
+    this.filteredEndHours = this.availableStartHours.filter(
+      (hour) => hour >= startHour + 8
+    );
+
+    // Si ya hay una hora de fin seleccionada y no está en el rango filtrado, resetear la hora de fin
+    if (
+      this.companiaFormGroup.get("horaFin")?.value &&
+      this.companiaFormGroup.get("horaFin")?.value < startHour + 8
+    ) {
+      this.companiaFormGroup.get("horaFin")?.setValue(null);
+    }
   }
 
   onFileSelected(event: any, tipo: "imagenSede" | "imagenQrYape") {
@@ -310,23 +349,29 @@ export class RegistrarSedeComponent implements OnInit {
       let horaInicio = this.companiaFormGroup.get("horaInicio")?.value;
       let horaFin = this.companiaFormGroup.get("horaFin")?.value;
 
-      if (horaInicio && horaInicio.length === 5) {
-        horaInicio += ":00";
-      }
+      console.log("HORA INICIO: ", horaInicio, " hora fin: ", horaFin);
 
-      if (horaFin && horaFin.length === 5) {
-        horaFin += ":00";
-      }
+      // Convertir las horas a formato HH:MM:SS
+      const formatToHHMMSS = (hour: number): string => {
+        const hours = hour < 10 ? `0${hour}` : `${hour}`;
+        return `${hours}:00:00`; // Asume minutos y segundos como 00
+      };
+
+      // Aplicamos el formato HH:MM:SS a horaInicio y horaFin
+      horaInicio = formatToHHMMSS(horaInicio);
+      horaFin = formatToHHMMSS(horaFin);
 
       const compania = {
         nombre: this.companiaFormGroup.get("nombre")?.value,
         concepto: this.companiaFormGroup.get("concepto")?.value,
         correo: this.companiaFormGroup.get("correo")?.value,
-        celular: this.companiaFormGroup.get("telefono")?.value,
-        horaInicio: horaInicio,
-        horaFin: horaFin,
+        celular: this.companiaFormGroup.get("yape")?.value,
+        horaInicio: horaInicio, // Enviar en formato HH:MM:SS
+        horaFin: horaFin, // Enviar en formato HH:MM:SS
         empresa: { id: empresaData.empresaId },
       };
+
+      console.log("COMPANIA DATA: ", compania);
 
       this.companiaService
         .saveCompania(this.qrFile!, this.file!, compania)
@@ -340,7 +385,6 @@ export class RegistrarSedeComponent implements OnInit {
             .updateClientOrSede(updateRequest)
             .subscribe((response) => {
               console.log("Relación cliente-sede actualizada:", response);
-              // Cambio de estado para mostrar el mensaje de éxito
               this.companyRegistered = true;
             });
         });

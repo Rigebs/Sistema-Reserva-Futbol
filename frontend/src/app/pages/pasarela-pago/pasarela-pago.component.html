@@ -13,7 +13,9 @@
           <!-- Nombre del campo -->
           <ng-container matColumnDef="nombreCampo">
             <th mat-header-cell *matHeaderCellDef>Campo</th>
-            <td mat-cell *matCellDef="let reserva">{{ reserva.nombre }}</td>
+            <td mat-cell *matCellDef="let reserva">
+              {{ reserva.campoNombre }}
+            </td>
           </ng-container>
 
           <!-- Fecha -->
@@ -36,16 +38,14 @@
           <ng-container matColumnDef="horaFin">
             <th mat-header-cell *matHeaderCellDef>Hora Fin</th>
             <td mat-cell *matCellDef="let reserva">
-              {{ reserva.horaFin | date : "hh:mm a" }}
+              {{ reserva.horaFinal | date : "hh:mm a" }}
             </td>
           </ng-container>
 
           <!-- Precio -->
           <ng-container matColumnDef="precio">
             <th mat-header-cell *matHeaderCellDef>Precio</th>
-            <td mat-cell *matCellDef="let reserva">
-              s/{{ reserva.precio | number : "1.2-2" }}
-            </td>
+            <td mat-cell *matCellDef="let reserva">s/{{ reserva.precio }}</td>
           </ng-container>
 
           <tr

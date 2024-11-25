@@ -158,8 +158,36 @@
             </mat-form-field>
 
             <mat-form-field class="grid-item" appearance="outline">
+              <span matTextPrefix>+51 &nbsp;</span>
               <mat-label>Número de Yape</mat-label>
-              <input matInput formControlName="telefono" required type="tel" />
+              <input
+                matInput
+                maxlength="9"
+                placeholder="Ex. 904533437"
+                formControlName="yape"
+                (input)="onYapeInput($event)"
+                required
+                type="text"
+              />
+              <mat-hint align="end">{{ valueYape().length }}/9</mat-hint>
+
+              <!-- Mensajes de error para el teléfono -->
+              <mat-error
+                *ngIf="
+                  companiaFormGroup.get('yape')?.hasError('required') &&
+                  companiaFormGroup.get('yape')?.touched
+                "
+              >
+                El número Yape es obligatorio.
+              </mat-error>
+              <mat-error
+                *ngIf="
+                  companiaFormGroup.get('yape')?.hasError('pattern') &&
+                  companiaFormGroup.get('yape')?.touched
+                "
+              >
+                El número Yape debe empezar con 9 y tener exactamente 9 dígitos.
+              </mat-error>
             </mat-form-field>
 
             <div class="grid-item">
@@ -219,19 +247,33 @@
                 Este campo es obligatorio.
               </div>
             </div>
-            <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Hora inicio de atención</mat-label>
-              <input
-                matInput
+            <mat-form-field appearance="fill">
+              <mat-label>Hora de inicio</mat-label>
+              <mat-select
                 formControlName="horaInicio"
-                required
-                type="time"
-              />
+                (selectionChange)="onStartHourChange($event)"
+              >
+                <mat-option
+                  *ngFor="let hour of availableStartHours"
+                  [value]="hour"
+                >
+                  {{ convertTo12HourFormat(hour) }}
+                  <!-- Mostrar en formato 12 horas -->
+                </mat-option>
+              </mat-select>
             </mat-form-field>
 
-            <mat-form-field class="grid-item" appearance="outline">
-              <mat-label>Hora fin de atención</mat-label>
-              <input matInput formControlName="horaFin" required type="time" />
+            <mat-form-field appearance="fill">
+              <mat-label>Hora de fin</mat-label>
+              <mat-select formControlName="horaFin">
+                <mat-option
+                  *ngFor="let hour of filteredEndHours"
+                  [value]="hour"
+                >
+                  {{ convertTo12HourFormat(hour) }}
+                  <!-- Mostrar en formato 12 horas -->
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
 

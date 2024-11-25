@@ -37,6 +37,43 @@
   overflow: auto;
 }
 
+.login-container {
+  text-align: center;
+}
+
+.google-login-button {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: #5f6368;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  text-align: center;
+  margin-top: 12px;
+  width: 100%;
+  display: flex;
+  text-align: center;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.google-login-button:hover {
+  background-color: #f7f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.google-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
 /* Estilos generales para los botones */
 .button {
   width: 100%; /* Los botones ocupan el 100% del ancho */
@@ -131,7 +168,7 @@
 .resend-container {
   margin-top: -16px;
   text-align: center;
-  margin-bottom: 34px;
+  margin-bottom: 16px;
 }
 
 .resend-container h6 {
@@ -182,7 +219,19 @@ h2 {
 /* Estilo del botón de error */
 .error-message {
   color: red;
-  margin-top: 10px;
+  margin-top: -26px;
+  margin-bottom: 25px;
+}
+
+.error-message p {
+  background-color: #ffdada;
+  border: 1px solid #e37d7d;
+  padding: 4px;
+  border-radius: 3px;
+  text-align: center;
+  margin-top: 6px;
+  color: #ff4141;
+  font-size: 14px;
 }
 
 /* Botones de texto para alternar entre login y registro */

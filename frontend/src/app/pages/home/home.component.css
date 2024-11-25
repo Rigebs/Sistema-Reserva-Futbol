@@ -112,7 +112,6 @@ app-carousel {
 .demo-inline-calendar-card {
   width: 100%;
   max-width: 300px;
-  margin-left: 35px;
 }
 
 .calendar {
@@ -129,6 +128,20 @@ app-carousel {
   margin-left: auto;
   margin-right: auto;
   justify-content: center;
+  gap: 14px;
+}
+
+.no-resultados {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.filtro {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .campos-lista {

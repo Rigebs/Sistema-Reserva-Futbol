@@ -23,6 +23,10 @@ mat-card-title {
   margin-top: 10px;
 }
 
+mat-icon {
+  width: 40px;
+}
+
 /* Estilos específicos para pantallas pequeñas */
 @media (max-width: 768px) {
   .campo-card {

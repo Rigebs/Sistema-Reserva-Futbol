@@ -17,6 +17,7 @@ import { AuthTokenUtil } from "../../utils/auth-token-util";
 import { LoginComponent } from "../../auth/login/login.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
+import { DetalleVenta } from "../../models/detalle-venta";
 
 @Component({
   selector: "app-reservar-campo",
@@ -39,7 +40,7 @@ import { MatDialog } from "@angular/material/dialog";
 export class ReservarCampoComponent implements OnInit {
   @ViewChild("reservaList") reservaListComponent: any;
 
-  reservasFinalizadas: any[] = [];
+  reservasFinalizadas: DetalleVenta[] = [];
   userId!: number;
   companiaId!: number;
   sedeConCampos: SedeWithCampo | undefined;
@@ -139,6 +140,8 @@ export class ReservarCampoComponent implements OnInit {
 
         this.router.navigate(["/registrar-cliente"]);
       } else {
+        console.log("RESR: ", this.reservasFinalizadas);
+
         this.router.navigate(["/pasarela-pago"], {
           state: { reservas: this.reservasFinalizadas },
         });
