@@ -289,12 +289,21 @@ public class ReservaService implements IReservaService {
         return jdbcTemplate.query(query, new Object[]{userId}, (rs, rowNum) -> new ReservaDisplayDTO(
                 rs.getLong(1),
                 rs.getString(2),
-                rs.getDate(3).toLocalDate(),
+                rs.getTimestamp(3).toLocalDateTime(),
                 rs.getBigDecimal(4),
                 rs.getBigDecimal(5),
                 rs.getString(6)
         ));
     }
 
+    @Override
+    public boolean isReservaActive(Long reservaId) {
+        Reserva reserva = reservaRepository.findById(reservaId).orElse(null);
 
+        if (reserva == null) {
+            return false;
+        }
+
+        return reserva.getEstado() == '1';  // Assuming '1' means active
+    }
 }

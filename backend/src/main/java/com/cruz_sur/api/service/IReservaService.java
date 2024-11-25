@@ -12,6 +12,7 @@ public interface IReservaService {
 
     @Transactional
     ReservaResponseDTO validarPagoReserva(Long reservaId, BigDecimal montoPago);
+    boolean isReservaActive(Long reservaId);
 
     List<VentaDTO> getVentasByUsuario();
     TotalReservasResponse getTotalReservas();

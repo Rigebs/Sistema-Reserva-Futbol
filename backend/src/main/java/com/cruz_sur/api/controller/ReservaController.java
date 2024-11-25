@@ -63,4 +63,10 @@ public class ReservaController {
             return ResponseEntity.badRequest().body(new ErrorResponse("Error: " + e.getMessage()));
         }
     }
+    
+    @GetMapping("/{reservaId}/is-active")
+    public ResponseEntity<PagoResponse> isReservaActive(@PathVariable Long reservaId) {
+        boolean isActive = reservaService.isReservaActive(reservaId);
+        return ResponseEntity.ok(new PagoResponse(isActive));  // Return JSON response
+    }
 }
