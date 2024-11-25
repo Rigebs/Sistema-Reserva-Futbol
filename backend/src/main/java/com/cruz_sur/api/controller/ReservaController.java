@@ -6,6 +6,7 @@ import com.cruz_sur.api.service.IReservaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.cruz_sur.api.responses.PagoResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
