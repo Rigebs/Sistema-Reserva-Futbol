@@ -142,6 +142,7 @@ export class PasarelaPagoComponent {
 
   openDialog(): void {
     const qrImageUrl = this.qrImageUrl;
+    console.log("DFJK: ", this.id);
 
     if (qrImageUrl) {
       this.dialog.open(PagoDialogComponent, {
@@ -198,6 +199,7 @@ export class PasarelaPagoComponent {
     this.reservaService.createReserva(this.reservaRequest!).subscribe(
       (data: ReservaResponse) => {
         this.id = data.reservaId;
+
         this.avalaibleButton = true;
         this.snackBar.open("RESERVA REALIZADA CON ÉXITO", "Cerrar", {
           duration: 3000, // Duración en milisegundos
@@ -215,8 +217,6 @@ export class PasarelaPagoComponent {
         console.error("ERROR: ", error);
       }
     );
-
-    console.log("REQUEST: ", this.reservaRequest);
   }
 
   formatDate(date: Date): string {

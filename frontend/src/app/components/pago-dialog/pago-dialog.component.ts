@@ -19,7 +19,7 @@ import { Router } from "@angular/router";
 export class PagoDialogComponent {
   qrUrl: string;
 
-  id: number | undefined;
+  id: number = 0;
 
   constructor(
     public dialogRef: MatDialogRef<PagoDialogComponent>,
@@ -28,11 +28,16 @@ export class PagoDialogComponent {
     private snackBar: MatSnackBar,
     private router: Router
   ) {
+    console.log("sd:", data);
+
     this.qrUrl = data.qrUrl;
+    this.id = data.id;
   }
 
   verificarPago() {
-    this.reservaService.isReservaActive(this.id!).subscribe({
+    console.log("i: ", this.id);
+
+    this.reservaService.isReservaActive(this.id).subscribe({
       next: (data) => {
         if (data.pagoStatus) {
           // Mostrar Snackbar
