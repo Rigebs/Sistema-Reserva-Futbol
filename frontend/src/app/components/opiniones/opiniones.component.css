@@ -346,3 +346,23 @@ p {
   font-size: 0.9rem;
   color: #666;
 }
+
+@media (max-width: 768px) {
+  .opiniones-container {
+    padding: 0;
+  }
+
+  .container-header {
+    flex-direction: column-reverse;
+  }
+
+  .opinion-form {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .resultado {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

@@ -7,7 +7,13 @@
 <div class="campos-container">
   <div class="demo-inline-calendar-card">
     <div class="filtro">
-      <button mat-icon-button color="warn" matTooltip="Limpiar filtros">
+      <button
+        mat-icon-button
+        color="warn"
+        matTooltip="Limpiar filtros"
+        *ngIf="isAvalaible"
+        (click)="limpiarFiltros()"
+      >
         <mat-icon>close</mat-icon>
       </button>
       <button
@@ -21,7 +27,10 @@
     <h6>Ubicación</h6>
     <mat-form-field appearance="outline" class="district-select">
       <mat-label>Departamento</mat-label>
-      <mat-select (selectionChange)="onDepartamentoChange($event)">
+      <mat-select
+        [(ngModel)]="departamentoSeleccionado"
+        (selectionChange)="onDepartamentoChange($event)"
+      >
         <mat-option
           *ngFor="let departamento of departamentos"
           [value]="departamento.id"
@@ -30,9 +39,11 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+
     <mat-form-field appearance="outline" class="district-select">
       <mat-label>Provincia</mat-label>
       <mat-select
+        [(ngModel)]="provinciaSeleccionado"
         [disabled]="provinciaHabilitado"
         (selectionChange)="onProvinciaChange($event)"
       >
@@ -41,9 +52,14 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+
     <mat-form-field appearance="outline" class="district-select">
       <mat-label>Distrito</mat-label>
-      <mat-select [disabled]="distritoHabilitado">
+      <mat-select
+        [(ngModel)]="distritoSeleccionado"
+        [disabled]="distritoHabilitado"
+        (selectionChange)="onDistritoChange($event)"
+      >
         <mat-option *ngFor="let distrito of distritos" [value]="distrito.id">
           {{ distrito.nombre }}
         </mat-option>

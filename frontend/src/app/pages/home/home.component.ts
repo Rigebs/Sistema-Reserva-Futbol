@@ -20,6 +20,7 @@ import { Departamento } from "../../models/departamento";
 import { Provincia } from "../../models/provincia";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: "app-home",
@@ -38,6 +39,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatDividerModule,
     MatIconModule,
     MatTooltipModule,
+    FormsModule,
   ],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",
@@ -50,6 +52,8 @@ export class HomeComponent implements OnInit {
     "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/seu8mefj09f8scnkaom2.jpg",
   ];
   campos: CampoSede[] = [];
+
+  isAvalaible: boolean = false;
 
   selectedSlots: { [key: string]: string[] } = {};
 
@@ -121,6 +125,8 @@ export class HomeComponent implements OnInit {
     this.distritoNombre = distrito?.nombre || "";
     this.loadCampos();
 
+    this.isAvalaible = true;
+
     this.departamentoNombre = "";
     this.provinciaNombre = "";
     this.distritoNombre = "";
@@ -136,6 +142,29 @@ export class HomeComponent implements OnInit {
         console.log("ERROR: ", error);
       },
     });
+  }
+
+  limpiarFiltros() {
+    this.isAvalaible = false;
+
+    // Deseleccionar los filtros
+    this.departamentoSeleccionado = undefined;
+    this.provinciaSeleccionado = undefined;
+    this.distritoSeleccionado = undefined;
+
+    // Limpiar las listas dependientes
+    this.provincias = [];
+    this.distritos = [];
+
+    // Restaurar estados deshabilitados
+    this.provinciaHabilitado = true;
+    this.distritoHabilitado = true;
+
+    // Recargar departamentos si es necesario
+    this.loadDepartamentos();
+
+    // Recargar los campos sin filtros
+    this.loadCampos();
   }
 
   onDepartamentoChange(event: any) {
