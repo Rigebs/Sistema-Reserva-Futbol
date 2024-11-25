@@ -187,6 +187,7 @@ app-campo-card {
   /* Aseguramos que el calendario sea responsivo */
   .campos-container {
     max-width: 100%;
+    gap: 0px;
   }
 
   /* Ocultar el calendario en dispositivos móviles */

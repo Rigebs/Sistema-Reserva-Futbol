@@ -22,13 +22,15 @@ export class SupremAdminGuard implements CanActivate {
     const token = localStorage.getItem("authToken");
 
     if (token) {
+      console.log("TOK");
+
       if (
         this.authTokenUtil.getUserFromToken() === usuarioEnRuta &&
         this.authTokenUtil.isAdmin()
       ) {
         return true;
       } else {
-        this.router.navigate(["/access-denied"]);
+        this.router.navigate(["/home"]);
         return false;
       }
     } else {
