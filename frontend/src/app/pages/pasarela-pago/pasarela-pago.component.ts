@@ -147,6 +147,7 @@ export class PasarelaPagoComponent {
           qrUrl: qrImageUrl, // Pasamos la URL al diálogo
         },
       });
+      this.pagarConYape();
     } else {
       console.error("No se ha recibido el QR Image URL.");
     }
@@ -199,9 +200,6 @@ export class PasarelaPagoComponent {
           horizontalPosition: "center", // Posición horizontal
           verticalPosition: "bottom", // Posición vertical
         });
-
-        // Redirigir a la ruta /home
-        this.router.navigate(["/home"]);
 
         console.log("RESPONSE: ", data); // Si necesitas más información
       },
