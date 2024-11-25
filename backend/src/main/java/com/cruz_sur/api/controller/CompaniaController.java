@@ -1,5 +1,6 @@
 package com.cruz_sur.api.controller;
 
+import com.cruz_sur.api.dto.EmpresaCompaniaDTO;
 import com.cruz_sur.api.dto.PagoInfoDTO;
 import com.cruz_sur.api.model.Compania;
 import com.cruz_sur.api.service.ICompaniaService;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,5 +88,10 @@ public class CompaniaController {
     public ResponseEntity<PagoInfoDTO> getPagoInfo(@PathVariable Long id) {
         PagoInfoDTO pagoInfo = companiaService.getPagoInfoByCompaniaId(id);
         return ResponseEntity.ok(pagoInfo);
+    }
+
+    @GetMapping("/en-espera")
+    public List<EmpresaCompaniaDTO> getCompaniasEnEspera() {
+        return companiaService.getCompaniasEnEspera();
     }
 }
