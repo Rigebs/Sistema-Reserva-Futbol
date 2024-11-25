@@ -1,0 +1,146 @@
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenedor principal */
+.container-top {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+h5 {
+  margin: 0;
+}
+
+/* Estilo base para las tarjetas */
+.card {
+  width: 250px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+/* Efecto hover */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Cuerpo de la tarjeta */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-title {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Estilo cuando está seleccionada */
+.card.selected {
+  border: 2px solid #007bff;
+  background-color: #e7f3ff;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  transform: translateY(-5px);
+}
+
+/* Contenedor principal de las cards */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap; /* Permite que las tarjetas se ajusten en varias filas si es necesario */
+  justify-content: center; /* Centra las tarjetas horizontalmente */
+  gap: 20px; /* Espacio entre las tarjetas */
+  padding: 0 10px; /* Opcional: agrega un poco de espacio interior */
+}
+
+/* Contenedor de cada card individual */
+.card-wrapper {
+  flex: 1 1 300px; /* Ajusta el ancho mínimo de las tarjetas */
+  max-width: 350px; /* Ancho máximo de cada tarjeta */
+  display: flex;
+  justify-content: center; /* Centra las cards individualmente */
+}
+
+.seccion-compania {
+  padding: 0px 20px 0px 20px;
+}
+
+/* Contenedor de la tabla con scroll horizontal */
+.table-container {
+  width: 100%;
+  overflow-x: auto; /* Activa el scroll horizontal */
+}
+
+/* Estilo general para la tabla */
+.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+/* Cabecera de la tabla */
+.mat-header-cell {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 12px;
+}
+
+/* Celdas de la tabla */
+.mat-cell {
+  padding: 10px;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Fila de la tabla al pasar el mouse */
+.mat-row:hover {
+  background-color: #f1f1f1;
+}
+
+/* Para hacer el estilo del paginator (si lo agregas) */
+.mat-paginator {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+/* Fondo para la tabla */
+.mat-elevation-z8 {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Resaltar la columna seleccionada */
+.mat-sort-header-sorted {
+  color: #007bff;
+}
+
+/* Estilo cuando está vacío */
+.empty-message {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+/* Adaptable para dispositivos móviles */
+@media (max-width: 768px) {
+  .container-top {
+    flex-direction: column;
+    gap: 15px;
+  }
+}

@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { Compania } from "../models/compania";
 import { Observable } from "rxjs";
+import { EmpresaCompania } from "../models/empresa-compania";
 
 @Injectable({
   providedIn: "root",
@@ -38,6 +39,10 @@ export class CompaniaService {
   // Obtener compañía por ID
   getCompaniaById(id: number): Observable<Compania> {
     return this.http.get<Compania>(`${this.apiUrl}/${id}`);
+  }
+
+  getCompaniasEnEspera(): Observable<EmpresaCompania[]> {
+    return this.http.get<EmpresaCompania[]>(`${this.apiUrl}/en-espera`);
   }
 
   // Cambiar estado de la compañía

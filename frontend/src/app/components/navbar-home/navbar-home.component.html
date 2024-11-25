@@ -7,7 +7,7 @@
     </div>
     <div class="nav-section">
       <ul class="nav-links" [class.active]="menuOpen">
-        <li *ngIf="!isCompania && !isEspera && !isCliente">
+        <li *ngIf="!isCompania && !isEspera && !isCliente && !isAdmin">
           <button
             class="nav-button join-us-button"
             (click)="openFieldOfferDialog()"
@@ -17,6 +17,11 @@
         </li>
         <li *ngIf="isCompania">
           <button class="admin-button" (click)="goToAdminPanel()">
+            Ir al panel admin
+          </button>
+        </li>
+        <li *ngIf="isAdmin">
+          <button class="nav-button admin-button" (click)="goToSupremPanel()">
             Ir al panel admin
           </button>
         </li>

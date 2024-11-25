@@ -103,6 +103,21 @@ body {
   transform: scale(1.1);
 }
 
+.admin-button {
+  background-color: #80fe9b;
+  color: #353637;
+  font-weight: bold;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.admin-button:hover {
+  background-color: #68e4a0;
+  transform: scale(1.1);
+}
+
 .welcome-message {
   color: white;
   font-size: 16px;

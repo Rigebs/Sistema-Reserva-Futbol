@@ -279,7 +279,7 @@ export class RegistrarSedeComponent implements OnInit {
   }
 
   checkUserRole() {
-    if (this.authService.hasRole("ROLE_ADMIN")) {
+    if (this.authService.hasRole("ROLE_COMPANIA")) {
       this.snackBar.open("Ya tienes registrada tu compañía", "Cerrar", {
         duration: 3000, // Duración de 3 segundos
         verticalPosition: "top",

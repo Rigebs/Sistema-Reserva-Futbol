@@ -1,0 +1,34 @@
+<div class="card compania-card">
+  <!-- Imagen de la Compañía -->
+  <div class="image-container">
+    <img
+      [src]="currentImage"
+      [alt]="compania.companiaNombre"
+      class="compania-image"
+    />
+    <!-- Botón para cambiar a QR -->
+    <button class="qr-button" (click)="toggleImage()" matTooltip="Mostrar QR">
+      <mat-icon>qr_code_scanner</mat-icon>
+    </button>
+  </div>
+
+  <!-- Detalles de la Compañía -->
+  <div class="card-body">
+    <h5 class="card-title">{{ compania.companiaNombre }}</h5>
+    <p class="text-muted">{{ compania.empresaNombre }}</p>
+    <p><strong>Dirección:</strong> {{ compania.empresaDireccion }}</p>
+    <p><strong>RUC:</strong> {{ compania.empresaRuc }}</p>
+    <p><strong>Correo:</strong> {{ compania.companiaCorreo }}</p>
+    <p><strong>Celular:</strong> {{ compania.companiaCelular }}</p>
+
+    <!-- Botones de acción -->
+    <div class="button-container" align="end">
+      <button class="action-button check-button" (click)="onCheck()">
+        <mat-icon>check</mat-icon>
+      </button>
+      <button class="action-button cancel-button" (click)="onCancel()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

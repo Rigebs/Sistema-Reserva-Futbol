@@ -43,4 +43,16 @@ export class UsuarioService {
     const decoded: JwtPayload = jwtDecode(token);
     this.currentUserSubject.next(decoded.sub || null);
   }
+
+  updateRoleCompania(idCompania: number): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/compania/${idCompania}/updateRoleCompania`,
+      {}
+    );
+  }
+
+  // Método para rechazar la compañía
+  rejectCompania(idCompania: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/compania/${idCompania}/reject`);
+  }
 }

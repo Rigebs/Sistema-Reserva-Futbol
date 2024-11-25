@@ -26,6 +26,8 @@ export class NavbarHomeComponent implements OnInit {
 
   isCliente = false;
 
+  isAdmin = false;
+
   isAvalaible: boolean = false;
 
   constructor(
@@ -84,6 +86,7 @@ export class NavbarHomeComponent implements OnInit {
       const payload = this.authTokenUtil.decodeToken();
       this.isEspera = this.authTokenUtil.isEspera();
       this.isCliente = this.authTokenUtil.isCliente();
+      this.isAdmin = this.authTokenUtil.isAdmin();
       this.adminUsername = payload.sub || null;
     }
   }
@@ -133,6 +136,14 @@ export class NavbarHomeComponent implements OnInit {
   goToAdminPanel() {
     if (this.adminUsername) {
       this.router.navigate([`/${this.adminUsername}/panel-admin`]);
+    } else {
+      console.error("No se encontró el nombre de usuario del administrador.");
+    }
+  }
+
+  goToSupremPanel() {
+    if (this.adminUsername) {
+      this.router.navigate([`/${this.adminUsername}/panel-suprem`]);
     } else {
       console.error("No se encontró el nombre de usuario del administrador.");
     }

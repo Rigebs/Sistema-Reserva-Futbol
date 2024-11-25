@@ -11,6 +11,8 @@ import { AdminGuard } from "./guards/admin.guard";
 import { RegistrarClienteComponent } from "./pages/registrar-cliente/registrar-cliente.component";
 import { ConfirmarComponent } from "./pages/confirmar/confirmar.component";
 import { GoogleConfirmationComponent } from "./pages/google-confirmation/google-confirmation.component";
+import { SupremAdminComponent } from "./pages/suprem-admin/suprem-admin.component";
+import { SupremAdminGuard } from "./guards/suprem-admin.guard";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -43,6 +45,11 @@ export const routes: Routes = [
     path: "registrar-sede",
     component: RegistrarSedeComponent,
     canActivate: [AuthGuard],
+  },
+  {
+    path: ":usuario/panel-suprem",
+    component: SupremAdminComponent,
+    canActivate: [SupremAdminGuard],
   },
 
   { path: "registrar-cliente", component: RegistrarClienteComponent },
