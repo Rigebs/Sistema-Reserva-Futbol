@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,7 +23,7 @@ public class DetalleVenta {
     private Time horaInicio;
     private Time horaFinal;
     private BigDecimal precio;
-
+    private LocalDate fecha;
     private String usuarioCreacion;
     private LocalDateTime fechaCreacion;
     private String usuarioModificacion;

@@ -32,6 +32,7 @@ public class DetalleVentaService {
                 .campo(campo)
                 .horaInicio(detalleVentaDTO.getHoraInicio())
                 .horaFinal(detalleVentaDTO.getHoraFinal())
+                .fecha(detalleVentaDTO.getFecha())
                 .precio(detalleVentaDTO.getPrecio())
                 .usuario(usuario)
                 .usuarioCreacion(authenticatedUsername)
