@@ -1,7 +1,11 @@
 <div mat-dialog-content>
-  <h2>Escanea este QR...</h2>
+  <h6>
+    Después de scanear presione 'Verificar Pago' para confirmar si el pago llegó
+    correctamente
+  </h6>
   <img [src]="qrUrl" alt="Código QR" class="qr-image" />
 </div>
 <div mat-dialog-actions class="">
   <button mat-button mat-dialog-close>Cerrar</button>
+  <button mat-flat-button (click)="verificarPago()">Verificar pago</button>
 </div>

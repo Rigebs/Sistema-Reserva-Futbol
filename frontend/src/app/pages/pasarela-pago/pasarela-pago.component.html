@@ -79,8 +79,21 @@
       </div>
 
       <!-- Botón para pagar con Yape -->
-      <button mat-flat-button color="primary" (click)="openDialog()">
-        Pagar con Yape
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="pagarConYape()"
+        [disabled]="avalaibleButton"
+      >
+        Confirmar reserva
+      </button>
+      <button
+        mat-button
+        (click)="openDialog()"
+        [disabled]="avalaibleButton"
+        class="yape"
+      >
+        Scanear Yape
       </button>
     </mat-card-content>
   </mat-card>

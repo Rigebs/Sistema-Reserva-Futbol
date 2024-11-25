@@ -5,6 +5,9 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from "@angular/material/dialog";
+import { ReservaService } from "../../services/reserva.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-pago-dialog",
@@ -16,10 +19,50 @@ import {
 export class PagoDialogComponent {
   qrUrl: string;
 
+  id: number | undefined;
+
   constructor(
     public dialogRef: MatDialogRef<PagoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private reservaService: ReservaService,
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
-    this.qrUrl = data.qrUrl; // Asignamos la URL recibida a la propiedad qrUrl
+    this.qrUrl = data.qrUrl;
+  }
+
+  verificarPago() {
+    this.reservaService.isReservaActive(this.id!).subscribe({
+      next: (data) => {
+        if (data.pagoStatus) {
+          // Mostrar Snackbar
+          this.snackBar.open("PAGO REALIZADO CORRECTAMENTE", "Cerrar", {
+            duration: 2000, // Mostrar por 2 segundos
+            horizontalPosition: "center", // Posición horizontal
+            verticalPosition: "bottom", // Posición vertical
+          });
+
+          // Redirigir después de 2 segundos
+          setTimeout(() => {
+            this.router.navigate(["/home"]); // Navegar a /home
+          }, 2000);
+        } else {
+          // En caso de que el pago no se haya realizado, puedes manejarlo aquí
+          this.snackBar.open("Error: El pago no se realizó.", "Cerrar", {
+            duration: 2000,
+            horizontalPosition: "center",
+            verticalPosition: "bottom",
+          });
+        }
+      },
+      error: (err) => {
+        console.error("Error al verificar el pago:", err);
+        this.snackBar.open("Error al verificar el pago.", "Cerrar", {
+          duration: 3000,
+          horizontalPosition: "center",
+          verticalPosition: "bottom",
+        });
+      },
+    });
   }
 }

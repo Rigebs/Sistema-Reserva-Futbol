@@ -44,6 +44,20 @@ button:hover {
   background-color: #1565c0;
 }
 
+.yape {
+  margin-top: 20px;
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  background-color: #ceddeb; /* Azul de Material Design */
+  color: white;
+  border-radius: 8px;
+}
+
+.yape:hover {
+  background-color: #dae3ec;
+}
+
 .mat-card-content {
   display: flex;
   flex-direction: column;

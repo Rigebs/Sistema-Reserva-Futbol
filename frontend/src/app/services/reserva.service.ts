@@ -4,6 +4,7 @@ import { ReservaRequest } from "../models/reserva-request";
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { ReservaResponse } from "../models/reserva-response";
+import { PagoResponse } from "../models/pago-response";
 
 @Injectable({
   providedIn: "root",
@@ -15,5 +16,9 @@ export class ReservaService {
 
   createReserva(request: ReservaRequest): Observable<ReservaResponse> {
     return this.http.post<ReservaResponse>(`${this.apiUrl}`, request);
+  }
+
+  isReservaActive(reservaId: number): Observable<PagoResponse> {
+    return this.http.get<PagoResponse>(`${this.apiUrl}/${reservaId}/is-active`);
   }
 }

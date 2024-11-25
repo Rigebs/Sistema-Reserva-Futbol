@@ -37,6 +37,10 @@ export class PasarelaPagoComponent {
 
   qrImageUrl: string | undefined;
 
+  avalaibleButton: boolean = false;
+
+  id: number | undefined;
+
   constructor(
     private router: Router,
     private datePipe: DatePipe,
@@ -137,17 +141,16 @@ export class PasarelaPagoComponent {
   }
 
   openDialog(): void {
-    // Aquí pasamos la URL de la imagen QR
-    const qrImageUrl = this.qrImageUrl; // Usamos la variable que contiene el URL recibido
+    const qrImageUrl = this.qrImageUrl;
 
     if (qrImageUrl) {
       this.dialog.open(PagoDialogComponent, {
         width: "300px",
         data: {
-          qrUrl: qrImageUrl, // Pasamos la URL al diálogo
+          qrUrl: qrImageUrl,
+          id: this.id,
         },
       });
-      this.pagarConYape();
     } else {
       console.error("No se ha recibido el QR Image URL.");
     }
@@ -194,24 +197,22 @@ export class PasarelaPagoComponent {
   pagarConYape() {
     this.reservaService.createReserva(this.reservaRequest!).subscribe(
       (data: ReservaResponse) => {
-        // Mostrar el Snackbar de éxito
+        this.id = data.reservaId;
+        this.avalaibleButton = true;
         this.snackBar.open("RESERVA REALIZADA CON ÉXITO", "Cerrar", {
           duration: 3000, // Duración en milisegundos
           horizontalPosition: "center", // Posición horizontal
           verticalPosition: "bottom", // Posición vertical
         });
-
-        console.log("RESPONSE: ", data); // Si necesitas más información
       },
       (error) => {
-        // Si hay un error, podrías mostrar un Snackbar de error
         this.snackBar.open("Error al realizar la reserva", "Cerrar", {
           duration: 3000,
           horizontalPosition: "center",
           verticalPosition: "bottom",
         });
 
-        console.error("ERROR: ", error); // Mostrar el error en consola
+        console.error("ERROR: ", error);
       }
     );
 

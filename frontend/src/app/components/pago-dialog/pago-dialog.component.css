@@ -4,3 +4,7 @@
   object-fit: contain;
   margin: auto;
 }
+
+h6 {
+  font-size: 17px;
+}
