@@ -32,11 +32,12 @@ public class DetalleVentaService {
                 .campo(campo)
                 .horaInicio(detalleVentaDTO.getHoraInicio())
                 .horaFinal(detalleVentaDTO.getHoraFinal())
+                .fecha(detalleVentaDTO.getFecha())
                 .precio(detalleVentaDTO.getPrecio())
                 .usuario(usuario)
                 .usuarioCreacion(authenticatedUsername)
                 .fechaCreacion(now)
-                .estado('1')
+                .estado('0')
                 .build();
 
         detalleVentaRepository.save(detalleVenta);

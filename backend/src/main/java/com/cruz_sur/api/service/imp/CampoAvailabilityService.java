@@ -10,24 +10,24 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class CampoAvailabilityService {
     private final DetalleVentaRepository detalleVentaRepository;
 
-    // Existing method to check if a specific time range is available
-    public boolean isCampoAvailable(Long campoId, LocalDate fecha, Time horaInicio, Time horaFin) {
+    // Check campo availability based on DetalleVenta.date
+    public boolean isCampoAvailable(Long campoId, LocalDate detalleFecha, Time horaInicio, Time horaFin) {
         if (horaFin.toLocalTime().equals(LocalTime.MIDNIGHT)) {
-            return false;
+            return false; // Prevent bookings that end at midnight
         }
 
-        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha)
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndFecha(campoId, detalleFecha)
                 .stream()
-                .filter(detalle -> detalle.getVenta().getEstado() == '1')
+                .filter(detalle -> detalle.getEstado() == '1') // Only consider active bookings
                 .toList();
 
         for (DetalleVenta reserva : reservas) {
+            // Check for overlapping time intervals
             if (reserva.getHoraInicio().before(horaFin) && reserva.getHoraFinal().after(horaInicio)) {
                 return false;
             }
@@ -35,13 +35,13 @@ public class CampoAvailabilityService {
         return true;
     }
 
-    // Updated method to get available hours
-    public List<Time> getAvailableHours(Long campoId, LocalDate fecha, List<Time> allHours) {
-        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndVenta_Fecha(campoId, fecha);
+    // Remove unavailable hours for the given date and campo
+    public List<Time> getAvailableHours(Long campoId, LocalDate detalleFecha, List<Time> allHours) {
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndFecha(campoId, detalleFecha);
         List<Time> availableHours = new ArrayList<>(allHours);
 
         for (DetalleVenta reserva : reservas) {
-            // Remove hours that are either within the reserved time or equal to the reserved times
+            // Remove hours that are already reserved
             availableHours.removeIf(hour ->
                     !hour.before(reserva.getHoraInicio()) && !hour.after(reserva.getHoraFinal()));
         }

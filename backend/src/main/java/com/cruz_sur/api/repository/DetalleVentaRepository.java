@@ -13,5 +13,8 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long
     List<DetalleVenta> findByVenta(Reserva reserva);
 
     // Modificación del método para verificar disponibilidad por campo y fecha de reserva
-    List<DetalleVenta> findByCampoIdAndVenta_Fecha(Long campoId, LocalDate fecha);
+
+    List<DetalleVenta> findByCampoIdAndFecha(Long campoId, LocalDate fecha);
+
+    List<DetalleVenta> findByVenta_Id(Long ventaId);
 }

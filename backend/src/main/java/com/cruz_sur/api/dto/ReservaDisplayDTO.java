@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 public class ReservaDisplayDTO {
     private Long reservaId;
     private String sede;
-    private LocalDate fechaReserva;
+    private LocalDateTime fechaReserva;
     private BigDecimal subtotal;
     private BigDecimal total;
     private String cliente;

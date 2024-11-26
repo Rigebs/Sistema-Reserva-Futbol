@@ -78,10 +78,10 @@ public class ReservaResponseBuilder {
                         .campoNombre(detalle.getCampo().getNombre())
                         .precio(detalle.getPrecio()) // Aquí tomamos el precio del detalle de venta
                         .horaInicio(detalle.getHoraInicio())
+                        .fecha(detalle.getFecha())
                         .horaFinal(detalle.getHoraFinal())
                         .build())
                 .collect(Collectors.toList());
-
         // Obtenemos los datos de la compañía a partir del campo
         Compania compania = detallesVenta.isEmpty() ? null : detallesVenta.get(0).getCampo().getUsuario().getSede();
 

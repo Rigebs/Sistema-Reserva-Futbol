@@ -6,6 +6,7 @@ import com.cruz_sur.api.service.IReservaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.cruz_sur.api.responses.PagoResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -62,5 +63,11 @@ public class ReservaController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Error: " + e.getMessage()));
         }
+    }
+    
+    @GetMapping("/{reservaId}/is-active")
+    public ResponseEntity<PagoResponse> isReservaActive(@PathVariable Long reservaId) {
+        boolean isActive = reservaService.isReservaActive(reservaId);
+        return ResponseEntity.ok(new PagoResponse(isActive));  // Return JSON response
     }
 }
