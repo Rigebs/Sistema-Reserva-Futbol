@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /admin/
+Allow: /home
+Sitemap: https://zemply.vercel.app/sitemap.xml
