@@ -55,6 +55,7 @@ public class UserService {
             empresa.setRazonSocial(userDetailsDTO.getEmpresa().getRazonSocial());
             empresa.setTelefono(userDetailsDTO.getEmpresa().getTelefono());
             empresa.setDireccion(userDetailsDTO.getEmpresa().getDireccion());
+            empresa.setDistrito(userDetailsDTO.getEmpresa().getDistrito());
             empresaRepository.save(empresa);
         }
 
@@ -82,6 +83,7 @@ public class UserService {
                 persona.setCelular(userDetailsDTO.getCliente().getPersona().getCelular());
                 persona.setDireccion(userDetailsDTO.getCliente().getPersona().getDireccion());
                 persona.setGenero(userDetailsDTO.getCliente().getPersona().getGenero());
+                persona.setDistrito(userDetailsDTO.getCliente().getPersona().getDistrito());
                 personaRepository.save(persona);
                 cliente.setPersona(persona);
             } else {

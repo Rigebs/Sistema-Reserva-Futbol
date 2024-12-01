@@ -282,15 +282,17 @@ public class ReservaService implements IReservaService {
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String query = "CALL ALL_RESERVAS(?, 'L')";
+        // Definimos el procedimiento almacenado
+        String query = "{call ALL_RESERVAS(?, 'L')}";  // Notar que usamos call en lugar de exec
 
+        // Mapeamos los resultados
         return jdbcTemplate.query(query, new Object[]{userId}, (rs, rowNum) -> new ReservaDisplayDTO(
-                rs.getLong(1),
-                rs.getString(2),
-                rs.getTimestamp(3).toLocalDateTime(),
-                rs.getBigDecimal(4),
-                rs.getBigDecimal(5),
-                rs.getString(6)
+                rs.getLong("Reserva_ID"),
+                rs.getString("SEDE"),
+                rs.getTimestamp("Fecha_Reserva").toLocalDateTime(),
+                rs.getBigDecimal("Subtotal"),
+                rs.getBigDecimal("Total"),
+                rs.getString("Cliente")
         ));
     }
 
