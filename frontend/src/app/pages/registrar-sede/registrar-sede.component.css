@@ -2,9 +2,13 @@
   display: flex;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 20px;
-  gap: 30px;
+  gap: 60px;
+  align-items: center; /* Centra verticalmente los elementos */
+  justify-content: center; /* Centra horizontalmente los elementos */
+  min-height: 100vh; /* Hace que el contenedor ocupe al menos toda la altura de la ventana */
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
 }
+
 
 /* Configuración de cuadrícula con un máximo de 2 elementos por fila */
 .grid-container {
@@ -13,27 +17,61 @@
   grid-template-columns: repeat(2, 1fr); /* Limitar a 2 columnas */
 }
 
-/* Estilo para el texto introductorio */
-.intro-text {
+.intro-container {
+  padding: 10px; /* Reduce el espacio interno */
+  border-radius: 10px;
+  max-width: 500px;
+  font-size: 0.85rem; /* Disminuye el tamaño del texto general */
+  line-height: 1.3; /* Reduce el espacio entre líneas */
+}
+
+.header .title {
+  color: #0288d1;
+  font-size: 1.8rem; /* Reduce el tamaño del título */
+  margin-bottom: 10px; /* Reduce el margen inferior */
   text-align: center;
-  margin-bottom: 20px;
-  background-color: #eef2f7;
-  padding: 20px;
-  border-radius: 8px;
-  width: 35%;
-  max-height: 526px; /* Ajusta este valor según lo que necesites */
-  overflow-y: auto; /* Permite el desplazamiento si el contenido es más largo que la altura máxima */
 }
 
-.intro-text h2 {
-  color: #3f51b5;
-  font-size: 28px;
-  margin-bottom: 10px;
+.content .intro {
+  font-size: 0.9rem; /* Ajusta el tamaño del texto */
+  margin-bottom: 10px; /* Reduce el espacio inferior */
+  text-align: justify;
 }
 
-.intro-text p {
-  color: #555;
-  font-size: 16px;
+.benefits .section-title {
+  font-size: 1.15rem; /* Reduce el tamaño del título de la sección */
+  color: #0288d1;
+  margin-bottom: 8px; /* Reduce el espacio inferior */
+}
+
+.benefits-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.benefits-list li {
+  font-size: 0.9rem; /* Reduce el tamaño del texto en los elementos */
+  margin-bottom: 5px; /* Reduce el espacio entre ítems */
+}
+
+.benefits-list li h6 {
+  font-size: 0.95rem; /* Reduce el tamaño de los subtítulos */
+  color: #0288d1;
+}
+
+.cta {
+  margin-top: 10px; /* Reduce el espacio superior */
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 1.3rem; /* Reduce el tamaño del título */
+  color: #0288d1;
+  font-weight: bold;
+}
+
+.cta-text {
+  font-size: 0.9rem; /* Ajusta el tamaño del texto */
 }
 
 .stepper {
