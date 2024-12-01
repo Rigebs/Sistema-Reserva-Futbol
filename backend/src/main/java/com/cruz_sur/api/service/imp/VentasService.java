@@ -24,8 +24,30 @@ public class VentasService implements IVentasService {
     public List<VentasMensualesDTO> all() {
         Long usuarioId = getAuthenticatedUserId();
         String sql = "{CALL ObtenerVentasMensualesPorUsuario(?)}";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(VentasMensualesDTO.class), usuarioId);
+
+        // Ejecuta la consulta con un mapeo manual para verificar el valor de 'anio'
+        return jdbcTemplate.query(sql, new Object[]{usuarioId}, (rs, rowNum) -> {
+            VentasMensualesDTO dto = new VentasMensualesDTO();
+            dto.setAnio(rs.getInt("AÑO"));  // Asegúrate de que 'AÑO' no sea NULL
+            dto.setCompaniaId(rs.getLong("COMPANIA_ID"));
+            dto.setCompaniaNombre(rs.getString("COMPANIA_NOMBRE"));
+            dto.setEnero(rs.getBigDecimal("Enero"));
+            dto.setFebrero(rs.getBigDecimal("Febrero"));
+            dto.setMarzo(rs.getBigDecimal("Marzo"));
+            dto.setAbril(rs.getBigDecimal("Abril"));
+            dto.setMayo(rs.getBigDecimal("Mayo"));
+            dto.setJunio(rs.getBigDecimal("Junio"));
+            dto.setJulio(rs.getBigDecimal("Julio"));
+            dto.setAgosto(rs.getBigDecimal("Agosto"));
+            dto.setSeptiembre(rs.getBigDecimal("Septiembre"));
+            dto.setOctubre(rs.getBigDecimal("Octubre"));
+            dto.setNoviembre(rs.getBigDecimal("Noviembre"));
+            dto.setDiciembre(rs.getBigDecimal("Diciembre"));
+            dto.setTotalHastaHoy(rs.getBigDecimal("TotalHastaHoy"));
+            return dto;
+        });
     }
+
 
     @Override
     public ContarReservasDTO countTotalReservas(String fecha) {
