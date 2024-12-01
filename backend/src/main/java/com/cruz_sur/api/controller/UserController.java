@@ -6,6 +6,7 @@ import com.cruz_sur.api.dto.UserDetailsDTO;
 import com.cruz_sur.api.model.*;
 import com.cruz_sur.api.responses.TokenResponse;
 import com.cruz_sur.api.service.imp.AuthenticationService;
+import com.cruz_sur.api.service.imp.JwtService;
 import com.cruz_sur.api.service.imp.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
 
@@ -63,9 +65,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDetailsDTO userDetailsDTO) {
+    public ResponseEntity<TokenResponse> updateUser(@PathVariable Long id, @RequestBody UserDetailsDTO userDetailsDTO) {
         User updatedUser = userService.updateAllFields(id, userDetailsDTO);
-        return ResponseEntity.ok(updatedUser);
+        String newToken = jwtService.generateToken(updatedUser);
+        return ResponseEntity.ok(new TokenResponse(newToken));
     }
-
 }
