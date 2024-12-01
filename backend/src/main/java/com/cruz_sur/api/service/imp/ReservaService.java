@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,62 +38,72 @@ public class ReservaService implements IReservaService {
     private final JdbcTemplate jdbcTemplate;
     private final EmailService emailService;
 
-
     @Transactional
     @Override
     public ReservaResponseDTO createReserva(ReservaDTO reservaDTO, List<DetalleVentaDTO> detallesVenta) {
-        // Obtener el usuario autenticado
+        // Obtener usuario autenticado
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         User usuario = userRepository.findByUsername(authenticatedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Obtener cliente
+        // Obtener cliente asociado
         Cliente cliente = usuario.getCliente();
         if (cliente == null) {
             throw new RuntimeException("No associated client for the authenticated user");
         }
 
-        // Validación del tipo de comprobante
+        // Validar tipo de comprobante
         reservaValidationService.validateTipoComprobante(cliente, reservaDTO.getTipoComprobante());
 
-        // Obtener el método de pago
+        // Obtener método de pago
         MetodoPago metodoPago = metodoPagoRepository.findById(reservaDTO.getMetodoPagoId())
                 .orElseThrow(() -> new RuntimeException("Payment method not found"));
 
         LocalDateTime now = LocalDateTime.now();
 
-        // **1. Validar disponibilidad de los campos antes de crear la reserva**
-        validarDisponibilidadCampos(detallesVenta);
+        // Validar disponibilidad de todos los campos
+        List<Long> campoIds = detallesVenta.stream()
+                .map(DetalleVentaDTO::getCampoId)
+                .distinct()
+                .toList();
 
-        // **2. Crear la reserva**
-        Reserva reserva = crearReserva(reservaDTO, cliente, usuario, metodoPago, now);
-        reservaRepository.save(reserva);
+        Map<Long, Campo> campos = campoRepository.findAllById(campoIds).stream()
+                .collect(Collectors.toMap(Campo::getId, campo -> campo));
 
-        // **3. Crear los detalles de la venta**
         for (DetalleVentaDTO detalleDTO : detallesVenta) {
-            detalleVentaService.createDetalleVenta(detalleDTO, reserva);
-        }
-
-        // **4. Enviar el correo al dueño del campo después de crear la reserva**
-        enviarCorreosALosDuenosDeCampo(detallesVenta, reserva);
-
-        return reservaResponseBuilder.build(reserva);
-    }
-
-    private void validarDisponibilidadCampos(List<DetalleVentaDTO> detallesVenta) {
-        for (DetalleVentaDTO detalleDTO : detallesVenta) {
-            Long campoId = detalleDTO.getCampoId();
-            Campo campo = campoRepository.findById(campoId)
-                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
-
-            LocalDate detalleFecha = detalleDTO.getFecha();
+            Campo campo = campos.get(detalleDTO.getCampoId());
+            if (campo == null) {
+                throw new RuntimeException("Campo not found for id: " + detalleDTO.getCampoId());
+            }
             boolean available = campoAvailabilityService.isCampoAvailable(
-                    campoId, detalleFecha, detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
-
+                    detalleDTO.getCampoId(), detalleDTO.getFecha(),
+                    detalleDTO.getHoraInicio(), detalleDTO.getHoraFinal());
             if (!available) {
                 throw new RuntimeException("Campo not available for the specified time range");
             }
         }
+
+        // Crear reserva
+        Reserva reserva = crearReserva(reservaDTO, cliente, usuario, metodoPago, now);
+        reservaRepository.save(reserva);
+
+        // Crear detalles de venta
+        List<DetalleVenta> detalles = detallesVenta.stream()
+                .map(detalleDTO -> detalleVentaService.createDetalleVenta(detalleDTO, reserva))
+                .toList();
+
+        // Enviar correo al dueño del campo (si corresponde)
+        Long campoId = detallesVenta.get(0).getCampoId(); // Usar el primer campo como ejemplo
+        Campo campo = campos.get(campoId);
+        if (campo != null) {
+            User campoUsuario = campo.getUsuario();
+            if (campoUsuario != null) {
+                comprobanteService.createComprobante(reserva, usuario, now, campo);
+                sendVerificationEmail(reserva, campoUsuario);
+            }
+        }
+
+        return reservaResponseBuilder.build(reserva);
     }
 
     private Reserva crearReserva(ReservaDTO reservaDTO, Cliente cliente, User usuario, MetodoPago metodoPago, LocalDateTime now) {
@@ -107,7 +118,7 @@ public class ReservaService implements IReservaService {
                 .cliente(cliente)
                 .usuario(usuario)
                 .metodoPago(metodoPago)
-                .estado('0')  // Estado inicial
+                .estado('0') // Estado inicial
                 .usuarioCreacion(usuario.getUsername())
                 .fechaCreacion(now)
                 .usuarioModificacion(usuario.getUsername())
@@ -115,19 +126,6 @@ public class ReservaService implements IReservaService {
                 .build();
     }
 
-    private void enviarCorreosALosDuenosDeCampo(List<DetalleVentaDTO> detallesVenta, Reserva reserva) {
-        for (DetalleVentaDTO detalleDTO : detallesVenta) {
-            Long campoId = detalleDTO.getCampoId();
-            Campo campo = campoRepository.findById(campoId)
-                    .orElseThrow(() -> new RuntimeException("Campo not found for id: " + campoId));
-
-            // Obtener usuario del dueño del campo
-            User campoUsuario = campo.getUsuario();
-            if (campoUsuario != null) {
-                sendVerificationEmail(reserva, campoUsuario); // Enviar el correo al dueño del campo
-            }
-        }
-    }
 
 
     private void sendVerificationEmail(Reserva reserva, User user) {

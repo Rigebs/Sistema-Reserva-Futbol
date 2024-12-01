@@ -18,7 +18,7 @@ public class DetalleVentaService {
     private final CampoRepository campoRepository;
     private final UserRepository userRepository;
 
-    public void createDetalleVenta(DetalleVentaDTO detalleVentaDTO, Reserva reserva) {
+    public DetalleVenta createDetalleVenta(DetalleVentaDTO detalleVentaDTO, Reserva reserva) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         LocalDateTime now = LocalDateTime.now();
         User usuario = userRepository.findByUsername(authenticatedUsername)
@@ -41,5 +41,7 @@ public class DetalleVentaService {
                 .build();
 
         detalleVentaRepository.save(detalleVenta);
+        return detalleVenta; // Retornar el objeto creado
     }
+
 }
