@@ -26,6 +26,7 @@ import { MatOptionModule } from "@angular/material/core";
 import { MatSelectChange, MatSelectModule } from "@angular/material/select";
 import { CommonModule } from "@angular/common";
 import { AvailabilityCamposService } from "../../services/availability-campos.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-proceso-reserva",
@@ -70,6 +71,10 @@ export class ProcesoReservaComponent implements OnInit {
   horaInicio: number = 0;
   horaFinal: number = 0;
 
+  isThereHours: boolean = true;
+
+  isHoraFinalDisponible: boolean = true;
+
   @Output() reservaFinalizada = new EventEmitter<{
     campoId: number;
     campoNombre: string;
@@ -83,6 +88,7 @@ export class ProcesoReservaComponent implements OnInit {
     private _formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<ProcesoReservaComponent>,
     private availabilityCamposService: AvailabilityCamposService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.atenciónStartHour = parseInt(this.data.horaInicio.split(":")[0]);
@@ -94,12 +100,18 @@ export class ProcesoReservaComponent implements OnInit {
     today.setDate(today.getDate() + 7);
     this.maxDate = today;
     this.firstFormGroup = this._formBuilder.group({
-      fechaReserva: ["", Validators.required],
+      fechaReserva: [
+        "",
+        [Validators.required, this.customValidator.bind(this)],
+      ],
     });
 
     this.secondFormGroup = this._formBuilder.group({
       horaInicio: ["", Validators.required],
-      horaFin: ["", Validators.required],
+      horaFin: [
+        { value: "", disabled: this.isHoraFinalDisponible },
+        Validators.required,
+      ],
     });
   }
 
@@ -121,6 +133,14 @@ export class ProcesoReservaComponent implements OnInit {
     );
   }
 
+  customValidator(control: any): { [key: string]: boolean } | null {
+    if (!this.isThereHours) {
+      return null;
+    } else {
+      return { noHour: true };
+    }
+  }
+
   onDateChange(event: any): void {
     if (this.id !== undefined) {
       const selectedDate = new Date(event.value);
@@ -132,6 +152,7 @@ export class ProcesoReservaComponent implements OnInit {
         .subscribe((dataTime: string[]) => {
           console.log("Horas disponibles del backend:", dataTime);
 
+          // Filtrar las horas disponibles
           this.availableHours = dataTime
             .map((hour) => parseInt(hour.split(":")[0]))
             .filter(
@@ -139,11 +160,32 @@ export class ProcesoReservaComponent implements OnInit {
                 hour >= this.atenciónStartHour && hour <= this.atenciónEndHour
             );
 
+          // Si no hay horas disponibles después del filtrado
+          if (!this.availableHours || this.availableHours.length === 0) {
+            this.isThereHours = true; // No hay horas disponibles
+            this.firstFormGroup.get("fechaReserva")?.updateValueAndValidity(); // Revalida el formulario
+            this.snackBar.open(
+              "No hay horas disponibles para esta fecha",
+              "Cerrar",
+              {
+                duration: 3000,
+                verticalPosition: "top",
+                horizontalPosition: "center",
+              }
+            );
+            return;
+          }
+          console.log("pasooo");
+
+          this.isThereHours = false;
+          this.firstFormGroup.get("fechaReserva")?.updateValueAndValidity(); // Revalida el formulario
+
           console.log(
             "Horas disponibles después de filtrar:",
             this.availableHours
           );
 
+          // Filtrar horas de fin si ya se seleccionó una hora de inicio
           if (this.secondFormGroup.value.horaInicio) {
             this.filteredEndHours = this.availableHours.filter(
               (hour) => hour > this.secondFormGroup.value.horaInicio
@@ -170,15 +212,32 @@ export class ProcesoReservaComponent implements OnInit {
           hour === nextHour + 3
       );
 
-      this.secondFormGroup.patchValue({ horaFin: "" });
+      if (this.filteredEndHours && this.filteredEndHours.length > 0) {
+        this.isHoraFinalDisponible = true; // Actualiza la variable booleana
+        this.secondFormGroup.get("horaFin")?.enable(); // Habilita el control
+      } else {
+        this.isHoraFinalDisponible = false;
+        this.secondFormGroup.get("horaFin")?.disable(); // Deshabilita el control si no hay horas válidas
+        this.snackBar.open(
+          "No hay horas disponibles para continuar",
+          "Cerrar",
+          {
+            duration: 3000,
+            verticalPosition: "top",
+            horizontalPosition: "center",
+          }
+        );
+      }
+
+      this.secondFormGroup.patchValue({ horaFin: "" }); // Resetea el valor de horaFin
       this.horaInicio = selectedHour;
+
+      console.log("Horas disponibles para hora fin:", this.filteredEndHours);
     } else {
-      console.log("RJDFK: ", selectedHour);
+      // Actualiza el valor de hora final y calcula el precio
       this.horaFinal = selectedHour;
-      console.log("RESTA: ", this.horaFinal - this.horaInicio);
       this.precio =
         this.data.reserva.precio * (this.horaFinal - this.horaInicio);
-
       this.secondFormGroup.patchValue({ horaFin: selectedHour });
     }
   }

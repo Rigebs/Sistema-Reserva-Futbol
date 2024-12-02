@@ -17,7 +17,9 @@ export class CamposResumenComponent {
   @Input() reservas: any[] = [];
   @Output() reservaEliminada = new EventEmitter<any>(); // Agregar salida
 
-  constructor(private datePipe: DatePipe) {}
+  constructor(private datePipe: DatePipe) {
+    console.log("HOLA");
+  }
 
   formatDate(date: Date): string {
     return this.datePipe.transform(date, "dd/MM/yyyy") || "";

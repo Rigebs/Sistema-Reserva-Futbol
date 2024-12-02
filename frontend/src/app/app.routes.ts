@@ -15,6 +15,7 @@ import { SupremAdminComponent } from "./pages/suprem-admin/suprem-admin.componen
 import { SupremAdminGuard } from "./guards/suprem-admin.guard";
 import { EditarPerfilComponent } from "./pages/editar-perfil/editar-perfil.component";
 import { DashboardComponent } from "./pages/dashboard/dashboard.component";
+import { ComprobanteComponent } from "./pages/comprobante/comprobante.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -61,6 +62,10 @@ export const routes: Routes = [
     path: ":usuario/panel-admin/dashboard",
     component: DashboardComponent,
     canActivate: [AdminGuard],
+  },
+  {
+    path: "comprobante",
+    component: ComprobanteComponent,
   },
 
   {

@@ -157,6 +157,8 @@ export class ReservarCampoComponent implements OnInit {
       (r) => r !== reserva
     );
     if (this.reservaListComponent) {
+      console.log("RESSD");
+
       this.reservaListComponent.hola(reserva);
     }
   }
