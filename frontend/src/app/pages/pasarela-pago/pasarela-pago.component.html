@@ -75,7 +75,24 @@
       </div>
 
       <div class="total-container">
-        <h3>Total: {{ total | number : "1.2-2" }}</h3>
+        <div class="total-item">
+          <span class="label">Subtotal:</span>
+          <span class="value">s/. {{ subtotal | number : "1.2-2" }}</span>
+        </div>
+        <div class="total-item">
+          <span class="label">Descuento:</span>
+          <span class="value discount"
+            >s/. {{ descuento | number : "1.2-2" }}</span
+          >
+        </div>
+        <div class="total-item">
+          <span class="label">IGV (18%):</span>
+          <span class="value igv">s/. {{ igv | number : "1.2-2" }}</span>
+        </div>
+        <div class="total-item total-final">
+          <span class="label-total">Total:</span>
+          <span class="value total">s/. {{ total | number : "1.2-2" }}</span>
+        </div>
       </div>
 
       <!-- Botón para pagar con Yape -->

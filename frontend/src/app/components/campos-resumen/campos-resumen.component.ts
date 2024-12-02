@@ -35,7 +35,7 @@ export class CamposResumenComponent {
   }
 
   removeReserva(reserva: any) {
-    this.reservaEliminada.emit(reserva); // Emitir evento
-    this.reservas = this.reservas.filter((r) => r !== reserva); // Eliminar la reserva del resumen
+    this.reservaEliminada.emit(reserva);
+    this.reservas = this.reservas.filter((r) => r !== reserva);
   }
 }

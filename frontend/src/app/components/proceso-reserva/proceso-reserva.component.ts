@@ -65,6 +65,11 @@ export class ProcesoReservaComponent implements OnInit {
 
   unavailableHours: number[] = [];
 
+  precio: number = 0;
+
+  horaInicio: number = 0;
+  horaFinal: number = 0;
+
   @Output() reservaFinalizada = new EventEmitter<{
     campoId: number;
     campoNombre: string;
@@ -108,6 +113,8 @@ export class ProcesoReservaComponent implements OnInit {
     const today = new Date();
     today.setDate(today.getDate() + 7);
     this.maxDate = today;
+
+    this.precio = this.data.reserva.precio;
 
     this.availableHours = this.availableHours.filter(
       (hour) => !this.unavailableHours.includes(hour)
@@ -163,11 +170,15 @@ export class ProcesoReservaComponent implements OnInit {
           hour === nextHour + 3
       );
 
-      console.log("FILTERED: ", this.filteredEndHours);
-
-      // Resetear la hora de fin
       this.secondFormGroup.patchValue({ horaFin: "" });
+      this.horaInicio = selectedHour;
     } else {
+      console.log("RJDFK: ", selectedHour);
+      this.horaFinal = selectedHour;
+      console.log("RESTA: ", this.horaFinal - this.horaInicio);
+      this.precio =
+        this.data.reserva.precio * (this.horaFinal - this.horaInicio);
+
       this.secondFormGroup.patchValue({ horaFin: selectedHour });
     }
   }
@@ -182,7 +193,7 @@ export class ProcesoReservaComponent implements OnInit {
       fecha: this.firstFormGroup.value.fechaReserva,
       horaInicio: horaInicioString,
       horaFinal: horaFinString,
-      precio: this.data.reserva.precio,
+      precio: this.precio,
     };
 
     this.reservaFinalizada.emit(reservaData);

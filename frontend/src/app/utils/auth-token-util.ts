@@ -16,6 +16,11 @@ export class AuthTokenUtil {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getIdFromToken(): number {
+    const payload = this.decodeToken();
+    return payload.id;
+  }
+
   removeToken(): void {
     localStorage.removeItem(this.tokenKey);
   }

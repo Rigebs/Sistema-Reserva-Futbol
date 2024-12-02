@@ -15,6 +15,17 @@ import { CompaniaService } from "../../services/compania.service";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { PagoDialogComponent } from "../../components/pago-dialog/pago-dialog.component";
 
+interface RangoHora {
+  horaInicio: number;
+  horaFin: number;
+}
+
+interface ObjetoConRangos {
+  campoId: number;
+  fecha: string;
+  rangosHora: RangoHora[];
+}
+
 @Component({
   selector: "app-pasarela-pago",
   standalone: true,
@@ -32,6 +43,7 @@ import { PagoDialogComponent } from "../../components/pago-dialog/pago-dialog.co
 export class PasarelaPagoComponent {
   reservas: any[] = [];
   total: number = 0;
+  subtotal: number = 0;
 
   reservaRequest: ReservaRequest | undefined;
 
@@ -40,6 +52,9 @@ export class PasarelaPagoComponent {
   avalaibleButton: boolean = false;
 
   id: number | undefined;
+
+  descuento = 0;
+  igv = 0;
 
   constructor(
     private router: Router,
@@ -80,6 +95,11 @@ export class PasarelaPagoComponent {
         horaFinal: this.convertirAHora(reserva.horaFinal),
       }));
 
+      this.subtotal = this.reservas.reduce(
+        (acc, reserva) => acc + reserva.precio,
+        0
+      );
+
       // Calcular totales
       this.calcularTotal();
 
@@ -87,22 +107,19 @@ export class PasarelaPagoComponent {
       const subtotal = this.reservas.reduce(
         (acc, detalle) => acc + detalle.precio,
         0
-      ); // Sumatoria de los precios
-      const descuento = 0.1 * subtotal; // Supongamos un 10% de descuento (ajustar según lógica)
-      const totalDescuento = subtotal - descuento; // Total menos descuento
-      const igv = 0.18 * totalDescuento; // 18% de IGV (ajustar según lógica fiscal)
-      const total = totalDescuento + igv; // Total final
+      );
+      const totalDescuento = this.subtotal - this.descuento;
 
       // Crear el objeto reserva
       const reserva: Reserva = {
-        fecha: this.fechaConverter(new Date()), // Fecha en formato ISO
-        descuento: parseFloat(descuento.toFixed(2)), // Redondear a 2 decimales
-        total: parseFloat(total.toFixed(2)), // Redondear a 2 decimales
-        igv: parseFloat(igv.toFixed(2)), // Redondear a 2 decimales
-        subtotal: parseFloat(subtotal.toFixed(2)), // Redondear a 2 decimales
-        totalDescuento: parseFloat(totalDescuento.toFixed(2)), // Redondear a 2 decimales
-        tipoComprobante: "B", // Factura boleta, ajustar si necesario
-        metodoPagoId: 1, // Método de pago por defecto
+        fecha: this.fechaConverter(new Date()),
+        descuento: 0, // Redondear a 2 decimales
+        total: parseFloat(this.total.toFixed(2)),
+        igv: parseFloat(this.igv.toFixed(2)),
+        subtotal: parseFloat(this.subtotal.toFixed(2)),
+        totalDescuento: parseFloat(totalDescuento.toFixed(2)),
+        tipoComprobante: "B",
+        metodoPagoId: 1,
       };
 
       // Los detalles se pasan directamente
@@ -189,10 +206,14 @@ export class PasarelaPagoComponent {
   }
 
   calcularTotal() {
-    this.total = this.reservas.reduce(
-      (acc, reserva) => acc + reserva.precio,
-      0
-    );
+    const porcentajeDescuento = 0; // 10% de descuento
+    const porcentajeIgv = 0.18; // 18% de IGV
+
+    this.descuento = this.subtotal * porcentajeDescuento;
+
+    this.igv = this.subtotal * porcentajeIgv;
+
+    this.total = this.subtotal - this.descuento + this.igv;
   }
 
   pagarConYape() {
@@ -202,10 +223,11 @@ export class PasarelaPagoComponent {
 
         this.avalaibleButton = true;
         this.snackBar.open("RESERVA REALIZADA CON ÉXITO", "Cerrar", {
-          duration: 3000, // Duración en milisegundos
+          duration: 3000,
           horizontalPosition: "center", // Posición horizontal
           verticalPosition: "bottom", // Posición vertical
         });
+        console.log("D: ", data);
       },
       (error) => {
         this.snackBar.open("Error al realizar la reserva", "Cerrar", {

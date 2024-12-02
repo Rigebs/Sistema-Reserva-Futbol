@@ -22,6 +22,10 @@ export class NavbarHomeComponent implements OnInit {
   isCompania = false;
   adminUsername: string | null = null;
 
+  isMobile = window.innerWidth <= 768;
+
+  showDropdown = false;
+
   isEspera = false;
 
   isCliente = false;
@@ -62,6 +66,22 @@ export class NavbarHomeComponent implements OnInit {
         });
       }
     });
+  }
+
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown; // Alterna el dropdown
+  }
+
+  editProfile() {
+    const currentUrl = this.router.url;
+    this.router.navigate(["/usuario/editar-perfil"], {
+      queryParams: { from: currentUrl },
+    });
+  }
+
+  viewReservations() {
+    console.log("Ver Reservas");
+    // Aquí puedes redirigir o mostrar las reservas del usuario
   }
 
   checkAdminRole() {

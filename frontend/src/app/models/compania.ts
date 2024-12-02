@@ -1,4 +1,6 @@
 import { Empresa } from "./empresa";
+import { Imagen } from "./imagen";
+import { QrImagen } from "./qr-imagen";
 
 export interface Compania {
   id?: number;
@@ -9,4 +11,6 @@ export interface Compania {
   horaInicio?: string;
   horaFin?: string;
   empresa?: Empresa;
+  imagen?: Imagen;
+  qrImagen?: QrImagen;
 }

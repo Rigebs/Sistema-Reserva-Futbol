@@ -13,6 +13,8 @@ import { ConfirmarComponent } from "./pages/confirmar/confirmar.component";
 import { GoogleConfirmationComponent } from "./pages/google-confirmation/google-confirmation.component";
 import { SupremAdminComponent } from "./pages/suprem-admin/suprem-admin.component";
 import { SupremAdminGuard } from "./guards/suprem-admin.guard";
+import { EditarPerfilComponent } from "./pages/editar-perfil/editar-perfil.component";
+import { DashboardComponent } from "./pages/dashboard/dashboard.component";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/home", pathMatch: "full" },
@@ -51,7 +53,20 @@ export const routes: Routes = [
     component: SupremAdminComponent,
     canActivate: [SupremAdminGuard],
   },
+  {
+    path: "usuario/editar-perfil",
+    component: EditarPerfilComponent,
+  },
+  {
+    path: ":usuario/panel-admin/dashboard",
+    component: DashboardComponent,
+    canActivate: [AdminGuard],
+  },
 
-  { path: "registrar-cliente", component: RegistrarClienteComponent },
+  {
+    path: "registrar-cliente",
+    component: RegistrarClienteComponent,
+    canActivate: [AuthGuard],
+  },
   { path: "confirm", component: ConfirmarComponent },
 ];

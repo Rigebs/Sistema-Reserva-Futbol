@@ -1,0 +1,243 @@
+<div class="formulario">
+  <div class="container-button">
+    <button mat-button class="regresar" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>Regresar
+    </button>
+  </div>
+  <div class="container">
+    <div class="formulario-container">
+      <h1>Editar Perfil</h1>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
+        <ng-container *ngIf="cargado">
+          <h6>Datos del usuario:</h6>
+          <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" readonly />
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Campos para ROLE_CLIENTE -->
+        <ng-container *ngIf="roleCliente && ubicacionCargada">
+          <H6>Datos de la persona:</H6>
+          <mat-form-field appearance="outline">
+            <mat-label>DNI</mat-label>
+            <input matInput formControlName="dni" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido Paterno</mat-label>
+            <input matInput formControlName="apePaterno" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido Materno</mat-label>
+            <input matInput formControlName="apeMaterno" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Celular</mat-label>
+            <input matInput formControlName="celular" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Correo personal</mat-label>
+            <input matInput formControlName="correo" type="email" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input matInput formControlName="fechaNac" type="date" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Género</mat-label>
+            <input matInput formControlName="genero" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Dirección</mat-label>
+            <input matInput formControlName="direccion" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="district-select">
+            <mat-label>Departamento</mat-label>
+            <mat-select
+              formControlName="departamento"
+              (selectionChange)="onDepartamentoChange($event)"
+            >
+              <mat-option
+                *ngFor="let departamento of departamentos"
+                [value]="departamento.id"
+              >
+                {{ departamento.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="district-select">
+            <mat-label>Provincia</mat-label>
+            <mat-select
+              formControlName="provincia"
+              (selectionChange)="onProvinciaChange($event)"
+            >
+              <mat-option
+                *ngFor="let provincia of provincias"
+                [value]="provincia.id"
+              >
+                {{ provincia.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="district-select">
+            <mat-label>Distrito</mat-label>
+            <mat-select
+              formControlName="distrito"
+              (selectionChange)="onDistritoChange($event)"
+            >
+              <mat-option
+                *ngFor="let distrito of distritos"
+                [value]="distrito.id"
+              >
+                {{ distrito.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Campos para ROLE_COMPANIA -->
+        <ng-container *ngIf="roleCompania">
+          <h6>Datos de la compañia</h6>
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de Compañía</mat-label>
+            <input matInput formControlName="nombre" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Concepto</mat-label>
+            <input matInput formControlName="concepto" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Celular</mat-label>
+            <input matInput formControlName="celular" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Correo</mat-label>
+            <input matInput formControlName="correo" type="email" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Hora de inicio</mat-label>
+            <mat-select
+              formControlName="horaInicio"
+              (selectionChange)="onStartHourChange($event)"
+            >
+              <mat-option
+                *ngFor="let hour of availableStartHours"
+                [value]="hour"
+              >
+                {{ convertTo12HourFormat(hour) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Hora de fin</mat-label>
+            <mat-select formControlName="horaFin">
+              <mat-option *ngFor="let hour of filteredEndHours" [value]="hour">
+                {{ convertTo12HourFormat(hour) }}
+                <!-- Mostrar en formato 12 horas -->
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="grid-item">
+            <h6 class="info">Imagen de la sede</h6>
+            <!-- Apartado para Foto de la Sede -->
+            <label class="label-file" for="fileInput">Foto de la Sede</label>
+            <input
+              class="file"
+              type="file"
+              id="fileInput"
+              (change)="onFileSelected($event, 'imagenSede')"
+              required
+              [ngClass]="{
+                'invalid-input':
+                  profileForm.get('imagenSede')?.invalid &&
+                  profileForm.get('imagenSede')?.touched
+              }"
+            />
+            <!-- Mostrar el nombre del archivo si se ha seleccionado -->
+            <span *ngIf="fileName" class="file-name">{{ fileName }}</span>
+            <div
+              *ngIf="
+                profileForm.get('imagenSede')?.invalid &&
+                profileForm.get('imagenSede')?.touched
+              "
+              class="error-message"
+            >
+              Este campo es obligatorio.
+            </div>
+            <img [src]="imagePreview" alt="Vista previa" width="200" />
+          </div>
+
+          <div>
+            <h6 class="info">Codigo QR de Yape</h6>
+            <!-- Apartado para QR de Yape -->
+            <label class="label-file" for="qrInput">QR de Yape</label>
+            <input
+              class="file"
+              type="file"
+              id="qrInput"
+              (change)="onFileSelected($event, 'imagenQrYape')"
+              required
+              [ngClass]="{
+                'invalid-input':
+                  profileForm.get('imagenQrYape')?.invalid &&
+                  profileForm.get('imagenQrYape')?.touched
+              }"
+            />
+            <!-- Mostrar el nombre del archivo si se ha seleccionado -->
+            <span *ngIf="qrFileName" class="file-name">{{ qrFileName }}</span>
+            <div
+              *ngIf="
+                profileForm.get('imagenQrYape')?.invalid &&
+                profileForm.get('imagenQrYape')?.touched
+              "
+              class="error-message"
+            >
+              Este campo es obligatorio.
+            </div>
+            <img [src]="qrPreview" alt="Vista previa" width="200" />
+          </div>
+
+          <h6>Datos de la empresa:</h6>
+
+          <mat-form-field appearance="outline">
+            <mat-label>RUC</mat-label>
+            <input matInput formControlName="ruc" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Razón Social</mat-label>
+            <input matInput formControlName="razonSocial" readonly />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Dirección</mat-label>
+            <input matInput formControlName="direccion" />
+          </mat-form-field>
+        </ng-container>
+
+        <div class="enviar" align="center">
+          <button mat-raised-button color="primary" type="submit">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

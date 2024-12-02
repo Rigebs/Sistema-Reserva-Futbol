@@ -1,9 +1,14 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from "@angular/common/http";
 import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 import { UpdateClientCompania } from "../models/update-client-sede";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { UserDetails } from "../models/user-details";
 
 @Injectable({
   providedIn: "root",
@@ -54,5 +59,17 @@ export class UsuarioService {
   // Método para rechazar la compañía
   rejectCompania(idCompania: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/compania/${idCompania}/reject`);
+  }
+
+  getUserById(id: number): Observable<UserDetails> {
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.get<UserDetails>(url);
+  }
+
+  updateUser(id: number, userDetailsDTO: UserDetails): Observable<any> {
+    console.log("sldjksdkl, ", userDetailsDTO);
+
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.put(url, userDetailsDTO);
   }
 }

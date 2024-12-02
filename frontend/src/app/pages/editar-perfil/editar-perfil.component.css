@@ -1,0 +1,62 @@
+.container-button {
+  padding-top: 40px;
+  max-width: 500px;
+  margin: 0 auto; /* Centra el contenedor con un margen superior */
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto; /* Centra el contenedor con un margen superior */
+}
+
+.formulario-container {
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 30px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  border: 1px solid #e0e0e0; /* Borde suave para dar estructura */
+  font-family: "Arial", sans-serif; /* Tipografía moderna */
+}
+
+.formulario {
+  margin-top: -30px;
+  padding-bottom: 30px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+button {
+  display: block;
+  margin: 20px 0;
+}
+
+.file {
+  display: none;
+}
+
+.file-name {
+  margin-left: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+.label-file {
+  display: inline-block;
+  background-color: #1976d2;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.label-file:hover {
+  background-color: #1565c0;
+}

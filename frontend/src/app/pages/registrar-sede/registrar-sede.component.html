@@ -258,7 +258,6 @@
                   [value]="hour"
                 >
                   {{ convertTo12HourFormat(hour) }}
-                  <!-- Mostrar en formato 12 horas -->
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -291,41 +290,46 @@
         </form>
       </mat-step>
     </mat-stepper>
-  </div><div class="intro-container" *ngIf="!isMobile">
+  </div>
+  <div class="intro-container" *ngIf="!isMobile">
     <div class="header">
       <h1 class="title">¡Bienvenido a Zemply!</h1>
     </div>
     <div class="content">
       <p class="intro">
-        Zemply es la plataforma líder para reservas de canchas deportivas. Conectamos a tus clientes con tu negocio, 
-        permitiendo reservas rápidas y sencillas desde cualquier dispositivo.
+        Zemply es la plataforma líder para reservas de canchas deportivas.
+        Conectamos a tus clientes con tu negocio, permitiendo reservas rápidas y
+        sencillas desde cualquier dispositivo.
       </p>
       <div class="benefits">
         <h3 class="section-title">¿Por qué unirte a Zemply?</h3>
         <ul class="benefits-list">
           <li>
-            <h6>Mayor visibilidad:</h6> Atrae a una amplia audiencia de jugadores locales y visitantes.
+            <h6>Mayor visibilidad:</h6>
+            Atrae a una amplia audiencia de jugadores locales y visitantes.
           </li>
           <li>
-            <h6>Aumento de reservas:</h6> Facilita las reservas 24/7, impulsando tus ingresos.
+            <h6>Aumento de reservas:</h6>
+            Facilita las reservas 24/7, impulsando tus ingresos.
           </li>
           <li>
-            <h6>Gestión simplificada:</h6> Herramientas intuitivas para administrar horarios y disponibilidad.
+            <h6>Gestión simplificada:</h6>
+            Herramientas intuitivas para administrar horarios y disponibilidad.
           </li>
           <li>
-            <h6>Mejor experiencia del cliente:</h6> Ofrece conveniencia y fortalece la lealtad de tus clientes.
+            <h6>Mejor experiencia del cliente:</h6>
+            Ofrece conveniencia y fortalece la lealtad de tus clientes.
           </li>
           <li>
-            <h6>Promoción personalizada:</h6> Destaca tus instalaciones y eventos especiales para atraer más jugadores.
+            <h6>Promoción personalizada:</h6>
+            Destaca tus instalaciones y eventos especiales para atraer más
+            jugadores.
           </li>
         </ul>
       </div>
       <div class="cta">
         <h3 class="cta-title">¡Únete a Zemply hoy!</h3>
-       
       </div>
     </div>
   </div>
-  
-
 </div>

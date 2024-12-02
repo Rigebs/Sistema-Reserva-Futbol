@@ -134,6 +134,29 @@ body {
   transform: scale(1.1); /* Zoom más marcado en hover */
 }
 
+.edit-profile {
+  background-color: #4caf50; /* Color de fondo */
+  color: white; /* Color del texto */
+  padding: 10px 20px; /* Espaciado interno */
+  font-size: 16px; /* Tamaño del texto */
+  border: none; /* Sin bordes */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer; /* Manito al pasar */
+  transition: all 0.3s ease; /* Transición para animaciones suaves */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+.edit-profile:hover {
+  background-color: #45a049; /* Color de fondo al pasar */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Sombra al pasar */
+  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+}
+
+.edit-profile:active {
+  transform: scale(1); /* Sin escala al hacer clic */
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Ajusta la sombra */
+}
+
 .welcome-message {
   color: white;
   font-size: 16px;

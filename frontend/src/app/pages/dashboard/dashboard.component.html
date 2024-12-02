@@ -1,0 +1,62 @@
+<app-sidebar-prueba></app-sidebar-prueba>
+<div class="co">
+  <div class="container">
+    <h2 class="text-center">Dashboard de Reservas y Ventas</h2>
+
+    <!-- Date Picker Section -->
+    <div class="mb-3">
+      <label for="fechaInput" class="form-label">Selecciona una fecha:</label>
+      <input
+        type="text"
+        id="fechaInput"
+        class="form-control flatpickr-input"
+        placeholder="Selecciona una fecha"
+      />
+    </div>
+
+    <!-- Cards for Total Reservations and Total Money -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title text-center">Total de Reservas Diario</h5>
+            <p class="card-text text-center">{{ totalReservas }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title text-center">
+              Total Monetario de Reservas Diario
+            </h5>
+            <p class="card-text text-center">{{ totalMonetario | currency }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reporte">
+      <!-- Monthly Sales Chart -->
+      <div class="chart-container chart-section">
+        <h4 class="text-center">Gráfico de Ventas Mensuales</h4>
+        <div class="card">
+          <div class="card-body">
+            <canvas id="ventasMensualesChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Reservations per Field Chart -->
+      <div class="chart-container chart-section">
+        <h4 class="text-center">Gráfico de Reservas por Campo Mensual</h4>
+        <div class="card">
+          <div class="card-body">
+            <canvas id="reservasCampoChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

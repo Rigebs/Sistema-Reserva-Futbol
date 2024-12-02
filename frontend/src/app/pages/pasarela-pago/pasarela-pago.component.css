@@ -28,6 +28,49 @@
   font-size: 1.2rem;
   color: #1b5e20; /* Verde oscuro para el total */
   text-align: right;
+  background-color: #f5f5f5; /* Fondo gris claro para resaltar */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.total-item {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.label {
+  color: #333; /* Color oscuro para las etiquetas */
+}
+
+.value {
+  color: #2e7d32; /* Verde para los valores */
+}
+
+.discount {
+  color: #d32f2f; /* Rojo para el descuento */
+}
+
+.igv {
+  color: #1976d2; /* Azul para IGV */
+}
+
+.total-final {
+  border-top: 2px solid #000000; /* Línea verde para separar el total */
+  padding-top: 10px;
+  font-size: 1.4rem;
+}
+
+.label-total {
+  font-weight: bold;
+  color: #0d0f5e;
+}
+
+.total {
+  font-weight: bold;
+  color: #0d0f5e; /* Verde más oscuro para el total final */
+  font-size: 1.5rem;
 }
 
 button {

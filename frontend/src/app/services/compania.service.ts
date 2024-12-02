@@ -59,9 +59,14 @@ export class CompaniaService {
   }
 
   // Actualizar la imagen de la compañía
-  updateCompaniaImage(id: number, file: File): Observable<Compania> {
+  updateCompaniaImage(
+    id: number,
+    file: File,
+    qrFile: File
+  ): Observable<Compania> {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("qrFile", qrFile);
 
     return this.http.put<Compania>(`${this.apiUrl}/${id}/imagen`, formData);
   }

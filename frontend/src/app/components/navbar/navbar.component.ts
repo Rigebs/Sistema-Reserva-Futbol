@@ -62,6 +62,13 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  editProfile() {
+    const currentUrl = this.router.url;
+    this.router.navigate(["/usuario/editar-perfil"], {
+      queryParams: { from: currentUrl },
+    });
+  }
+
   checkAdminRole() {
     const hasToken = this.authTokenUtil.hasToken();
     if (hasToken) {
