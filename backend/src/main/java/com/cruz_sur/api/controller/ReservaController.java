@@ -1,8 +1,11 @@
 package com.cruz_sur.api.controller;
 
 import com.cruz_sur.api.dto.*;
+import com.cruz_sur.api.model.Reserva;
+import com.cruz_sur.api.repository.ReservaRepository;
 import com.cruz_sur.api.responses.TotalReservasResponse;
 import com.cruz_sur.api.service.IReservaService;
+import com.cruz_sur.api.service.imp.ReservaResponseBuilder;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +13,7 @@ import com.cruz_sur.api.responses.PagoResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -18,6 +22,8 @@ import java.util.List;
 public class ReservaController {
 
     private final IReservaService reservaService;
+    private final ReservaRepository reservaRepository;
+    private final ReservaResponseBuilder reservaResponseBuilder;
 
     @PostMapping
     public ResponseEntity<ReservaResponseDTO> createReserva(@RequestBody ReservaRequest request) {
@@ -68,6 +74,15 @@ public class ReservaController {
     @GetMapping("/{reservaId}/is-active")
     public ResponseEntity<PagoResponse> isReservaActive(@PathVariable Long reservaId) {
         boolean isActive = reservaService.isReservaActive(reservaId);
-        return ResponseEntity.ok(new PagoResponse(isActive));  // Return JSON response
+        return ResponseEntity.ok(new PagoResponse(isActive));
+    }
+
+    @GetMapping("/cliente/{id}")
+    public ReservaResponseDTO getReservaById(@PathVariable Long id) {
+        Optional<Reserva> reservaOptional = reservaRepository.findById(id);
+        if (reservaOptional.isEmpty()) {
+            throw new RuntimeException("Reserva not found with id: " + id);
+        }
+        return reservaResponseBuilder.build(reservaOptional.get());
     }
 }
