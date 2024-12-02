@@ -14,6 +14,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { CompaniaService } from "../../services/compania.service";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { PagoDialogComponent } from "../../components/pago-dialog/pago-dialog.component";
+import { UsuarioService } from "../../services/usuario.service";
+import { AuthTokenUtil } from "../../utils/auth-token-util";
+import { MatSelectModule } from "@angular/material/select";
 
 interface RangoHora {
   horaInicio: number;
@@ -35,6 +38,7 @@ interface ObjetoConRangos {
     CommonModule,
     MatButtonModule,
     NavbarComponent,
+    MatSelectModule,
   ],
   templateUrl: "./pasarela-pago.component.html",
   styleUrl: "./pasarela-pago.component.css",
@@ -49,6 +53,10 @@ export class PasarelaPagoComponent {
 
   qrImageUrl: string | undefined;
 
+  opciones: string[] = [];
+
+  opcionSeleccionada: string = "";
+
   avalaibleButton: boolean = false;
 
   id: number | undefined;
@@ -56,13 +64,19 @@ export class PasarelaPagoComponent {
   descuento = 0;
   igv = 0;
 
+  disabled: boolean = true;
+
+  dataEnviar: any;
+
   constructor(
     private router: Router,
     private datePipe: DatePipe,
     private reservaService: ReservaService,
     private snackBar: MatSnackBar,
     private companiaService: CompaniaService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    usuarioService: UsuarioService,
+    authTokenUtil: AuthTokenUtil
   ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state as { reservas?: any[] };
@@ -70,6 +84,19 @@ export class PasarelaPagoComponent {
 
     console.log("RESERVAS: ", state?.reservas);
     console.log("QR: ", stateQR?.companiaId);
+
+    usuarioService.getUserById(authTokenUtil.getIdFromToken()).subscribe({
+      next: (data) => {
+        this.disabled = false;
+        if (data.empresa) {
+          this.opciones = ["FACTURA", "TICKET"];
+          console.log("HKDF");
+        } else {
+          console.log("PERSO");
+          this.opciones = ["BOLETA", "TICKET"];
+        }
+      },
+    });
 
     if (stateQR?.companiaId) {
       // Realizamos la solicitud al servicio para obtener la información de pago
@@ -102,8 +129,8 @@ export class PasarelaPagoComponent {
 
       // Calcular totales
       this.calcularTotal();
+      console.log("hola");
 
-      // Crear objeto reserva con cálculos dinámicos
       const subtotal = this.reservas.reduce(
         (acc, detalle) => acc + detalle.precio,
         0
@@ -118,9 +145,11 @@ export class PasarelaPagoComponent {
         igv: parseFloat(this.igv.toFixed(2)),
         subtotal: parseFloat(this.subtotal.toFixed(2)),
         totalDescuento: parseFloat(totalDescuento.toFixed(2)),
-        tipoComprobante: "B",
+        tipoComprobante: this.obtenerTipoComprobante(this.opcionSeleccionada),
         metodoPagoId: 1,
       };
+
+      console.log("RESERr: ", reserva);
 
       // Los detalles se pasan directamente
       const detalles: DetalleVenta[] = this.reservas.map((reserva) => ({
@@ -134,10 +163,29 @@ export class PasarelaPagoComponent {
         reservaDTO: reserva,
         detallesVenta: detalles,
       };
+      console.log("REEE: ", this.reservaRequest);
     } else {
       // Redirigir si no hay reservas
       this.router.navigate(["/reservar-campo"]);
     }
+  }
+
+  obtenerTipoComprobante(opcion: string) {
+    switch (opcion) {
+      case "TICKET":
+        return "T";
+      case "BOLETA":
+        return "B";
+      case "FACTURA":
+        return "F";
+      default:
+        return "";
+    }
+  }
+
+  onSelectionChange(event: any) {
+    this.opcionSeleccionada = event.value;
+    console.log(this.opcionSeleccionada);
   }
 
   convertirNormal(hora: Date): string {
@@ -167,6 +215,7 @@ export class PasarelaPagoComponent {
         data: {
           qrUrl: qrImageUrl,
           id: this.id,
+          data: this.dataEnviar,
         },
       });
     } else {
@@ -217,28 +266,40 @@ export class PasarelaPagoComponent {
   }
 
   pagarConYape() {
-    this.reservaService.createReserva(this.reservaRequest!).subscribe(
-      (data: ReservaResponse) => {
-        this.id = data.reservaId;
+    console.log(this.obtenerTipoComprobante(this.opcionSeleccionada));
+    console.log(this.reservaRequest);
 
-        this.avalaibleButton = true;
-        this.snackBar.open("RESERVA REALIZADA CON ÉXITO", "Cerrar", {
-          duration: 3000,
-          horizontalPosition: "center", // Posición horizontal
-          verticalPosition: "bottom", // Posición vertical
-        });
-        console.log("D: ", data);
-      },
-      (error) => {
-        this.snackBar.open("Error al realizar la reserva", "Cerrar", {
-          duration: 3000,
-          horizontalPosition: "center",
-          verticalPosition: "bottom",
-        });
+    // Verifica si reservaRequest no es undefined antes de acceder a sus propiedades
+    if (this.reservaRequest) {
+      this.reservaRequest.reservaDTO.tipoComprobante =
+        this.obtenerTipoComprobante(this.opcionSeleccionada);
 
-        console.error("ERROR: ", error);
-      }
-    );
+      this.reservaService.createReserva(this.reservaRequest).subscribe(
+        (data: ReservaResponse) => {
+          this.id = data.reservaId;
+
+          this.avalaibleButton = true;
+          this.snackBar.open("RESERVA REALIZADA CON ÉXITO", "Cerrar", {
+            duration: 3000,
+            horizontalPosition: "center",
+            verticalPosition: "bottom",
+          });
+          console.log("D: ", data);
+          this.dataEnviar = data;
+        },
+        (error) => {
+          this.snackBar.open("Error al realizar la reserva", "Cerrar", {
+            duration: 3000,
+            horizontalPosition: "center",
+            verticalPosition: "bottom",
+          });
+
+          console.error("ERROR: ", error);
+        }
+      );
+    } else {
+      console.error("Error: reservaRequest no está definido.");
+    }
   }
 
   formatDate(date: Date): string {

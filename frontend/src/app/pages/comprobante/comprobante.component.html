@@ -1,264 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Factura</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f9f9f9;
-      }
-
-      .factura {
-        width: 800px;
-        margin: 20px auto;
-        padding: 30px; /* Agregado padding para evitar que el contenido quede pegado al borde */
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-sizing: border-box; /* Incluye el padding en el ancho total */
-      }
-
-      .header,
-      .info,
-      .client,
-      .items,
-      .totals,
-      .qr,
-      .footer {
-        margin-bottom: 20px;
-      }
-
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 10px;
-      }
-
-      .header .company-info {
-        max-width: 70%;
-      }
-
-      .header img {
-        width: 50vh;
-        height: 20vh;
-      }
-
-      .header h1 {
-        margin: 0;
-        font-size: 24px;
-        text-transform: uppercase;
-      }
-
-      .info,
-      .client,
-      .totals {
-        font-size: 14px;
-      }
-
-      .info p,
-      .client p,
-      .totals p {
-        margin: 4px 0;
-      }
-
-      .items table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-
-      .items table th,
-      .items table td {
-        padding: 8px;
-        text-align: left;
-      }
-
-      .items table th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-      }
-
-      .totals p strong {
-        font-size: 16px;
-      }
-
-      .qr {
-        text-align: center;
-      }
-
-      .footer {
-        text-align: center;
-        font-size: 12px;
-        color: #888;
-      }
-
-      .download-btn {
-        display: flex;
-        justify-content: center;
-        margin: 20px;
-      }
-
-      .download-btn button {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-      .download-btn button:hover {
-        background-color: #0056b3;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="factura" id="invoice">
-      <header class="header">
-        <div class="company-info">
-          <h1>CLINICA SAN GABRIEL S.A.C.</h1>
-          <p><strong>RUC:</strong> 20505018509</p>
-          <p>
-            <strong>Dirección:</strong> AV. LA MARINA NRO 2955 URB. MARANGA III
-            ETAPA 4
-          </p>
-          <p><strong>Teléfono:</strong> 912232434</p>
-        </div>
-        <img
-          src="https://res.cloudinary.com/dpfcpo5me/image/upload/v1733086380/asvfop1j8kfoms6amu3c.jpg"
-          alt="Logo"
-        />
-      </header>
-
-      <section class="info">
-        <p><strong>Factura</strong></p>
-        <p><strong>Serie:</strong> B001</p>
-        <p><strong>Número:</strong> 000004</p>
-        <p><strong>Fecha de emisión:</strong> 2024-12-01</p>
-      </section>
-
-      <section class="client">
-        <p><strong>Cliente:</strong> RICARDO ANDRES OBREGON LARA</p>
-        <p><strong>Dirección:</strong> Manuel Pardo N° 1017</p>
-        <p><strong>DNI:</strong> 73047218</p>
-        <p><strong>Celular:</strong> 903019613</p>
-      </section>
-
-      <section class="items">
-        <table>
-          <thead>
-            <tr>
-              <th>Descripción</th>
-              <th>Cantidad</th>
-              <th>Precio Unitario</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody id="details">
-            <!-- Los detalles se llenarán dinámicamente -->
-          </tbody>
-        </table>
-      </section>
-
-      <section class="totals">
-        <p><strong>Subtotal:</strong> S/40.00</p>
-        <p><strong>IGV (18%):</strong> S/6.48</p>
-        <p><strong>Descuento:</strong> S/4.00</p>
-        <p><strong>Total:</strong> <strong>S/42.48</strong></p>
-      </section>
-
-      <section class="qr">
-        <canvas id="qrCode"></canvas>
-      </section>
-
-      <footer class="footer">
-        <p>
-          Generado automáticamente - Gracias por su preferencia. Visita nuestra
-          página web:
-          <a href="https://zemply.vercel.app/" target="_blank">Zemply</a>
-        </p>
-      </footer>
+<div class="factura" id="invoice">
+  <header class="header">
+    <div class="company-info">
+      <h1>{{ data.razonSocial }}</h1>
+      <p><strong>RUC:</strong> {{ data.ruc }}</p>
+      <p><strong>Dirección:</strong> {{ data.direccionEmpresa }}</p>
+      <p><strong>Teléfono:</strong> {{ data.telefonoEmpresa }}</p>
     </div>
+    <img [src]="data.imageUrl" alt="Logo" />
+  </header>
 
-    <div class="download-btn">
-      <button id="downloadPdf">Descargar Factura</button>
-    </div>
+  <section class="info">
+    <p>
+      <strong>{{ data.comprobante }}</strong>
+    </p>
+    <p><strong>Serie:</strong> {{ data.serie }}</p>
+    <p><strong>Número:</strong> {{ data.numero }}</p>
+    <p><strong>Fecha de emisión:</strong> {{ data.fecha }}</p>
+  </section>
 
-    <script>
-      // Datos proporcionados como JSON
-      const data = {
-        cliente: "RICARDO ANDRES OBREGON LARA",
-        direccionCliente: "Manuel Pardo N° 1017",
-        identificacion: "73047218",
-        celular: "903019613",
-        comprobante: "FACTURA",
-        igv: 6.48,
-        descuento: 4,
-        fecha: "2024-12-01",
-        subtotal: 40,
-        total: 42.48,
-        numero: "000004",
-        serie: "B001",
-        razonSocial: "CLINICA SAN GABRIEL S.A.C.",
-        ruc: "20505018509",
-        telefonoEmpresa: "912232434",
-        direccionEmpresa: "AV. LA MARINA NRO 2955 URB. MARANGA III ETAPA 4",
-        detallesVenta: [
-          {
-            campoNombre: "FUTBOL 5",
-            precio: 40,
-          },
-        ],
-      };
+  <section class="client">
+    <p><strong>Cliente:</strong> {{ data.cliente }}</p>
+    <p><strong>Dirección:</strong> {{ data.direccionCliente }}</p>
+    <p><strong>DNI:</strong> {{ data.identificacion }}</p>
+    <p><strong>Celular:</strong> {{ data.celular }}</p>
+  </section>
 
-      // Llenar detalles de venta en la tabla
-      const detailsTable = document.getElementById("details");
-      data.detallesVenta.forEach((detalle) => {
-        const row = `
-                <tr>
-                    <td>${detalle.campoNombre}</td>
-                    <td>1</td>
-                    <td>S/${detalle.precio.toFixed(2)}</td>
-                    <td>S/${detalle.precio.toFixed(2)}</td>
-                </tr>
-            `;
-        detailsTable.innerHTML += row;
-      });
+  <section class="items">
+    <table>
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data.detallesVenta">
+          <td>{{ item.campoNombre }}</td>
+          <td>1</td>
+          <td>S/{{ item.precio.toFixed(2) }}</td>
+          <td>S/{{ item.precio.toFixed(2) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
-      // Generar QR Code
-      const qrData = `RUC: ${data.ruc} | Número: ${data.serie}-${data.numero} | Total: S/${data.total}`;
-      QRCode.toCanvas(
-        document.getElementById("qrCode"),
-        qrData,
-        function (error) {
-          if (error) console.error(error);
-        }
-      );
+  <section class="totals">
+    <p><strong>Subtotal:</strong> S/{{ data.subtotal.toFixed(2) }}</p>
+    <p><strong>IGV (18%):</strong> S/{{ data.igv.toFixed(2) }}</p>
+    <p><strong>Descuento:</strong> S/{{ data.descuento.toFixed(2) }}</p>
+    <p>
+      <strong>Total:</strong> <strong>S/{{ data.total.toFixed(2) }}</strong>
+    </p>
+  </section>
 
-      // Descargar la factura como PDF
-      document.getElementById("downloadPdf").addEventListener("click", () => {
-        const invoice = document.getElementById("invoice");
-        const options = {
-          margin: 0,
-          filename: "factura.pdf",
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-          },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        };
-        html2pdf().set(options).from(invoice).save();
-      });
-    </script>
-  </body>
-</html>
+  <section class="qr">
+    <canvas id="qrCode"></canvas>
+  </section>
+
+  <footer class="footer">
+    <p>
+      Generado automáticamente - Gracias por su preferencia. Visita nuestra
+      página web:
+      <a href="https://zemply.vercel.app/" target="_blank">Zemply</a>
+    </p>
+  </footer>
+</div>
+
+<div class="download-btn">
+  <button id="downloadPdf" (click)="descargarPdf()">Descargar Factura</button>
+</div>

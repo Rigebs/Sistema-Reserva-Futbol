@@ -28,6 +28,7 @@ import { ProvinciaService } from "../../services/provincia.service";
 import { DepartamentoService } from "../../services/departamento.service";
 import { MatIconModule } from "@angular/material/icon";
 import { ActivatedRoute, Router } from "@angular/router";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: "app-editar-perfil",
@@ -96,7 +97,8 @@ export class EditarPerfilComponent {
     private provinciaService: ProvinciaService,
     private departamentoService: DepartamentoService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -405,6 +407,20 @@ export class EditarPerfilComponent {
         this.usuarioService.updateUser(id, userDetails).subscribe({
           next: (data) => {
             this.authTokenUtil.setToken(data.token);
+
+            // Mostrar Snackbar
+            const snackBarRef = this.snackBar.open(
+              "DATOS ACTUALIZADOS CORRECTAMENTE",
+              "Cerrar",
+              {
+                duration: 2000, // El snackbar se cierra automáticamente después de 2 segundos
+              }
+            );
+
+            // Redirigir después de que se cierre el Snackbar
+            snackBarRef.afterDismissed().subscribe(() => {
+              this.router.navigate(["/home"]);
+            });
           },
           error: (error) => {
             console.log("Error: ", error);
@@ -447,7 +463,20 @@ export class EditarPerfilComponent {
       this.usuarioService.updateUser(id, userDetails).subscribe({
         next: (data) => {
           this.authTokenUtil.setToken(data.token);
-          console.log("LO QIE LLEGO: ", userDetails);
+
+          // Mostrar Snackbar
+          const snackBarRef = this.snackBar.open(
+            "DATOS ACTUALIZADOS CORRECTAMENTE",
+            "Cerrar",
+            {
+              duration: 2000, // El snackbar se cierra automáticamente después de 2 segundos
+            }
+          );
+
+          // Redirigir después de que se cierre el Snackbar
+          snackBarRef.afterDismissed().subscribe(() => {
+            this.router.navigate(["/home"]);
+          });
         },
         error: (error) => {
           console.log("Error: ", error);

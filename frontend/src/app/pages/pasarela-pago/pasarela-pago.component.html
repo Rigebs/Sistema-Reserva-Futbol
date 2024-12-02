@@ -95,6 +95,19 @@
         </div>
       </div>
 
+      <mat-form-field appearance="fill">
+        <mat-label>Seleccione el tipo de comprobante</mat-label>
+        <mat-select
+          [(value)]="opcionSeleccionada"
+          [disabled]="disabled"
+          (selectionChange)="onSelectionChange($event)"
+        >
+          <mat-option *ngFor="let opcion of opciones" [value]="opcion">
+            {{ opcion }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
       <!-- Botón para pagar con Yape -->
       <button
         mat-flat-button

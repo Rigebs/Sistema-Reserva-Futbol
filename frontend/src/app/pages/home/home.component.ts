@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { CarouselComponent } from "../../components/carousel/carousel.component";
 import { MatSelectModule } from "@angular/material/select";
@@ -44,7 +44,8 @@ import { FormsModule } from "@angular/forms";
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.css",
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
+  @ViewChild(NavbarHomeComponent) childComponent!: NavbarHomeComponent;
   images = [
     "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/okgofljbrvcofompyxfk.jpg",
     "https://res.cloudinary.com/dpfcpo5me/image/upload/v1732066033/fntcuhbxcippz4b24rcr.jpg",
@@ -98,6 +99,10 @@ export class HomeComponent implements OnInit {
   ) {
     this.selectedDistrict = this.districts[-1];
     this.maxDate.setMonth(this.maxDate.getMonth() + 1);
+  }
+  ngAfterViewInit(): void {
+    this.childComponent.ngOnInit();
+    console.log("DLFJDFKLJDFLKJDFKLDFJ");
   }
 
   ngOnInit(): void {

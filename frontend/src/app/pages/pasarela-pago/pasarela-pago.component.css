@@ -67,6 +67,11 @@
   color: #0d0f5e;
 }
 
+mat-form-field {
+  padding-top: 30px;
+  width: 100%;
+}
+
 .total {
   font-weight: bold;
   color: #0d0f5e; /* Verde más oscuro para el total final */
@@ -93,7 +98,6 @@ button:hover {
   padding: 15px;
   font-size: 1.1rem;
   background-color: #ceddeb; /* Azul de Material Design */
-  color: white;
   border-radius: 8px;
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { LoginComponent } from "../../auth/login/login.component";
@@ -16,7 +16,7 @@ import { AuthTokenUtil } from "../../utils/auth-token-util";
   templateUrl: "./navbar-home.component.html",
   styleUrl: "./navbar-home.component.css",
 })
-export class NavbarHomeComponent implements OnInit {
+export class NavbarHomeComponent implements OnInit, AfterViewInit {
   menuOpen = false;
   currentUser: string | null = null;
   isCompania = false;
@@ -42,9 +42,35 @@ export class NavbarHomeComponent implements OnInit {
     private authNotificationService: AuthNotificationService,
     private authTokenUtil: AuthTokenUtil
   ) {}
+  ngAfterViewInit(): void {
+    this.verifyToken();
+
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user;
+      if (user) {
+        this.checkAdminRole();
+        this.checkEsperaRole();
+      } else {
+        this.isCompania = false;
+        this.adminUsername = null;
+      }
+    });
+
+    this.authNotificationService.message$.subscribe((message) => {
+      if (message === "Primero tienes que iniciar sesión") {
+        this.openLoginDialog();
+        this.snackBar.open(message, "Cerrar", {
+          duration: 3000,
+          verticalPosition: "top",
+          horizontalPosition: "center",
+        });
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.verifyToken();
+
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       if (user) {

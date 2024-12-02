@@ -21,6 +21,8 @@ export class PagoDialogComponent {
 
   id: number = 0;
 
+  dataComprobante: any;
+
   constructor(
     public dialogRef: MatDialogRef<PagoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -32,6 +34,8 @@ export class PagoDialogComponent {
 
     this.qrUrl = data.qrUrl;
     this.id = data.id;
+
+    this.dataComprobante = data.data;
   }
 
   verificarPago() {
@@ -40,7 +44,6 @@ export class PagoDialogComponent {
     this.reservaService.isReservaActive(this.id).subscribe({
       next: (data) => {
         if (data.pagoStatus) {
-          // Mostrar Snackbar
           this.snackBar.open("PAGO REALIZADO CORRECTAMENTE", "Cerrar", {
             duration: 2000, // Mostrar por 2 segundos
             horizontalPosition: "center", // Posición horizontal
@@ -50,7 +53,7 @@ export class PagoDialogComponent {
           // Redirigir después de 2 segundos
           this.dialogRef.close();
           setTimeout(() => {
-            this.router.navigate(["/home"]); // Navegar a /home
+            this.verComprobante(this.dataComprobante);
           }, 2000);
         } else {
           // En caso de que el pago no se haya realizado, puedes manejarlo aquí
@@ -70,5 +73,9 @@ export class PagoDialogComponent {
         });
       },
     });
+  }
+
+  verComprobante(data: any) {
+    this.router.navigate(["/comprobante"], { state: { data } });
   }
 }

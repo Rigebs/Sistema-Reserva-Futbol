@@ -76,7 +76,9 @@ export class CampoService {
       );
   }
   update(id: number, campo: Campo): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/${id}`, campo);
+    return this.http.put<string>(`${this.apiUrl}/${id}`, campo, {
+      responseType: "text" as "json",
+    });
   }
 
   changeStatus(id: number, status: string): Observable<any> {

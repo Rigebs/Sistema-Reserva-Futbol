@@ -152,7 +152,6 @@ export class ProcesoReservaComponent implements OnInit {
         .subscribe((dataTime: string[]) => {
           console.log("Horas disponibles del backend:", dataTime);
 
-          // Filtrar las horas disponibles
           this.availableHours = dataTime
             .map((hour) => parseInt(hour.split(":")[0]))
             .filter(
@@ -160,7 +159,6 @@ export class ProcesoReservaComponent implements OnInit {
                 hour >= this.atenciónStartHour && hour <= this.atenciónEndHour
             );
 
-          // Si no hay horas disponibles después del filtrado
           if (!this.availableHours || this.availableHours.length === 0) {
             this.isThereHours = true; // No hay horas disponibles
             this.firstFormGroup.get("fechaReserva")?.updateValueAndValidity(); // Revalida el formulario

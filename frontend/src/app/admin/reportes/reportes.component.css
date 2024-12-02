@@ -1,0 +1,201 @@
+/* Reset de márgenes y rellenos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background: #f4f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+/* Títulos */
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+/* Estilo para las tarjetas (cards) */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 25px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 15px;
+}
+
+.card-text {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #16a085;
+}
+
+/* Estilos para las cartas de "Total de Reservas" y "Total Monetario" */
+.card .card-title {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: #2980b9;
+}
+
+.card .card-text {
+  font-size: 2.5rem;
+  color: #27ae60;
+  font-weight: 700;
+}
+
+/* Sección de gráficos */
+.chart-container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.chart-section {
+  margin-bottom: 30px;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Input de fecha */
+#fechaInput {
+  border: 2px solid #2980b9;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+#fechaInput:focus {
+  outline: none;
+  border-color: #16a085;
+  box-shadow: 0 0 5px rgba(22, 160, 133, 0.5);
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 20px;
+  }
+
+  .row {
+    display: block;
+  }
+
+  .col-md-6 {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .card-text {
+    font-size: 1.5rem;
+  }
+
+  #fechaInput {
+    font-size: 0.9rem;
+  }
+}
+
+/* Estilos de la tabla de los gráficos */
+canvas {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación de carga de gráficos */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.chart-container {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Fondo de la página */
+body {
+  background: linear-gradient(135deg, #f1c40f, #e74c3c);
+  background-size: cover;
+  color: #ecf0f1;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+h2,
+.card-title,
+.card-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Botones de interacción */
+button {
+  background-color: #2980b9;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #16a085;
+}
+
+button:focus {
+  outline: none;
+}

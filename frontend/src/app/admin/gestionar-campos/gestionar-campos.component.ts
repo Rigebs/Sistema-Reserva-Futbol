@@ -64,7 +64,8 @@ export class GestionarCamposComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllCampos();
-    this.getAllTipoDeportes(); // Llama para obtener los tipos de deportes
+    this.getAllTipoDeportes();
+    console.log("CAMPOS:", this.dataSource);
   }
 
   // Método para obtener los datos de los campos
@@ -79,6 +80,8 @@ export class GestionarCamposComponent implements OnInit {
               ? { label: "Habilitado", color: "green" }
               : { label: "Inhabilitado", color: "red" },
         }));
+        console.log("CAMPOS:", this.dataSource);
+
         this.isLoading = false;
         console.log("ho");
       },
@@ -161,7 +164,6 @@ export class GestionarCamposComponent implements OnInit {
     dialogRef.componentInstance.submitEvent.subscribe((formData) => {
       const nuevoCampo: Campo = {
         ...formData,
-        estado: formData.estado ? "1" : "0", // Convertimos el estado a "1" o "0"
         tipoDeporte: {
           id: formData.tipoDeporteId, // Solo enviamos el id del tipoDeporte
         },
