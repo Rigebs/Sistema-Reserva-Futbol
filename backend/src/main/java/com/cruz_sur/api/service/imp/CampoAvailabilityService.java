@@ -10,9 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CampoAvailabilityService {
+
     private final DetalleVentaRepository detalleVentaRepository;
 
     // Check campo availability based on DetalleVenta.date
@@ -21,6 +23,7 @@ public class CampoAvailabilityService {
             return false; // Prevent bookings that end at midnight
         }
 
+        // Fetch only active reservations (estado == '1') on the given date
         List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndFecha(campoId, detalleFecha)
                 .stream()
                 .filter(detalle -> detalle.getEstado() == '1') // Only consider active bookings
@@ -29,19 +32,25 @@ public class CampoAvailabilityService {
         for (DetalleVenta reserva : reservas) {
             // Check for overlapping time intervals
             if (reserva.getHoraInicio().before(horaFin) && reserva.getHoraFinal().after(horaInicio)) {
-                return false;
+                return false; // If there's an overlap, the campo is not available
             }
         }
-        return true;
+
+        return true; // No overlapping reservations, campo is available
     }
 
     // Remove unavailable hours for the given date and campo
     public List<Time> getAvailableHours(Long campoId, LocalDate detalleFecha, List<Time> allHours) {
-        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndFecha(campoId, detalleFecha);
+        // Fetch only active reservations (estado == '1') for the given date
+        List<DetalleVenta> reservas = detalleVentaRepository.findByCampoIdAndFecha(campoId, detalleFecha)
+                .stream()
+                .filter(detalle -> detalle.getEstado() == '1') // Only consider active bookings
+                .toList();
+
         List<Time> availableHours = new ArrayList<>(allHours);
 
+        // For each reservation, remove the hours that overlap with reserved hours
         for (DetalleVenta reserva : reservas) {
-            // Remove hours that are already reserved
             availableHours.removeIf(hour ->
                     !hour.before(reserva.getHoraInicio()) && !hour.after(reserva.getHoraFinal()));
         }
